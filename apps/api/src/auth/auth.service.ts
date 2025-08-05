@@ -1,26 +1,28 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { TenantsService } from '../tenants/tenants.service';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import type { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import type { TenantsService } from '../tenants/tenants.service';
+import type { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private tenantsService: TenantsService,
+    private tenantsService: TenantsService
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     try {
       console.log('Validating user:', email);
       const user = await this.usersService.findByEmail(email);
-      console.log('Found user during validation:', { ...user, password: '[REDACTED]' });
+      console.log('Found user during validation:', {
+        ...user,
+        password: '[REDACTED]',
+      });
       const isPasswordValid = await bcrypt.compare(password, user.password);
       console.log('Password validation result:', isPasswordValid);
-      
+
       if (user && isPasswordValid) {
         const { password, ...result } = user;
         return result;
@@ -58,13 +60,13 @@ export class AuthService {
 
   async register(email: string, password: string, invitationToken?: string) {
     console.log('Registering new user:', email);
-    
+
     // Create user with admin role if no invitation token
     const roles = invitationToken ? ['user'] : ['admin'];
     const user = await this.usersService.create({
       email,
       password,
-      roles
+      roles,
     });
 
     // If no invitation token, create a new tenant for the user
@@ -72,7 +74,7 @@ export class AuthService {
       const tenantName = `${email.split('@')[0]}'s Organization`;
       await this.tenantsService.createTenant({
         name: tenantName,
-        adminId: user.id
+        adminId: user.id,
       });
     }
 
@@ -81,48 +83,73 @@ export class AuthService {
       await this.tenantsService.acceptInvitation(invitationToken, user.id);
     }
 
-    console.log('User registered successfully:', { ...user, password: '[REDACTED]' });
+    console.log('User registered successfully:', {
+      ...user,
+      password: '[REDACTED]',
+    });
     const { password: _, ...result } = user;
     return {
       message: 'Registration successful',
-      user: result
+      user: result,
     };
   }
 
-  async updateProfile(userId: string, updateData: { name?: string; bio?: string; avatarUrl?: string }) {
+  async updateProfile(
+    userId: string,
+    updateData: { name?: string; bio?: string; avatarUrl?: string }
+  ) {
     console.log('Updating profile for user:', userId);
     const user = await this.usersService.findOne(userId);
-    
+
     // Update only provided fields
-    if (updateData.name !== undefined) user.name = updateData.name;
-    if (updateData.bio !== undefined) user.bio = updateData.bio;
-    if (updateData.avatarUrl !== undefined) user.avatarUrl = updateData.avatarUrl;
-    
+    if (updateData.name !== undefined) {
+      user.name = updateData.name;
+    }
+    if (updateData.bio !== undefined) {
+      user.bio = updateData.bio;
+    }
+    if (updateData.avatarUrl !== undefined) {
+      user.avatarUrl = updateData.avatarUrl;
+    }
+
     const updatedUser = await this.usersService.update(user);
     console.log('Profile updated successfully:', updatedUser);
-    
+
     const { password: _, ...result } = updatedUser;
     return {
       message: 'Profile updated successfully',
-      user: result
+      user: result,
     };
   }
 
-  async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+  async updatePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
     const user = await this.usersService.findOne(userId);
     if (!user) {
-      throw new HttpException({
-        status: HttpStatus.NOT_FOUND,
-        message: 'User not found',
-      }, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+        },
+        HttpStatus.NOT_FOUND
+      );
     }
 
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
     if (!isPasswordValid) {
-      throw new HttpException({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'Current password is incorrect',
-      }, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          message: 'Current password is incorrect',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

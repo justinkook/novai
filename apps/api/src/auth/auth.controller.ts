@@ -1,19 +1,30 @@
-import { Controller, Post, Body, UseGuards, Get, Request, HttpException, HttpStatus, Query, Patch } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
   ApiBearerAuth,
   ApiBody,
+  ApiOperation,
   ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
+import type { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import type { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -23,7 +34,11 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: RegisterDto })
-  @ApiQuery({ name: 'invitationToken', required: false, description: 'Invitation token for joining existing tenant' })
+  @ApiQuery({
+    name: 'invitationToken',
+    required: false,
+    description: 'Invitation token for joining existing tenant',
+  })
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
@@ -44,7 +59,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid input' })
   async register(
     @Body() registerDto: RegisterDto,
-    @Query('invitationToken') invitationToken?: string,
+    @Query('invitationToken') invitationToken?: string
   ) {
     try {
       const result = await this.authService.register(
@@ -54,19 +69,25 @@ export class AuthController {
       );
       return {
         ...result,
-        message: 'Registration successful'
+        message: 'Registration successful',
       };
     } catch (error) {
       if (error.message === 'Email already exists') {
-        throw new HttpException({
-          status: HttpStatus.CONFLICT,
-          message: 'Email already exists',
-        }, HttpStatus.CONFLICT);
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            message: 'Email already exists',
+          },
+          HttpStatus.CONFLICT
+        );
       }
-      throw new HttpException({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Registration failed',
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Registration failed',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
@@ -96,13 +117,16 @@ export class AuthController {
       const result = await this.authService.login(req.user);
       return {
         ...result,
-        message: 'Login successful'
+        message: 'Login successful',
       };
-    } catch (error) {
-      throw new HttpException({
-        status: HttpStatus.UNAUTHORIZED,
-        message: 'Invalid credentials',
-      }, HttpStatus.UNAUTHORIZED);
+    } catch (_error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          message: 'Invalid credentials',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
     }
   }
 
@@ -157,9 +181,9 @@ export class AuthController {
     console.log('Token validation request received:', {
       userId: req.user.id,
       email: req.user.email,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     return {
       valid: true,
       user: req.user,
@@ -190,10 +214,21 @@ export class AuthController {
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+  async updateProfile(
+    @Request() req,
+    @Body() updateProfileDto: UpdateProfileDto
+  ) {
     try {
-      console.log('Updating profile for user:', req.user.userId, 'with data:', updateProfileDto);
-      const result = await this.authService.updateProfile(req.user.userId, updateProfileDto);
+      console.log(
+        'Updating profile for user:',
+        req.user.userId,
+        'with data:',
+        updateProfileDto
+      );
+      const result = await this.authService.updateProfile(
+        req.user.userId,
+        updateProfileDto
+      );
       console.log('Profile update result:', result);
       return {
         message: 'Profile updated successfully',
@@ -201,10 +236,13 @@ export class AuthController {
       };
     } catch (error) {
       console.error('Error updating profile:', error);
-      throw new HttpException({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to update profile',
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Failed to update profile',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 
@@ -216,18 +254,18 @@ export class AuthController {
     description: 'Password updated successfully',
     schema: {
       properties: {
-        message: { type: 'string' }
-      }
-    }
+        message: { type: 'string' },
+      },
+    },
   })
   async updatePassword(
     @Request() req,
-    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Body() updatePasswordDto: UpdatePasswordDto
   ) {
     await this.authService.updatePassword(
       req.user.userId,
       updatePasswordDto.currentPassword,
-      updatePasswordDto.newPassword,
+      updatePasswordDto.newPassword
     );
     return { message: 'Password updated successfully' };
   }

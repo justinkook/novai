@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { TenantsModule } from './tenants/tenants.module';
-import { User } from './users/user.entity';
-import { Tenant } from './tenants/tenant.entity';
-import { Invitation } from './tenants/invitation.entity';
 import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { TenantsModule } from './tenants/tenants.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -38,4 +35,4 @@ import { PassportModule } from '@nestjs/passport';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

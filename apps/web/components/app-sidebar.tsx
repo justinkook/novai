@@ -1,5 +1,12 @@
-"use client"
+'use client';
 
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '@workspace/ui/components/sidebar';
 import {
   AudioWaveform,
   Command,
@@ -8,88 +15,86 @@ import {
   Home,
   Map,
   PieChart,
-  Settings2
-} from "lucide-react"
-import * as React from "react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@workspace/ui/components/sidebar"
+  Settings2,
+  Sword,
+} from 'lucide-react';
+import type * as React from 'react';
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
+import { TeamSwitcher } from '@/components/team-switcher';
 
 // Navigation data
 const navData = [
   {
-    title: "Home",
-    url: "/",
+    title: 'Home',
+    url: '/',
     icon: Home,
     items: [
       {
-        title: "Dashboard",
-        url: "/dashboard",
+        title: 'Dashboard',
+        url: '/dashboard',
       },
       {
-        title: "Transactions",
-        url: "/transactions",
+        title: 'Transactions',
+        url: '/transactions',
       },
     ],
   },
   {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings2,      
+    title: 'RPG',
+    url: '/rpg',
+    icon: Sword,
   },
-]
+  {
+    title: 'Settings',
+    url: '/settings',
+    icon: Settings2,
+  },
+];
 
 // This is sample data.
 export const data = {
   user: {
-    name: "mohit",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: 'mohit',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: 'Acme Inc',
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: 'Enterprise',
     },
     {
-      name: "Acme Corp.",
+      name: 'Acme Corp.',
       logo: AudioWaveform,
-      plan: "Startup",
+      plan: 'Startup',
     },
     {
-      name: "Evil Corp.",
+      name: 'Evil Corp.',
       logo: Command,
-      plan: "Free",
+      plan: 'Free',
     },
   ],
   navMain: navData,
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
+      name: 'Design Engineering',
+      url: '#',
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
+      name: 'Sales & Marketing',
+      url: '#',
       icon: PieChart,
     },
     {
-      name: "Travel",
-      url: "#",
+      name: 'Travel',
+      url: '#',
       icon: Map,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -105,5 +110,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

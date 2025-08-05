@@ -1,23 +1,23 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from 'next/font/google';
 
-import "@workspace/ui/globals.css"
-import { Providers } from "@/components/providers"
-import { Toaster } from "@workspace/ui/components/toaster"
+import '@workspace/ui/globals.css';
+import { Toaster } from '@workspace/ui/components/toaster';
+import { Providers } from '@/components/providers';
 
 const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -28,5 +28,5 @@ export default function RootLayout({
         <Toaster />
       </body>
     </html>
-  )
+  );
 }

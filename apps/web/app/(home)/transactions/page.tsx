@@ -1,4 +1,4 @@
-import OriginTable from "@/components/comp-485";
+import OriginTable from '@/components/comp-485';
 
 export default function TransactionsPage() {
   return (
@@ -10,6 +10,5 @@ export default function TransactionsPage() {
         <OriginTable />
       </div>
     </>
-  )
+  );
 }
-

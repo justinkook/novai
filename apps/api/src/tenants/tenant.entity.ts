@@ -1,6 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Entity('tenants')
 export class Tenant {
@@ -16,7 +23,10 @@ export class Tenant {
   @Column({ default: 'active' })
   status: string;
 
-  @OneToMany(() => User, user => user.tenant)
+  @OneToMany(
+    () => User,
+    (user) => user.tenant
+  )
   users: User[];
 
   @CreateDateColumn()

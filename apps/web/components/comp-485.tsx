@@ -1,6 +1,21 @@
-"use client";
+'use client';
 
-import { cn } from "@workspace/ui/lib/utils";
+import {
+  type ColumnDef,
+  type ColumnFiltersState,
+  type FilterFn,
+  flexRender,
+  getCoreRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type PaginationState,
+  type Row,
+  type SortingState,
+  useReactTable,
+  type VisibilityState,
+} from '@tanstack/react-table';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,10 +26,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@workspace/ui/components/alert-dialog";
-import { Badge } from "@workspace/ui/components/badge";
-import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+} from '@workspace/ui/components/alert-dialog';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -29,18 +44,26 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
-import { Pagination, PaginationContent, PaginationItem } from "@workspace/ui/components/pagination";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+} from '@workspace/ui/components/dropdown-menu';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from '@workspace/ui/components/pagination';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@workspace/ui/components/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@workspace/ui/components/select";
+} from '@workspace/ui/components/select';
 import {
   Table,
   TableBody,
@@ -48,23 +71,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
-  PaginationState,
-  Row,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+} from '@workspace/ui/components/table';
+import { cn } from '@workspace/ui/lib/utils';
 import {
   ChevronDown,
   ChevronFirst,
@@ -80,8 +88,8 @@ import {
   ListFilter,
   Plus,
   Trash,
-} from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+} from 'lucide-react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 type Item = {
   id: string;
@@ -89,30 +97,38 @@ type Item = {
   email: string;
   location: string;
   flag: string;
-  status: "Active" | "Inactive" | "Pending";
+  status: 'Active' | 'Inactive' | 'Pending';
   balance: number;
 };
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
-  const searchableRowContent = `${row.original.name} ${row.original.email}`.toLowerCase();
-  const searchTerm = (filterValue ?? "").toLowerCase();
+const multiColumnFilterFn: FilterFn<Item> = (row, _columnId, filterValue) => {
+  const searchableRowContent =
+    `${row.original.name} ${row.original.email}`.toLowerCase();
+  const searchTerm = (filterValue ?? '').toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
 
-const statusFilterFn: FilterFn<Item> = (row, columnId, filterValue: string[]) => {
-  if (!filterValue?.length) return true;
+const statusFilterFn: FilterFn<Item> = (
+  row,
+  columnId,
+  filterValue: string[]
+) => {
+  if (!filterValue?.length) {
+    return true;
+  }
   const status = row.getValue(columnId) as string;
   return filterValue.includes(status);
 };
 
 const columns: ColumnDef<Item>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -130,62 +146,66 @@ const columns: ColumnDef<Item>[] = [
     enableHiding: false,
   },
   {
-    header: "Name",
-    accessorKey: "name",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    header: 'Name',
+    accessorKey: 'name',
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue('name')}</div>
+    ),
     size: 180,
     filterFn: multiColumnFilterFn,
     enableHiding: false,
   },
   {
-    header: "Email",
-    accessorKey: "email",
+    header: 'Email',
+    accessorKey: 'email',
     size: 220,
   },
   {
-    header: "Location",
-    accessorKey: "location",
+    header: 'Location',
+    accessorKey: 'location',
     cell: ({ row }) => (
       <div>
-        <span className="text-lg leading-none">{row.original.flag}</span> {row.getValue("location")}
+        <span className="text-lg leading-none">{row.original.flag}</span>{' '}
+        {row.getValue('location')}
       </div>
     ),
     size: 180,
   },
   {
-    header: "Status",
-    accessorKey: "status",
+    header: 'Status',
+    accessorKey: 'status',
     cell: ({ row }) => (
       <Badge
         className={cn(
-          row.getValue("status") === "Inactive" && "bg-muted-foreground/60 text-primary-foreground",
+          row.getValue('status') === 'Inactive' &&
+            'bg-muted-foreground/60 text-primary-foreground'
         )}
       >
-        {row.getValue("status")}
+        {row.getValue('status')}
       </Badge>
     ),
     size: 100,
     filterFn: statusFilterFn,
   },
   {
-    header: "Performance",
-    accessorKey: "performance",
+    header: 'Performance',
+    accessorKey: 'performance',
   },
   {
-    header: "Balance",
-    accessorKey: "balance",
+    header: 'Balance',
+    accessorKey: 'balance',
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("balance"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
+      const amount = parseFloat(row.getValue('balance'));
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
       }).format(amount);
       return formatted;
     },
     size: 120,
   },
   {
-    id: "actions",
+    id: 'actions',
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => <RowActions row={row} />,
     size: 60,
@@ -205,7 +225,7 @@ export default function OriginTable() {
 
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: "name",
+      id: 'name',
       desc: false,
     },
   ]);
@@ -214,7 +234,7 @@ export default function OriginTable() {
   useEffect(() => {
     async function fetchPosts() {
       const res = await fetch(
-        "https://res.cloudinary.com/dlzlfasou/raw/upload/users-01_fertyx.json",
+        'https://res.cloudinary.com/dlzlfasou/raw/upload/users-01_fertyx.json'
       );
       const data = await res.json();
       setData(data);
@@ -225,7 +245,7 @@ export default function OriginTable() {
   const handleDeleteRows = () => {
     const selectedRows = table.getSelectedRowModel().rows;
     const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id),
+      (item) => !selectedRows.some((row) => row.original.id === item.id)
     );
     setData(updatedData);
     table.resetRowSelection();
@@ -254,29 +274,33 @@ export default function OriginTable() {
 
   // Get unique status values
   const uniqueStatusValues = useMemo(() => {
-    const statusColumn = table.getColumn("status");
+    const statusColumn = table.getColumn('status');
 
-    if (!statusColumn) return [];
+    if (!statusColumn) {
+      return [];
+    }
 
     const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
 
     return values.sort();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+  }, [table.getColumn]);
 
   // Get counts for each status
   const statusCounts = useMemo(() => {
-    const statusColumn = table.getColumn("status");
-    if (!statusColumn) return new Map();
+    const statusColumn = table.getColumn('status');
+    if (!statusColumn) {
+      return new Map();
+    }
     return statusColumn.getFacetedUniqueValues();
-  }, [table.getColumn("status")?.getFacetedUniqueValues()]);
+  }, [table.getColumn]);
 
   const selectedStatuses = useMemo(() => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+    const filterValue = table.getColumn('status')?.getFilterValue() as string[];
     return filterValue ?? [];
-  }, [table.getColumn("status")?.getFilterValue()]);
+  }, [table.getColumn]);
 
   const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+    const filterValue = table.getColumn('status')?.getFilterValue() as string[];
     const newFilterValue = filterValue ? [...filterValue] : [];
 
     if (checked) {
@@ -288,7 +312,9 @@ export default function OriginTable() {
       }
     }
 
-    table.getColumn("status")?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
+    table
+      .getColumn('status')
+      ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
   };
 
   return (
@@ -302,11 +328,15 @@ export default function OriginTable() {
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
-                "peer min-w-60 ps-9",
-                Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9",
+                'peer min-w-60 ps-9',
+                Boolean(table.getColumn('name')?.getFilterValue()) && 'pe-9'
               )}
-              value={(table.getColumn("name")?.getFilterValue() ?? "") as string}
-              onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+              value={
+                (table.getColumn('name')?.getFilterValue() ?? '') as string
+              }
+              onChange={(e) =>
+                table.getColumn('name')?.setFilterValue(e.target.value)
+              }
               placeholder="Filter by name or email..."
               type="text"
               aria-label="Filter by name or email"
@@ -314,12 +344,12 @@ export default function OriginTable() {
             <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
               <ListFilter size={16} strokeWidth={2} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn("name")?.getFilterValue()) && (
+            {Boolean(table.getColumn('name')?.getFilterValue()) && (
               <button
                 className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn("name")?.setFilterValue("");
+                  table.getColumn('name')?.setFilterValue('');
                   if (inputRef.current) {
                     inputRef.current.focus();
                   }
@@ -349,20 +379,24 @@ export default function OriginTable() {
             </PopoverTrigger>
             <PopoverContent className="min-w-36 p-3" align="start">
               <div className="space-y-3">
-                <div className="text-xs font-medium text-muted-foreground">Filters</div>
+                <div className="text-xs font-medium text-muted-foreground">
+                  Filters
+                </div>
                 <div className="space-y-3">
                   {uniqueStatusValues.map((value, i) => (
                     <div key={value} className="flex items-center gap-2">
                       <Checkbox
                         id={`${id}-${i}`}
                         checked={selectedStatuses.includes(value)}
-                        onCheckedChange={(checked: boolean) => handleStatusChange(checked, value)}
+                        onCheckedChange={(checked: boolean) =>
+                          handleStatusChange(checked, value)
+                        }
                       />
                       <Label
                         htmlFor={`${id}-${i}`}
                         className="flex grow justify-between gap-2 font-normal"
                       >
-                        {value}{" "}
+                        {value}{' '}
                         <span className="ms-2 text-xs text-muted-foreground">
                           {statusCounts.get(value)}
                         </span>
@@ -397,7 +431,9 @@ export default function OriginTable() {
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                       onSelect={(event) => event.preventDefault()}
                     >
                       {column.id}
@@ -431,27 +467,43 @@ export default function OriginTable() {
                     className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border"
                     aria-hidden="true"
                   >
-                    <CircleAlert className="opacity-80" size={16} strokeWidth={2} />
+                    <CircleAlert
+                      className="opacity-80"
+                      size={16}
+                      strokeWidth={2}
+                    />
                   </div>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {table.getSelectedRowModel().rows.length} selected{" "}
-                      {table.getSelectedRowModel().rows.length === 1 ? "row" : "rows"}.
+                      This action cannot be undone. This will permanently delete{' '}
+                      {table.getSelectedRowModel().rows.length} selected{' '}
+                      {table.getSelectedRowModel().rows.length === 1
+                        ? 'row'
+                        : 'rows'}
+                      .
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>Delete</AlertDialogAction>
+                  <AlertDialogAction onClick={handleDeleteRows}>
+                    Delete
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           )}
           {/* Add user button */}
           <Button className="ml-auto" variant="outline">
-            <Plus className="-ms-1 me-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
+            <Plus
+              className="-ms-1 me-2 opacity-60"
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
             Add user
           </Button>
         </div>
@@ -474,14 +526,14 @@ export default function OriginTable() {
                         <div
                           className={cn(
                             header.column.getCanSort() &&
-                              "flex h-full cursor-pointer select-none items-center justify-between gap-2",
+                              'flex h-full cursor-pointer select-none items-center justify-between gap-2'
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           onKeyDown={(e) => {
                             // Enhanced keyboard handling for sorting
                             if (
                               header.column.getCanSort() &&
-                              (e.key === "Enter" || e.key === " ")
+                              (e.key === 'Enter' || e.key === ' ')
                             ) {
                               e.preventDefault();
                               header.column.getToggleSortingHandler()?.(e);
@@ -489,7 +541,10 @@ export default function OriginTable() {
                           }}
                           tabIndex={header.column.getCanSort() ? 0 : undefined}
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                           {{
                             asc: (
                               <ChevronUp
@@ -510,7 +565,10 @@ export default function OriginTable() {
                           }[header.column.getIsSorted() as string] ?? null}
                         </div>
                       ) : (
-                        flexRender(header.column.columnDef.header, header.getContext())
+                        flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )
                       )}
                     </TableHead>
                   );
@@ -521,17 +579,26 @@ export default function OriginTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="last:py-0">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -567,19 +634,29 @@ export default function OriginTable() {
         </div>
         {/* Page number information */}
         <div className="flex grow justify-end whitespace-nowrap text-sm text-muted-foreground">
-          <p className="whitespace-nowrap text-sm text-muted-foreground" aria-live="polite">
+          <p
+            className="whitespace-nowrap text-sm text-muted-foreground"
+            aria-live="polite"
+          >
             <span className="text-foreground">
-              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+              {table.getState().pagination.pageIndex *
+                table.getState().pagination.pageSize +
+                1}
+              -
               {Math.min(
                 Math.max(
-                  table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                  table.getState().pagination.pageIndex *
+                    table.getState().pagination.pageSize +
                     table.getState().pagination.pageSize,
-                  0,
+                  0
                 ),
-                table.getRowCount(),
+                table.getRowCount()
               )}
-            </span>{" "}
-            of <span className="text-foreground">{table.getRowCount().toString()}</span>
+            </span>{' '}
+            of{' '}
+            <span className="text-foreground">
+              {table.getRowCount().toString()}
+            </span>
           </p>
         </div>
 
@@ -644,7 +721,7 @@ export default function OriginTable() {
         </div>
       </div>
       <p className="mt-4 text-center text-sm text-muted-foreground">
-        Example of a more complex table made with{" "}
+        Example of a more complex table made with{' '}
         <a
           className="underline hover:text-foreground"
           href="https://tanstack.com/table"
@@ -663,7 +740,12 @@ function RowActions({ row }: { row: Row<Item> }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex justify-end">
-          <Button size="icon" variant="ghost" className="shadow-none" aria-label="Edit item">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="shadow-none"
+            aria-label="Edit item"
+          >
             <Ellipsis size={16} strokeWidth={2} aria-hidden="true" />
           </Button>
         </div>

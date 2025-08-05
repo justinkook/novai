@@ -1,112 +1,199 @@
-# turborepo monorepo with Next.js 15 + NestJS 11 + shadcn
+# Novai - AI-Powered Text RPG Engine
 
-This template is for creating a comprehensive Enterprise level app using Next.js 15 (frontend) and NestJS 11 (backend).
-Use database of your choice (MySQL, PostgreSQL, etc.) and configure it in the app.
+**Novai** is a source-agnostic AI-driven text RPG system that replicates the full gameplay experience of games like Baldur's Gate 3 using only text, powered by LLMs as the Game Master.
 
-## Usage
+## 🎯 Project Vision
 
-You can use or follow the step 1 to clone.
-```bash
-pnpm dlx superepo@latest init
+Build a **campaign-agnostic AI-driven text RPG system** that can:
+- Replicate full gameplay (characters, stat checks, combat, branching choices) using only text
+- Support multiple campaigns (BG3, Game of Thrones, Cyberpunk, etc.)
+- Export playthroughs as traditional web novels
+- Use LLMs as intelligent Game Masters
+
+## 🛠 Tech Stack
+
+- **Monorepo**: Turborepo
+- **Frontend**: Next.js 15 (App Router), Tailwind CSS, shadcn/ui
+- **Backend**: NestJS 11 (TypeScript)
+- **AI**: OpenAI via `vercel/ai` SDK for hosted MVP, local LM Studio for dev NSFW
+- **Vector DB**: Pinecone or Supabase pgvector
+- **Storage**: 
+  - Dev: local `fs` (fast iteration)
+  - Prod: Supabase PostgreSQL
+- **Hosting**: Vercel (web), Railway or Fly.io (api)
+
+## 🏗 Architecture
+
+```
+.
+├── apps/
+│   ├── web/              # Next.js frontend for player input/output
+│   └── api/              # NestJS backend with game logic, LLM routing
+│
+├── packages/
+│   ├── engine/           # Core text RPG engine
+│   ├── rulesets/         # Modular RPG logic (D&D, etc.)
+│   ├── prompts/          # Dynamic system prompts per campaign
+│   ├── exporters/        # Web novel output compiler
+│   └── ui/               # Shared UI components
+│
+├── campaigns/            # Data for BG3, Thrones, etc.
+├── turbo.json            # Turborepo config
+└── .env                  # Store user-provided API keys
 ```
 
-1. Clone the repository
+## 🎮 Features
 
+### Core Engine
+- **AI Game Master**: LLM-powered narration and decision-making
+- **Modular Rulesets**: D&D 5e, Game of Thrones politics, etc.
+- **Dynamic Campaigns**: Load campaigns from `/campaigns/{name}/`
+- **Stat System**: Full RPG stat checks and combat mechanics
+- **Choice System**: Branching narratives with consequences
+- **Companion System**: AI-driven companion interactions
+
+### Campaign Support
+- **Baldur's Gate 3**: Full D&D 5e experience with Mind Flayer tadpole
+- **Game of Thrones**: Political intrigue and noble politics
+- **Cyberpunk**: Futuristic setting with corporate intrigue
+- **Custom Campaigns**: Easy to create new campaigns
+
+### Export Features
+- **Web Novel Export**: Convert playthroughs to Markdown/text
+- **AO3/WebNovel/KDP**: Ready for publishing platforms
+- **Story Compilation**: Automatic chapter organization
+
+## 🚀 Quick Start
+
+1. **Clone and Setup**
 ```bash
-git clone https://github.com/mohitarora/superepo.git
-
-cd superepo
-```
-
-2. Setup Environment Variables
-
-Copy .env.example to .env in both apps/api and apps/web
-```bash
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
-```
-
-3. Install dependencies
-
-```bash
+git clone <repository>
+cd novai
 pnpm install
 ```
 
-4. Start the database (optional)
-
-example for Postgres:
+2. **Environment Variables**
 ```bash
-docker pull postgres
-docker run -d --name <container_name> -p 5432:5432 -e POSTGRES_PASSWORD=<new_password> postgres
+# Copy .env.example to .env in both apps/api and apps/web
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+
+# Add your OpenAI API key
+echo "NEXT_PUBLIC_OPENAI_API_KEY=your_key_here" >> apps/web/.env
 ```
-then update the .env file with the new password (default **DB_USERNAME**=postgres, **DB_DATABASE**=postgres) 
 
-5. Start the app
-
+3. **Start Development**
 ```bash
 pnpm dev
 ```
 
-6. Visit http://localhost:3000
+4. **Visit the RPG**
+- Open http://localhost:3000/rpg
+- Start your Baldur's Gate 3 adventure!
 
-7. Visit http://localhost:4000/api/docs
+## 🎲 How to Play
 
-If you need to install new packages, you can add to the respective app folder:
+1. **Character Creation**: Enter your character's name
+2. **Begin Adventure**: Start with the nautiloid ship crash
+3. **Make Choices**: Respond to AI-generated scenarios
+4. **Stat Checks**: Roll for success on challenges
+5. **Combat**: Engage in turn-based combat
+6. **Companions**: Interact with AI-driven companions
+7. **Story Progression**: Unlock new locations and plot points
 
+## 📁 Project Structure
+
+### Core Packages
+
+#### `@workspace/engine`
+- `GameEngineService`: Main game orchestration
+- `LLMService`: AI provider abstraction (OpenAI/local)
+- `CampaignService`: Campaign data management
+- `types.ts`: Core game state and response types
+
+#### `@workspace/prompts`
+- `dnd-5e.ts`: D&D 5e system prompts
+- `prompt-templates.ts`: Reusable prompt templates
+- Campaign-specific prompt generation
+
+#### `@workspace/rulesets`
+- `dnd-5e.ts`: D&D 5e rules implementation
+- `types.ts`: Ruleset interfaces
+- Modular ruleset system
+
+### Campaigns
+
+#### `campaigns/baldurs-gate-3/`
+- `campaign.json`: Campaign configuration
+- `intro.md`: Opening narrative
+- `companions.json`: Character data
+- `locations.json`: World locations
+- `plot.json`: Story progression
+
+## 🔧 Development
+
+### Adding New Campaigns
+
+1. Create campaign directory: `campaigns/{campaign-name}/`
+2. Add `campaign.json` with configuration
+3. Create `intro.md` for opening narrative
+4. Add companion and location data
+5. Update prompts for campaign-specific style
+
+### Adding New Rulesets
+
+1. Create ruleset in `packages/rulesets/src/{ruleset}.ts`
+2. Implement `Ruleset` interface
+3. Add prompt templates in `packages/prompts/src/`
+4. Update engine to support new ruleset
+
+### Local LLM Development
+
+For NSFW content or faster iteration:
 ```bash
-pnpm add <package-name>
+# Start LM Studio locally
+# Update LLMConfig to use 'local' provider
+# Point to http://localhost:1234/v1/chat/completions
 ```
 
-## Adding shadcn components
+## 📊 Roadmap
 
-To add shadcn components to your app, run the following command at the root of your `web` app:
+### Phase 1 ✅ (Current)
+- [x] Turborepo monorepo setup
+- [x] Core engine with OpenAI integration
+- [x] D&D 5e ruleset
+- [x] Baldur's Gate 3 campaign
+- [x] Basic web interface
+- [x] Stat checks and combat system
 
-```bash
-pnpm dlx shadcn@latest add button -c apps/web
-```
+### Phase 2 🚧
+- [ ] Vector DB integration for memory
+- [ ] Advanced combat mechanics
+- [ ] Companion AI interactions
+- [ ] Story branching and consequences
+- [ ] Export to web novel format
 
-This will place the ui components in the `packages/ui/src/components` directory.
+### Phase 3 📋
+- [ ] Game of Thrones campaign
+- [ ] Cyberpunk campaign
+- [ ] Multiplayer support
+- [ ] Advanced AI features
+- [ ] Mobile app
 
-## Using components
+## 🤝 Contributing
 
-To use the components in your app, import them from the `ui` package.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-```tsx
-import { Button } from "@workspace/ui/components/ui/button"
-```
+## 📄 License
 
-## Functionality
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- Create New user from Register page
-- Login to app using credentials from Login page
-- Go to Settings page and invite a new user
-- Copy the invitation URL and register the user (either in another browser or in incognito mode)
-- Login using new user credentials from Login page
+## 🙏 Acknowledgments
 
-- NOTE: Now you have successfully created an admin user as well as a regular user.
-
-## Features
-
-**Core Architecture**
-- Next.js 15 with Turbopack
-- Monorepo setup using Turborepo
-- Shared ESLint/TypeScript configs
-
-**Functionality**
-- Authentication (NextAuth.js)
-- Form validation with Zod + react-hook-form
-- Data visualization with Recharts
-
-
-## Packages 
-
-- Next.js 15
-- NestJS 11
-- shadcn/ui
-- next-auth
-- passport
-- TypeORM
-
-## License
-
-Superepo is released under the [MIT License](https://opensource.org/licenses/MIT).
+- Inspired by Baldur's Gate 3 and classic text adventures
+- Built with modern AI/LLM technology
+- Powered by the open-source community

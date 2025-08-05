@@ -1,83 +1,85 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { Textarea } from "@workspace/ui/components/textarea"
-import { toast } from "@workspace/ui/hooks/use-toast"
-import { settingsApi, User } from "../api/settings"
+} from '@workspace/ui/components/card';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { toast } from '@workspace/ui/hooks/use-toast';
+import { useEffect, useState } from 'react';
+import { settingsApi, type User } from '../api/settings';
 
 export function ProfileForm() {
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [form, setForm] = useState({
-    name: "",
-    bio: "",
-  })
+    name: '',
+    bio: '',
+  });
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        console.log("Loading profile...")
-        const data = await settingsApi.getProfile()
-        console.log("Profile data received:", data)
-        setUser(data)
+        console.log('Loading profile...');
+        const data = await settingsApi.getProfile();
+        console.log('Profile data received:', data);
+        setUser(data);
         setForm({
-          name: data.name || "",
-          bio: data.bio || "",
-        })
+          name: data.name || '',
+          bio: data.bio || '',
+        });
       } catch (error) {
-        console.error("Error loading profile:", error)
+        console.error('Error loading profile:', error);
         toast({
-          title: "Error",
-          description: error instanceof Error ? error.message : "Failed to load profile.",
-          variant: "destructive",
-        })
+          title: 'Error',
+          description:
+            error instanceof Error ? error.message : 'Failed to load profile.',
+          variant: 'destructive',
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadProfile()
-  }, [])
+    loadProfile();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
+    e.preventDefault();
+    setSaving(true);
     try {
-      console.log("Updating profile with:", form)
+      console.log('Updating profile with:', form);
       const updatedUser = await settingsApi.updateProfile({
         name: form.name,
         bio: form.bio,
-      })
-      console.log("Profile updated:", updatedUser)
-      setUser(updatedUser)
+      });
+      console.log('Profile updated:', updatedUser);
+      setUser(updatedUser);
       toast({
-        title: "Success",
-        description: "Profile updated successfully.",
-      })
+        title: 'Success',
+        description: 'Profile updated successfully.',
+      });
     } catch (error) {
-      console.error("Error updating profile:", error)
+      console.error('Error updating profile:', error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update profile.",
-        variant: "destructive",
-      })
+        title: 'Error',
+        description:
+          error instanceof Error ? error.message : 'Failed to update profile.',
+        variant: 'destructive',
+      });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   if (loading) {
-    return <div>Loading profile...</div>
+    return <div>Loading profile...</div>;
   }
 
   return (
@@ -89,11 +91,7 @@ export function ProfileForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>Email</Label>
-            <Input
-              type="email"
-              value={user?.email || ""}
-              disabled
-            />
+            <Input type="email" value={user?.email || ''} disabled />
           </div>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
@@ -115,10 +113,10 @@ export function ProfileForm() {
             />
           </div>
           <Button type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

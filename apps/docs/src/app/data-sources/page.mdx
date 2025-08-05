@@ -1,0 +1,241 @@
+# Data Sources for AI Agent
+
+Data sources are the foundation of your AI agent's knowledge and context. They provide the information your AI needs to create rich, engaging RPG experiences.
+
+## Overview
+
+The NovAI data sources system allows you to:
+
+- **Import documents** and knowledge bases
+- **Process and index** content for AI consumption
+- **Provide context** to your AI agent during gameplay
+- **Manage multiple sources** for different campaigns or settings
+
+## Types of Data Sources
+
+### 1. Campaign Documentation
+
+Store campaign-specific information:
+
+```markdown
+# Baldur's Gate 3 Campaign
+
+## Setting
+The city of Baldur's Gate and surrounding areas...
+
+## Characters
+- Astarion: A vampire spawn seeking freedom
+- Shadowheart: A cleric of Shar with mysterious past
+- Gale: A wizard with a magical condition
+
+## Rules and Mechanics
+- Combat uses D&D 5e rules
+- Magic is prevalent but regulated
+- Political intrigue is common
+```
+
+### 2. Game Rules and Mechanics
+
+Document your game's rules system:
+
+```markdown
+# D&D 5e Rules Reference
+
+## Ability Scores
+- Strength: Physical power and athletic training
+- Dexterity: Agility, reflexes, and balance
+- Constitution: Health, stamina, and force of will
+- Intelligence: Mental acuity and reasoning
+- Wisdom: Awareness and intuition
+- Charisma: Force of personality
+
+## Combat
+- Initiative determines turn order
+- Actions include Attack, Cast Spell, Dash, etc.
+- Movement is limited by speed
+```
+
+### 3. World Lore and Background
+
+Rich world-building information:
+
+```markdown
+# Forgotten Realms Lore
+
+## Geography
+The Sword Coast stretches along the western edge of Faerûn...
+
+## History
+The Time of Troubles reshaped the world...
+
+## Organizations
+- The Harpers: Secret organization for good
+- The Zhentarim: Mercenary company with dark goals
+- The Lords' Alliance: Coalition of city-states
+```
+
+## Setting Up Data Sources
+
+### 1. Create Documentation Files
+
+Place your documentation in the `campaigns/` directory:
+
+```
+campaigns/
+├── baldurs-gate-3/
+│   ├── campaign.json
+│   ├── intro.md
+│   ├── characters.md
+│   ├── rules.md
+│   └── lore.md
+└── your-campaign/
+    ├── campaign.json
+    └── documentation.md
+```
+
+### 2. Configure Campaign Data
+
+Each campaign should have a `campaign.json` file:
+
+```json
+{
+  "name": "Baldur's Gate 3",
+  "description": "An epic adventure in the Forgotten Realms",
+  "ruleset": "dnd-5e",
+  "dataSources": [
+    "campaigns/baldurs-gate-3/intro.md",
+    "campaigns/baldurs-gate-3/characters.md",
+    "campaigns/baldurs-gate-3/rules.md",
+    "campaigns/baldurs-gate-3/lore.md"
+  ],
+  "aiAgent": {
+    "personality": "experienced DM with deep knowledge of D&D",
+    "style": "immersive and descriptive",
+    "difficulty": "moderate"
+  }
+}
+```
+
+### 3. Process Data Sources
+
+The AI agent will automatically process and index your documentation:
+
+```typescript
+// The engine loads data sources when starting a campaign
+const campaign = await loadCampaign('baldurs-gate-3');
+const dataSources = await processDataSources(campaign.dataSources);
+```
+
+## Best Practices
+
+### 1. Structure Your Content
+
+- Use clear headings and sections
+- Include examples and code blocks
+- Keep related information together
+- Use consistent formatting
+
+### 2. Provide Context
+
+- Include character motivations and backgrounds
+- Document important locations and NPCs
+- Explain game mechanics clearly
+- Add flavor text and descriptions
+
+### 3. Update Regularly
+
+- Keep documentation current with game changes
+- Add new information as the campaign evolves
+- Remove outdated or incorrect information
+- Version control your documentation
+
+## Advanced Features
+
+### Vector Search
+
+The AI agent uses vector search to find relevant information:
+
+```typescript
+// When the AI needs context, it searches the knowledge base
+const relevantInfo = await searchKnowledgeBase(query, dataSources);
+```
+
+### Context Injection
+
+Relevant information is automatically injected into AI prompts:
+
+```typescript
+// The AI receives context about the current situation
+const prompt = `
+Context: ${relevantInfo}
+
+Current situation: ${gameState.description}
+
+Player action: ${playerAction}
+
+Response as the game master:
+`;
+```
+
+### Multi-Source Support
+
+You can combine multiple data sources:
+
+```json
+{
+  "dataSources": [
+    "campaigns/baldurs-gate-3/core.md",
+    "rulesets/dnd-5e/rules.md",
+    "worlds/forgotten-realms/lore.md"
+  ]
+}
+```
+
+## Integration with AI Agent
+
+The data sources system integrates seamlessly with your AI agent:
+
+1. **Automatic Loading**: Data sources are loaded when starting a campaign
+2. **Context Injection**: Relevant information is provided to the AI
+3. **Dynamic Updates**: Changes to documentation are reflected in gameplay
+4. **Search Integration**: The AI can search for specific information
+
+## Example: Baldur's Gate 3 Campaign
+
+Here's how the Baldur's Gate 3 campaign uses data sources:
+
+```markdown
+# Campaign Overview
+
+The party begins in the Nautiloid, a mind flayer ship...
+
+## Key Characters
+
+### Astarion
+- **Race**: High Elf
+- **Class**: Rogue
+- **Background**: Vampire spawn seeking freedom
+- **Personality**: Charming but manipulative
+
+### Shadowheart
+- **Race**: Half-Elf
+- **Class**: Cleric (Trickery Domain)
+- **Background**: Cleric of Shar with mysterious past
+- **Personality**: Secretive and devoted
+
+## Important Locations
+
+### Baldur's Gate
+The city of Baldur's Gate is a bustling metropolis...
+
+### The Grove
+A sacred grove where druids protect refugees...
+```
+
+This documentation provides the AI agent with rich context for creating immersive gameplay experiences.
+
+## Next Steps
+
+- **[Knowledge Base Management](/data-sources/knowledge-base)** - Learn about advanced knowledge base features
+- **[Vector Search](/data-sources/vector-search)** - Understand how search works
+- **[Document Processing](/data-sources/document-processing)** - Learn about document ingestion and processing 

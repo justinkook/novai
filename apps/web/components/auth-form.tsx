@@ -1,100 +1,106 @@
-'use client'
+'use client';
 
-import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter, useSearchParams } from 'next/navigation'
+} from '@workspace/ui/components/card';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { cn } from '@workspace/ui/lib/utils';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 
 interface AuthFormProps {
-  path: string
+  path: string;
 }
 
 export function AuthForm({
   className,
   path,
   ...props
-}: React.ComponentPropsWithoutRef<"div"> & AuthFormProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const invitationToken = searchParams.get('invitationToken')
-  const isLogin = path === "login"
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+}: React.ComponentPropsWithoutRef<'div'> & AuthFormProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const invitationToken = searchParams.get('invitationToken');
+  const isLogin = path === 'login';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError('');
 
     if (isLogin) {
       // Handle Sign In
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard"
-      })
+        callbackUrl: '/dashboard',
+      });
 
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       } else if (result?.url) {
-        router.push(result.url)
+        router.push(result.url);
       }
     } else {
       // Handle Sign Up
       try {
         const url = invitationToken
           ? `${process.env.NEXT_PUBLIC_API_SERVER}/auth/register?invitationToken=${invitationToken}`
-          : `${process.env.NEXT_PUBLIC_API_SERVER}/auth/register`
+          : `${process.env.NEXT_PUBLIC_API_SERVER}/auth/register`;
 
         const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        })
+          body: JSON.stringify({ email, password }),
+        });
 
         if (res.ok) {
           // After successful signup, sign in automatically
-          const result = await signIn("credentials", {
+          const result = await signIn('credentials', {
             email,
             password,
             redirect: false,
-            callbackUrl: "/dashboard"
-          })
-          if (result?.url) router.push(result.url)
+            callbackUrl: '/dashboard',
+          });
+          if (result?.url) {
+            router.push(result.url);
+          }
         } else {
-          const data = await res.json()
-          setError(data.message || 'Something went wrong')
+          const data = await res.json();
+          setError(data.message || 'Something went wrong');
         }
-      } catch (err) {
-        setError('Failed to register')
+      } catch (_err) {
+        setError('Failed to register');
       }
     }
-  }
+  };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">
-            {isLogin ? "Welcome back" : invitationToken ? "Accept invitation" : "Create an account"}
+            {isLogin
+              ? 'Welcome back'
+              : invitationToken
+                ? 'Accept invitation'
+                : 'Create an account'}
           </CardTitle>
           <CardDescription>
             {isLogin
-              ? "Login with your Apple or Google account"
+              ? 'Login with your Apple or Google account'
               : invitationToken
-              ? "Create your account to join the tenant"
-              : "Sign up with your Apple or Google account"}
+                ? 'Create your account to join the tenant'
+                : 'Sign up with your Apple or Google account'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,7 +114,7 @@ export function AuthForm({
                       fill="currentColor"
                     />
                   </svg>
-                  {isLogin ? "Login with Apple" : "Sign up with Apple"}
+                  {isLogin ? 'Login with Apple' : 'Sign up with Apple'}
                 </Button>
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -117,7 +123,7 @@ export function AuthForm({
                       fill="currentColor"
                     />
                   </svg>
-                  {isLogin ? "Login with Google" : "Sign up with Google"}
+                  {isLogin ? 'Login with Google' : 'Sign up with Google'}
                 </Button>
               </div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -160,22 +166,33 @@ export function AuthForm({
                   />
                 </div>
                 <Button type="submit" className="w-full">
-                  {isLogin ? "Login" : invitationToken ? "Accept invitation" : "Sign up"}
+                  {isLogin
+                    ? 'Login'
+                    : invitationToken
+                      ? 'Accept invitation'
+                      : 'Sign up'}
                 </Button>
               </div>
-              {error && <div className="text-red-500 text-center text-sm mb-4">{error}</div>}
+              {error && (
+                <div className="text-red-500 text-center text-sm mb-4">
+                  {error}
+                </div>
+              )}
               {!invitationToken && (
                 <div className="text-center text-sm">
                   {isLogin ? (
                     <>
-                      Don&apos;t have an account?{" "}
-                      <a href="register" className="underline underline-offset-4">
+                      Don&apos;t have an account?{' '}
+                      <a
+                        href="register"
+                        className="underline underline-offset-4"
+                      >
                         Sign up
                       </a>
                     </>
                   ) : (
                     <>
-                      Already have an account?{" "}
+                      Already have an account?{' '}
                       <a href="login" className="underline underline-offset-4">
                         Login
                       </a>
@@ -188,9 +205,9 @@ export function AuthForm({
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
-  )
+  );
 }

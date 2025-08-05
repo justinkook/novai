@@ -1,19 +1,21 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { ConfigService } from '@nestjs/config';
+import type { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import type { UsersService } from '../users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private usersService: UsersService,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get('JWT_SECRET') || 'your-super-secret-key-that-should-be-in-env',
+      secretOrKey:
+        configService.get('JWT_SECRET') ||
+        'your-super-secret-key-that-should-be-in-env',
     });
   }
 
@@ -21,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       // Get the full user to ensure we have the latest data
       const user = await this.usersService.findOne(payload.sub);
-      
+
       if (!user) {
         throw new UnauthorizedException('User no longer exists');
       }

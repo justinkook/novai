@@ -1,0 +1,376 @@
+# AI Agent Configuration
+
+The AI agent is the heart of NovAI, acting as an intelligent game master that can create immersive, dynamic RPG experiences. This guide covers how to configure and optimize your AI agent.
+
+## Overview
+
+The NovAI AI agent combines several advanced AI technologies:
+
+- **Large Language Models (LLMs)** for natural language generation
+- **Vector search** for retrieving relevant context
+- **Memory systems** for maintaining game state
+- **Prompt engineering** for consistent behavior
+
+## Core Components
+
+### 1. Language Model Integration
+
+The AI agent supports multiple LLM providers:
+
+```typescript
+// Configuration for different LLM providers
+const llmConfig = {
+  provider: 'openai', // or 'anthropic', 'local'
+  model: 'gpt-4-turbo',
+  temperature: 0.7,
+  maxTokens: 2000,
+  apiKey: process.env.OPENAI_API_KEY
+};
+```
+
+### 2. Context Management
+
+The AI agent maintains context through:
+
+- **Game state** - Current situation and player actions
+- **Data sources** - Campaign lore and rules
+- **Memory** - Previous interactions and decisions
+- **Personality** - Consistent character and style
+
+### 3. Prompt Engineering
+
+Carefully crafted prompts ensure consistent behavior:
+
+```typescript
+const gameMasterPrompt = `
+You are an experienced Dungeon Master running a D&D 5e campaign.
+
+Context:
+${campaignContext}
+
+Current Situation:
+${gameState}
+
+Player Action:
+${playerAction}
+
+Respond as the game master, describing what happens next. Be descriptive and immersive.
+`;
+```
+
+## Configuration Options
+
+### Basic Configuration
+
+```json
+{
+  "aiAgent": {
+    "provider": "openai",
+    "model": "gpt-4-turbo",
+    "temperature": 0.7,
+    "maxTokens": 2000,
+    "personality": "experienced DM with deep knowledge of D&D",
+    "style": "immersive and descriptive",
+    "difficulty": "moderate"
+  }
+}
+```
+
+### Advanced Configuration
+
+```json
+{
+  "aiAgent": {
+    "provider": "openai",
+    "model": "gpt-4-turbo",
+    "temperature": 0.7,
+    "maxTokens": 2000,
+    "personality": {
+      "role": "Dungeon Master",
+      "experience": "20+ years",
+      "style": "immersive and descriptive",
+      "knowledge": "deep understanding of D&D 5e",
+      "approach": "player-focused, story-driven"
+    },
+    "memory": {
+      "type": "conversation",
+      "maxLength": 10,
+      "importance": "high"
+    },
+    "context": {
+      "includeRules": true,
+      "includeLore": true,
+      "includeHistory": true,
+      "maxContextLength": 4000
+    }
+  }
+}
+```
+
+## Personality Configuration
+
+### DM Personality Types
+
+1. **Narrative-Focused**
+   - Emphasizes story and character development
+   - Descriptive and atmospheric
+   - Flexible with rules for story
+
+2. **Rules-Focused**
+   - Strict adherence to game mechanics
+   - Detailed combat and skill checks
+   - Consistent with rulebooks
+
+3. **Player-Focused**
+   - Adapts to player preferences
+   - Encourages player agency
+   - Balances challenge and fun
+
+4. **Immersive**
+   - Rich environmental descriptions
+   - Deep character interactions
+   - Atmospheric storytelling
+
+### Example Personality Configuration
+
+```json
+{
+  "personality": {
+    "type": "narrative-focused",
+    "traits": [
+      "descriptive",
+      "story-driven",
+      "character-focused",
+      "atmospheric"
+    ],
+    "style": {
+      "descriptions": "vivid and detailed",
+      "dialogue": "natural and engaging",
+      "pacing": "dynamic and responsive",
+      "tone": "immersive and dramatic"
+    }
+  }
+}
+```
+
+## Memory Systems
+
+### Conversation Memory
+
+The AI agent remembers recent interactions:
+
+```typescript
+interface ConversationMemory {
+  messages: Message[];
+  maxLength: number;
+  importance: 'low' | 'medium' | 'high';
+}
+```
+
+### Game State Memory
+
+Persistent game state is maintained:
+
+```typescript
+interface GameStateMemory {
+  characters: Character[];
+  locations: Location[];
+  events: GameEvent[];
+  decisions: Decision[];
+}
+```
+
+### Long-term Memory
+
+Important events are stored for future reference:
+
+```typescript
+interface LongTermMemory {
+  keyEvents: GameEvent[];
+  characterDevelopment: CharacterArc[];
+  worldChanges: WorldEvent[];
+}
+```
+
+## Context Injection
+
+### Automatic Context Selection
+
+The AI agent automatically selects relevant context:
+
+```typescript
+// When processing a player action
+const relevantContext = await selectContext({
+  currentSituation: gameState,
+  playerAction: action,
+  dataSources: campaign.dataSources,
+  memory: agentMemory
+});
+```
+
+### Context Types
+
+1. **Campaign Lore** - World background and history
+2. **Character Information** - NPCs and player characters
+3. **Rules and Mechanics** - Game system details
+4. **Recent Events** - What happened recently
+5. **Location Details** - Current environment
+
+### Example Context Injection
+
+```typescript
+const prompt = `
+Campaign Context:
+${campaignLore}
+
+Character Context:
+${characterInfo}
+
+Rules Context:
+${relevantRules}
+
+Recent Events:
+${recentEvents}
+
+Current Situation:
+${gameState}
+
+Player Action:
+${playerAction}
+
+Respond as the game master:
+`;
+```
+
+## Performance Optimization
+
+### Token Management
+
+Efficient token usage is crucial:
+
+```typescript
+const tokenOptimization = {
+  maxContextTokens: 3000,
+  maxResponseTokens: 1000,
+  priorityContext: ['rules', 'characters', 'recent-events'],
+  compression: 'smart-summarization'
+};
+```
+
+### Caching Strategies
+
+```typescript
+const cachingConfig = {
+  contextCache: {
+    enabled: true,
+    ttl: 300, // 5 minutes
+    maxSize: 100
+  },
+  responseCache: {
+    enabled: true,
+    ttl: 60, // 1 minute
+    maxSize: 50
+  }
+};
+```
+
+## Error Handling
+
+### Graceful Degradation
+
+The AI agent handles errors gracefully:
+
+```typescript
+try {
+  const response = await aiAgent.processAction(action);
+  return response;
+} catch (error) {
+  if (error.type === 'context-overflow') {
+    return await aiAgent.processWithReducedContext(action);
+  } else if (error.type === 'model-unavailable') {
+    return await aiAgent.processWithFallback(action);
+  }
+  throw error;
+}
+```
+
+### Fallback Strategies
+
+1. **Reduced Context** - Use less context if token limit exceeded
+2. **Simplified Response** - Generate shorter, simpler responses
+3. **Cached Response** - Use previously generated responses
+4. **Rule-Based Fallback** - Use deterministic rules instead of AI
+
+## Monitoring and Analytics
+
+### Performance Metrics
+
+Track AI agent performance:
+
+```typescript
+interface AIMetrics {
+  responseTime: number;
+  tokenUsage: number;
+  contextRelevance: number;
+  userSatisfaction: number;
+  errorRate: number;
+}
+```
+
+### Quality Assurance
+
+Monitor response quality:
+
+```typescript
+const qualityChecks = {
+  consistency: 'check-personality-consistency',
+  relevance: 'check-context-relevance',
+  coherence: 'check-response-coherence',
+  safety: 'check-content-safety'
+};
+```
+
+## Best Practices
+
+### 1. Start Simple
+
+Begin with basic configuration and gradually add complexity:
+
+```json
+{
+  "aiAgent": {
+    "provider": "openai",
+    "model": "gpt-4-turbo",
+    "temperature": 0.7,
+    "personality": "experienced DM"
+  }
+}
+```
+
+### 2. Test Thoroughly
+
+Test different scenarios and edge cases:
+
+- Combat situations
+- Social interactions
+- Rule clarifications
+- Creative problem-solving
+
+### 3. Monitor Performance
+
+Track key metrics and adjust configuration:
+
+- Response quality
+- Token usage
+- User satisfaction
+- Error rates
+
+### 4. Iterate and Improve
+
+Continuously refine your configuration based on feedback and performance data.
+
+## Next Steps
+
+- **[LLM Integration](/ai-agent/llm)** - Learn about different LLM providers
+- **[Prompt Engineering](/ai-agent/prompts)** - Master prompt design
+- **[Memory Systems](/ai-agent/memory)** - Understand memory management 

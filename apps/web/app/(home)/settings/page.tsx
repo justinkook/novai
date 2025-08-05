@@ -1,11 +1,16 @@
-"use client"
+'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
-import { ProfileForm } from "./components/profile-form"
-import { PasswordForm } from "./components/password-form"
-import { InviteForm } from "./components/invite-form"
-import { TeamList } from "./components/team-list"
-import { Separator } from "@workspace/ui/components/separator"
+import { Separator } from '@workspace/ui/components/separator';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@workspace/ui/components/tabs';
+import { InviteForm } from './components/invite-form';
+import { PasswordForm } from './components/password-form';
+import { ProfileForm } from './components/profile-form';
+import { TeamList } from './components/team-list';
 
 export default function SettingsPage() {
   return (
@@ -60,10 +65,10 @@ export default function SettingsPage() {
               </p>
             </div>
             <Separator />
-            <InviteForm />            
+            <InviteForm />
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
