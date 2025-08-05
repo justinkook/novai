@@ -13,7 +13,9 @@
     ],
     "lib": [
       // Add this! Doing so adds WebWorker and ServiceWorker types to the global.
-      "webworker"
+      "webworker",
+      "DOM",
+      "DOM.Iterable"
     ],
     "plugins": [
       {

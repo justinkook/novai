@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { Metadata } from 'next';
-import { Button } from '@workspace/ui';
+import { Button } from '@workspace/ui/components/button';
 import { ArrowRight, Sparkles, Users, Shield, Zap } from 'lucide-react';
 
 export const metadata: Metadata = {

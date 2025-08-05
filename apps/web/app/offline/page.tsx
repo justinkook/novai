@@ -1,4 +1,6 @@
-import { Button } from '@workspace/ui'
+'use client';
+
+import { Button } from '@workspace/ui/components/button'
 import { WifiOff, RefreshCw } from 'lucide-react'
 
 export default function OfflinePage() {
