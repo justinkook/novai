@@ -1,0 +1,475 @@
+---
+title: "LLM Integration"
+description: "Learn how NovAI integrates with various language models for intelligent game narration"
+---
+
+# LLM Integration
+
+The NovAI game engine integrates with multiple Large Language Model (LLM) providers to generate intelligent, context-aware game narratives. The system is designed to be flexible and extensible, supporting various LLM providers and configurations.
+
+## Supported Providers
+
+### OpenAI
+
+The default provider for high-quality text generation:
+
+```typescript
+const llmConfig: LLMConfig = {
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-4', // or 'gpt-3.5-turbo'
+  baseUrl: 'https://api.openai.com/v1'
+};
+```
+
+### Local Models
+
+Support for local LLM servers and Ollama:
+
+```typescript
+const llmConfig: LLMConfig = {
+  provider: 'local',
+  baseUrl: 'http://localhost:11434', // Ollama default
+  model: 'llama2:7b' // or other local models
+};
+```
+
+### Custom Providers
+
+Extensible provider system for custom LLM integrations:
+
+```typescript
+interface LLMProvider {
+  call(prompt: string, memory: string[], temperature: number): Promise<string>;
+}
+
+class CustomLLMProvider implements LLMProvider {
+  async call(prompt: string, memory: string[], temperature: number): Promise<string> {
+    // Custom implementation
+    return await this.callCustomAPI(prompt, memory, temperature);
+  }
+}
+```
+
+## LLMService Implementation
+
+The `LLMService` class handles all LLM interactions:
+
+```typescript
+export class LLMService {
+  constructor(private config: LLMConfig) {}
+
+  async callLLM(
+    prompt: string,
+    memory: string[],
+    temperature: number = 0.7
+  ): Promise<string> {
+    switch (this.config.provider) {
+      case 'openai':
+        return this.callOpenAI(prompt, memory, temperature);
+      case 'local':
+        return this.callLocalLLM(prompt, memory, temperature);
+      default:
+        throw new Error(`Unsupported LLM provider: ${this.config.provider}`);
+    }
+  }
+
+  private async callOpenAI(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
+    const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: this.config.model || 'gpt-4',
+        messages: [
+          { role: 'system', content: this.buildSystemMessage() },
+          ...memory.map(msg => ({ role: 'user', content: msg })),
+          { role: 'user', content: prompt }
+        ],
+        temperature,
+        max_tokens: 1000,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  }
+
+  private async callLocalLLM(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
+    const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: this.config.model,
+        prompt: this.buildLocalPrompt(prompt, memory),
+        temperature,
+        max_tokens: 1000,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Local LLM API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.response;
+  }
+}
+```
+
+## Prompt Engineering
+
+### System Message Construction
+
+The engine constructs comprehensive system messages that guide the AI's behavior:
+
+```typescript
+private buildSystemMessage(): string {
+  return `You are an expert Dungeon Master running a tabletop RPG game. Your role is to:
+
+1. Create immersive, engaging narratives
+2. Adapt to player choices and actions
+3. Maintain consistent world-building and character development
+4. Provide meaningful choices when appropriate
+5. Handle game mechanics like stat checks and combat
+6. Never break character or reference being an AI
+
+GUIDELINES:
+- Use 2nd-person narration ("You see...", "You feel...")
+- Provide 2-4 meaningful choices when the player needs to make a decision
+- Include stat checks when relevant (e.g., "Make a Strength check (DC 15)")
+- Describe combat in turn-based format
+- Keep responses engaging but concise (2-4 paragraphs)
+- Maintain narrative consistency and immersion
+- Adapt the story based on player choices and character development`;
+}
+```
+
+### Context-Aware Prompts
+
+Prompts are built dynamically based on game state and campaign context:
+
+```typescript
+private buildContextPrompt(
+  campaign: Campaign,
+  gameState: GameState,
+  playerInput: string
+): string {
+  return `CAMPAIGN: ${campaign.name}
+DESCRIPTION: ${campaign.description}
+
+CURRENT SITUATION:
+- Location: ${gameState.currentLocation}
+- Companions: ${gameState.companions.join(', ') || 'None'}
+- Inventory: ${gameState.inventory.join(', ') || 'Empty'}
+- Recent choices: ${gameState.choices.slice(-3).join(', ') || 'None'}
+
+PLAYER INPUT: ${playerInput}
+
+Respond as the Game Master, continuing the narrative based on the player's input.`;
+}
+```
+
+### Memory Integration
+
+The engine uses a sliding window approach for narrative memory:
+
+```typescript
+private getNarrativeMemory(gameState: GameState): string[] {
+  // Get last 5 narrative entries for context
+  return gameState.narrative
+    .map((n) => n.content)
+    .slice(-5)
+    .filter(content => content.length > 0);
+}
+```
+
+## Temperature and Creativity
+
+### Temperature Control
+
+The engine uses temperature settings to control creativity vs. consistency:
+
+```typescript
+// High creativity for open-ended scenarios
+const highTemp = 0.8;
+
+// Balanced creativity for most situations
+const balancedTemp = 0.7;
+
+// Low creativity for mechanical responses
+const lowTemp = 0.3;
+
+// Choose temperature based on context
+function getTemperature(context: GameContext): number {
+  if (context.type === 'combat') return lowTemp;
+  if (context.type === 'dialogue') return balancedTemp;
+  if (context.type === 'exploration') return highTemp;
+  return balancedTemp;
+}
+```
+
+### Context-Aware Temperature
+
+```typescript
+async processGameRequest(request: GameRequest): Promise<GameResponse> {
+  // Determine appropriate temperature based on context
+  const temperature = this.determineTemperature(request);
+  
+  const aiResponse = await this.llmService.callLLM(
+    prompt,
+    memory,
+    temperature
+  );
+  
+  return this.parseResponse(aiResponse);
+}
+
+private determineTemperature(request: GameRequest): number {
+  const { gameState, playerInput } = request;
+  
+  // Combat situations need consistency
+  if (playerInput.toLowerCase().includes('attack') || 
+      gameState.currentLocation.includes('battle')) {
+    return 0.3;
+  }
+  
+  // Creative exploration
+  if (playerInput.toLowerCase().includes('explore') ||
+      playerInput.toLowerCase().includes('investigate')) {
+    return 0.8;
+  }
+  
+  // Standard interaction
+  return 0.7;
+}
+```
+
+## Error Handling
+
+### Retry Logic
+
+```typescript
+async callLLMWithRetry(
+  prompt: string,
+  memory: string[],
+  temperature: number,
+  maxRetries: number = 3
+): Promise<string> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await this.callLLM(prompt, memory, temperature);
+    } catch (error) {
+      console.error(`LLM call attempt ${attempt} failed:`, error);
+      
+      if (attempt === maxRetries) {
+        throw new Error(`LLM call failed after ${maxRetries} attempts: ${error.message}`);
+      }
+      
+      // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
+}
+```
+
+### Fallback Responses
+
+```typescript
+private getFallbackResponse(context: string): string {
+  const fallbacks = {
+    'combat': "The battle continues, but something seems to interfere with your connection to the game world. Please try your action again.",
+    'dialogue': "The conversation seems to have been interrupted. Please repeat what you'd like to say.",
+    'exploration': "Your exploration is momentarily paused. Please describe what you'd like to do next.",
+    'default': "The game world seems to be experiencing a brief disruption. Please try your action again."
+  };
+  
+  return fallbacks[context] || fallbacks.default;
+}
+```
+
+## Performance Optimization
+
+### Caching
+
+```typescript
+class LLMCache {
+  private cache = new Map<string, string>();
+  private maxSize = 1000;
+
+  async get(key: string): Promise<string | null> {
+    return this.cache.get(key) || null;
+  }
+
+  set(key: string, value: string): void {
+    this.cache.set(key, value);
+    this.cleanup();
+  }
+
+  private cleanup(): void {
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+  }
+}
+```
+
+### Prompt Optimization
+
+```typescript
+private optimizePrompt(prompt: string): string {
+  // Remove redundant whitespace
+  prompt = prompt.replace(/\s+/g, ' ').trim();
+  
+  // Limit prompt length to prevent token overflow
+  const maxLength = 4000;
+  if (prompt.length > maxLength) {
+    prompt = prompt.substring(0, maxLength) + '...';
+  }
+  
+  return prompt;
+}
+```
+
+## Security Considerations
+
+### API Key Management
+
+```typescript
+class SecureLLMService extends LLMService {
+  constructor(config: LLMConfig) {
+    // Validate API key format
+    if (config.provider === 'openai' && !this.isValidAPIKey(config.apiKey)) {
+      throw new Error('Invalid OpenAI API key format');
+    }
+    
+    super(config);
+  }
+
+  private isValidAPIKey(apiKey?: string): boolean {
+    return apiKey?.startsWith('sk-') && apiKey.length > 20;
+  }
+
+  // Override to add logging
+  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
+    console.log(`LLM call to ${this.config.provider} with temperature ${temperature}`);
+    
+    const startTime = Date.now();
+    const result = await super.callLLM(prompt, memory, temperature);
+    const duration = Date.now() - startTime;
+    
+    console.log(`LLM call completed in ${duration}ms`);
+    return result;
+  }
+}
+```
+
+### Rate Limiting
+
+```typescript
+class RateLimitedLLMService extends LLMService {
+  private lastCall = 0;
+  private minInterval = 1000; // 1 second between calls
+
+  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
+    const now = Date.now();
+    const timeSinceLastCall = now - this.lastCall;
+    
+    if (timeSinceLastCall < this.minInterval) {
+      await new Promise(resolve => 
+        setTimeout(resolve, this.minInterval - timeSinceLastCall)
+      );
+    }
+    
+    this.lastCall = Date.now();
+    return super.callLLM(prompt, memory, temperature);
+  }
+}
+```
+
+## Monitoring and Analytics
+
+### Call Tracking
+
+```typescript
+interface LLMCallMetrics {
+  provider: string;
+  model: string;
+  temperature: number;
+  promptLength: number;
+  responseLength: number;
+  duration: number;
+  success: boolean;
+  error?: string;
+}
+
+class MonitoredLLMService extends LLMService {
+  private metrics: LLMCallMetrics[] = [];
+
+  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
+    const startTime = Date.now();
+    const startMetrics: Partial<LLMCallMetrics> = {
+      provider: this.config.provider,
+      model: this.config.model || 'unknown',
+      temperature,
+      promptLength: prompt.length
+    };
+
+    try {
+      const response = await super.callLLM(prompt, memory, temperature);
+      
+      this.metrics.push({
+        ...startMetrics,
+        responseLength: response.length,
+        duration: Date.now() - startTime,
+        success: true
+      } as LLMCallMetrics);
+      
+      return response;
+    } catch (error) {
+      this.metrics.push({
+        ...startMetrics,
+        duration: Date.now() - startTime,
+        success: false,
+        error: error.message
+      } as LLMCallMetrics);
+      
+      throw error;
+    }
+  }
+
+  getMetrics(): LLMCallMetrics[] {
+    return [...this.metrics];
+  }
+}
+```
+
+## Best Practices
+
+1. **Provider Selection**: Choose the right provider for your use case and budget
+2. **Temperature Tuning**: Adjust temperature based on the type of interaction
+3. **Error Handling**: Implement robust error handling and fallback mechanisms
+4. **Rate Limiting**: Respect API rate limits to avoid service disruption
+5. **Security**: Secure API keys and implement proper access controls
+6. **Monitoring**: Track usage and performance metrics
+7. **Caching**: Cache responses when appropriate to reduce API calls
+8. **Testing**: Test with different providers and configurations 

@@ -1,0 +1,400 @@
+---
+title: "Campaign Management"
+description: "Learn how to create, configure, and manage campaigns in the NovAI game engine"
+---
+
+# Campaign Management
+
+Campaigns are the heart of the NovAI experience, defining the world, characters, and story elements that players will interact with. Each campaign contains rich metadata that guides the AI in creating immersive, consistent narratives.
+
+## Campaign Structure
+
+A campaign consists of several key components:
+
+```typescript
+interface Campaign {
+  id: string;                    // Unique campaign identifier
+  name: string;                  // Campaign title
+  description: string;           // Campaign description
+  ruleset: string;              // Associated ruleset (e.g., "dnd-5e")
+  intro: string;                // Campaign introduction text
+  companions: Companion[];       // Available NPC companions
+  locations: Location[];        // World locations
+  plot: PlotPoint[];           // Story plot points
+}
+```
+
+## Campaign Files
+
+Campaigns are stored as a collection of files in the `campaigns/` directory:
+
+```
+campaigns/
+├── baldurs-gate-3/
+│   ├── campaign.json
+│   ├── intro.md
+│   ├── companions.json
+│   ├── locations.json
+│   └── plot.json
+├── custom-campaign/
+│   ├── campaign.json
+│   ├── intro.md
+│   └── ...
+```
+
+### Campaign Configuration
+
+```json
+{
+  "id": "baldurs-gate-3",
+  "name": "Baldur's Gate 3 Adventure",
+  "description": "A thrilling adventure in the Forgotten Realms",
+  "ruleset": "dnd-5e",
+  "intro": "Welcome to Baldur's Gate, a city of intrigue and danger...",
+  "companions": [
+    {
+      "id": "gandalf",
+      "name": "Gandalf the Grey",
+      "description": "A wise wizard with mysterious powers",
+      "stats": {
+        "intelligence": 18,
+        "wisdom": 16,
+        "charisma": 14
+      }
+    }
+  ],
+  "locations": [
+    {
+      "id": "tavern",
+      "name": "The Prancing Pony",
+      "description": "A cozy tavern with warm hearth and good ale",
+      "connections": ["market", "inn", "guild_hall"]
+    }
+  ],
+  "plot": [
+    {
+      "id": "main_quest",
+      "title": "The Ring Bearer",
+      "description": "A mysterious ring holds great power",
+      "requirements": []
+    }
+  ]
+}
+```
+
+## Creating a Campaign
+
+### 1. Campaign Directory
+
+Create a new directory for your campaign:
+
+```bash
+mkdir campaigns/my-campaign
+cd campaigns/my-campaign
+```
+
+### 2. Campaign Configuration
+
+Create `campaign.json` with basic campaign information:
+
+```json
+{
+  "id": "my-campaign",
+  "name": "My Custom Campaign",
+  "description": "A custom adventure created for NovAI",
+  "ruleset": "dnd-5e",
+  "intro": "Welcome to the world of My Campaign..."
+}
+```
+
+### 3. Campaign Introduction
+
+Create `intro.md` with the campaign's opening narrative:
+
+```markdown
+# Welcome to My Campaign
+
+You find yourself standing at the gates of the ancient city of Eldoria. 
+The stone walls tower above you, weathered by centuries of history. 
+Merchants bustle about, and the sound of blacksmiths working fills the air.
+
+As you step through the gates, you notice a group of travelers gathered 
+around a notice board. One of them turns to you with a concerned expression.
+
+"Are you here for the quest?" they ask. "The mayor is offering a reward 
+for anyone who can help with the recent disappearances in the city."
+
+What would you like to do?
+```
+
+### 4. Companions
+
+Define NPC companions in `companions.json`:
+
+```json
+[
+  {
+    "id": "merlin",
+    "name": "Merlin the Wise",
+    "description": "An elderly wizard with vast knowledge of ancient magic",
+    "stats": {
+      "intelligence": 18,
+      "wisdom": 16,
+      "charisma": 12
+    },
+    "abilities": ["fireball", "light", "detect_magic"],
+    "personality": "Wise and patient, but sometimes forgetful",
+    "background": "A former court wizard who now travels seeking ancient knowledge"
+  },
+  {
+    "id": "thorin",
+    "name": "Thorin Ironfist",
+    "description": "A stout dwarf warrior with a mighty axe",
+    "stats": {
+      "strength": 16,
+      "constitution": 14,
+      "dexterity": 12
+    },
+    "abilities": ["axe_mastery", "stonecunning", "dwarven_resilience"],
+    "personality": "Bold and direct, values honor and craftsmanship",
+    "background": "A master blacksmith seeking rare materials for his craft"
+  }
+]
+```
+
+### 5. Locations
+
+Define world locations in `locations.json`:
+
+```json
+[
+  {
+    "id": "eldoria_gates",
+    "name": "Eldoria City Gates",
+    "description": "The main entrance to the ancient city of Eldoria",
+    "connections": ["eldoria_market", "eldoria_tavern", "eldoria_castle"],
+    "features": ["guard_tower", "notice_board", "merchant_stalls"],
+    "atmosphere": "Busy and bustling with travelers and merchants"
+  },
+  {
+    "id": "eldoria_market",
+    "name": "Eldoria Market Square",
+    "description": "A vibrant marketplace filled with colorful stalls",
+    "connections": ["eldoria_gates", "eldoria_tavern", "eldoria_temple"],
+    "features": ["food_stalls", "craft_stalls", "fountain", "town_hall"],
+    "atmosphere": "Lively and colorful, filled with the sounds of commerce"
+  }
+]
+```
+
+### 6. Plot Points
+
+Define story elements in `plot.json`:
+
+```json
+[
+  {
+    "id": "disappearances",
+    "title": "The Disappearances",
+    "description": "People have been vanishing from the city at night",
+    "requirements": [],
+    "objectives": [
+      "Investigate the disappearances",
+      "Find clues in the city",
+      "Confront the source of the problem"
+    ],
+    "rewards": ["gold", "reputation", "magic_item"]
+  },
+  {
+    "id": "ancient_temple",
+    "title": "The Ancient Temple",
+    "description": "An abandoned temple holds ancient secrets",
+    "requirements": ["disappearances"],
+    "objectives": [
+      "Explore the temple",
+      "Solve the temple's puzzles",
+      "Retrieve the ancient artifact"
+    ],
+    "rewards": ["artifact", "experience", "companion"]
+  }
+]
+```
+
+## Campaign Loading
+
+The `CampaignService` handles loading and managing campaigns:
+
+```typescript
+export class CampaignService {
+  constructor(private campaignsPath?: string) {}
+
+  async loadCampaign(campaignId: string): Promise<Campaign> {
+    const campaignPath = path.join(this.campaignsPath || 'campaigns', campaignId);
+    
+    // Load campaign configuration
+    const campaignData = await fs.readFile(
+      path.join(campaignPath, 'campaign.json'),
+      'utf8'
+    );
+    const campaign = JSON.parse(campaignData);
+    
+    // Load additional campaign components
+    campaign.companions = await this.loadCompanions(campaignPath);
+    campaign.locations = await this.loadLocations(campaignPath);
+    campaign.plot = await this.loadPlot(campaignPath);
+    
+    return campaign;
+  }
+
+  async getCampaignIntro(campaignId: string): Promise<string> {
+    const introPath = path.join(
+      this.campaignsPath || 'campaigns',
+      campaignId,
+      'intro.md'
+    );
+    return await fs.readFile(introPath, 'utf8');
+  }
+}
+```
+
+## Campaign Integration
+
+### System Prompt Integration
+
+Campaign data is integrated into the AI system prompt:
+
+```typescript
+private async buildSystemPrompt(campaign: Campaign, gameState: GameState): Promise<string> {
+  const ruleset = campaign.ruleset || 'dnd-5e';
+  const rulesetPrompt = await this.loadRulesetPrompt(ruleset);
+
+  return `You are a Dungeon Master narrating ${campaign.name} in ${ruleset} style.
+
+${rulesetPrompt}
+
+CAMPAIGN CONTEXT:
+- Campaign: ${campaign.name}
+- Description: ${campaign.description}
+- Current Location: ${gameState.currentLocation}
+- Available Companions: ${campaign.companions.map(c => c.name).join(', ')}
+- Active Companions: ${gameState.companions.join(', ') || 'None'}
+- Player Stats: ${JSON.stringify(gameState.stats)}
+
+WORLD LOCATIONS:
+${campaign.locations.map(loc => 
+  `- ${loc.name}: ${loc.description}`
+).join('\n')}
+
+AVAILABLE COMPANIONS:
+${campaign.companions.map(comp => 
+  `- ${comp.name}: ${comp.description}`
+).join('\n')}
+
+RULES:
+- Handle stat checks, choices, companions, turn-based combat
+- Never break character
+- Use 2nd-person narration
+- Provide 2-4 meaningful choices when appropriate
+- Include stat checks when relevant
+- Describe combat in turn-based format
+- Maintain narrative consistency and immersion`;
+}
+```
+
+## Advanced Campaign Features
+
+### Dynamic Content Generation
+
+Campaigns can include dynamic content that adapts to player choices:
+
+```typescript
+interface DynamicContent {
+  type: 'location' | 'companion' | 'quest' | 'item';
+  trigger: {
+    condition: string;
+    value: any;
+  };
+  content: string;
+  effects: {
+    stats?: Record<string, number>;
+    inventory?: string[];
+    companions?: string[];
+  };
+}
+```
+
+### Campaign Metadata
+
+Additional campaign metadata can be stored for enhanced functionality:
+
+```json
+{
+  "metadata": {
+    "difficulty": "medium",
+    "estimatedDuration": "8-12 hours",
+    "recommendedLevel": "3-5",
+    "themes": ["mystery", "adventure", "fantasy"],
+    "contentWarnings": ["violence", "supernatural"],
+    "author": "Campaign Creator",
+    "version": "1.0.0",
+    "lastUpdated": "2024-01-15"
+  }
+}
+```
+
+## Campaign Validation
+
+### Schema Validation
+
+Campaigns are validated using Zod schemas:
+
+```typescript
+export const CampaignSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  ruleset: z.string(),
+  intro: z.string(),
+  companions: z.array(CompanionSchema),
+  locations: z.array(LocationSchema),
+  plot: z.array(PlotPointSchema),
+  metadata: z.record(z.unknown()).optional(),
+});
+```
+
+### Campaign Testing
+
+Test campaigns before deployment:
+
+```typescript
+async validateCampaign(campaignId: string): Promise<ValidationResult> {
+  try {
+    const campaign = await this.loadCampaign(campaignId);
+    const validated = CampaignSchema.parse(campaign);
+    
+    // Check for required files
+    const requiredFiles = ['campaign.json', 'intro.md'];
+    for (const file of requiredFiles) {
+      const filePath = path.join(this.campaignsPath || 'campaigns', campaignId, file);
+      if (!await fs.access(filePath).then(() => true).catch(() => false)) {
+        throw new Error(`Missing required file: ${file}`);
+      }
+    }
+    
+    return { valid: true, campaign: validated };
+  } catch (error) {
+    return { valid: false, error: error.message };
+  }
+}
+```
+
+## Best Practices
+
+1. **Consistent Naming**: Use clear, descriptive names for campaigns and components
+2. **Modular Design**: Break campaigns into logical components (locations, companions, plot)
+3. **Rich Descriptions**: Provide detailed descriptions for better AI understanding
+4. **Progressive Complexity**: Start simple and add complexity as needed
+5. **Testing**: Validate campaigns thoroughly before deployment
+6. **Documentation**: Include clear documentation for custom campaigns
+7. **Version Control**: Use version control for campaign development
+8. **Backup**: Keep backups of campaign data 

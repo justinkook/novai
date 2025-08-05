@@ -1,0 +1,474 @@
+---
+title: "Quick Start"
+description: "Get started with NovAI in minutes - set up your first AI-powered tabletop RPG campaign"
+---
+
+# Quick Start
+
+Get your first AI-powered tabletop RPG campaign running in minutes with NovAI. This guide will walk you through setting up the development environment, creating your first campaign, and running a game session.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **pnpm** (recommended) or npm
+- **Git**
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/novai.git
+cd novai
+```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Database Configuration (if using)
+DATABASE_URL=your_database_url_here
+
+# Authentication (if using)
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
+```
+
+### 4. Code Quality Tools
+
+NovAI uses **Biome** for linting and formatting. The project is pre-configured with Biome, so you can start coding immediately:
+
+```bash
+# Format all code
+pnpm format
+
+# Check for linting issues
+pnpm lint
+
+# Fix linting issues automatically
+pnpm lint:fix
+```
+
+## Running the Development Environment
+
+### 1. Start the API Server
+
+```bash
+pnpm dev:api
+```
+
+This starts the NestJS API server on `http://localhost:3001`.
+
+### 2. Start the Web Application
+
+```bash
+pnpm dev:web
+```
+
+This starts the Next.js web application on `http://localhost:3000`.
+
+### 3. Start the Documentation
+
+```bash
+pnpm dev:docs
+```
+
+This starts the documentation site on `http://localhost:3002`.
+
+## Creating Your First Campaign
+
+### 1. Campaign Structure
+
+Create a new campaign directory in the `campaigns/` folder:
+
+```bash
+mkdir campaigns/my-first-campaign
+cd campaigns/my-first-campaign
+```
+
+### 2. Campaign Configuration
+
+Create `campaign.json`:
+
+```json
+{
+  "id": "my-first-campaign",
+  "name": "My First Adventure",
+  "description": "A beginner-friendly fantasy adventure",
+  "ruleset": "dnd-5e",
+  "intro": "Welcome to the world of My First Adventure..."
+}
+```
+
+### 3. Campaign Introduction
+
+Create `intro.md`:
+
+```markdown
+# Welcome to My First Adventure
+
+You find yourself standing at the gates of the small village of Oakdale. 
+The morning sun casts long shadows across the cobblestone streets, and 
+the sound of blacksmiths working fills the air.
+
+A young villager approaches you with a concerned expression.
+
+"Adventurer!" they call out. "We need your help. Strange noises have 
+been coming from the old mill at night, and some of our livestock has 
+gone missing. Can you investigate?"
+
+What would you like to do?
+```
+
+### 4. Campaign Companions
+
+Create `companions.json`:
+
+```json
+[
+  {
+    "id": "elder",
+    "name": "Elder Oak",
+    "description": "A wise village elder with knowledge of local history",
+    "stats": {
+      "intelligence": 16,
+      "wisdom": 14,
+      "charisma": 12
+    },
+    "personality": "Wise and patient, but sometimes forgetful",
+    "background": "Has lived in Oakdale for over 50 years"
+  }
+]
+```
+
+### 5. Campaign Locations
+
+Create `locations.json`:
+
+```json
+[
+  {
+    "id": "village_gates",
+    "name": "Oakdale Village Gates",
+    "description": "The main entrance to the village of Oakdale",
+    "connections": ["village_square", "old_mill", "forest_path"],
+    "features": ["guard_tower", "notice_board", "merchant_stalls"],
+    "atmosphere": "Busy and welcoming, with travelers coming and going"
+  },
+  {
+    "id": "village_square",
+    "name": "Oakdale Village Square",
+    "description": "The heart of the village with a central fountain",
+    "connections": ["village_gates", "tavern", "shop", "elder_home"],
+    "features": ["fountain", "market_stalls", "town_hall"],
+    "atmosphere": "Lively and colorful, filled with villagers going about their day"
+  }
+]
+```
+
+## Running Your First Game
+
+### 1. Using the Game Engine
+
+Create a simple script to test your campaign:
+
+```typescript
+// test-game.ts
+import { GameEngineService } from '@novai/engine';
+
+const llmConfig = {
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-4'
+};
+
+const engine = new GameEngineService(llmConfig);
+
+async function runGame() {
+  // Create a new game
+  const gameState = await engine.createNewGame('my-first-campaign', 'Adventurer');
+  
+  console.log('Game started!');
+  console.log('Campaign:', gameState.campaignId);
+  console.log('Player:', gameState.playerName);
+  
+  // Process player input
+  const response = await engine.processGameRequest({
+    gameState,
+    playerInput: 'I want to investigate the old mill',
+    context: { timeOfDay: 'morning' }
+  });
+  
+  console.log('\nGame Master Response:');
+  console.log(response.narration);
+  
+  if (response.choices) {
+    console.log('\nAvailable choices:');
+    response.choices.forEach((choice, index) => {
+      console.log(`${index + 1}. ${choice}`);
+    });
+  }
+  
+  if (response.statCheck) {
+    console.log('\nStat Check:');
+    console.log(`${response.statCheck.stat} check (DC ${response.statCheck.difficulty})`);
+    console.log(`Roll: ${response.statCheck.result} (${response.statCheck.success ? 'Success' : 'Failure'})`);
+  }
+}
+
+runGame().catch(console.error);
+```
+
+### 2. Running the Test
+
+```bash
+npx tsx test-game.ts
+```
+
+## Using the Web Interface
+
+### 1. Access the Web Application
+
+Open your browser and navigate to `http://localhost:3000`.
+
+### 2. Create an Account
+
+1. Click "Sign Up" to create a new account
+2. Fill in your details and create your account
+3. Verify your email (if required)
+
+### 3. Start a New Game
+
+1. Navigate to the "Campaigns" section
+2. Select "My First Adventure" from the available campaigns
+3. Click "Start New Game"
+4. Enter your character name and click "Begin Adventure"
+
+### 4. Playing the Game
+
+1. Read the game master's narration
+2. Type your actions in the input field
+3. Click "Send" or press Enter to submit your action
+4. Review the response and any available choices
+5. Continue the adventure!
+
+## Using the API
+
+### 1. Authentication
+
+First, authenticate with the API:
+
+```bash
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "your-email@example.com",
+    "password": "your-password"
+  }'
+```
+
+### 2. Create a Game Session
+
+```bash
+curl -X POST http://localhost:3001/game/create \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "campaignId": "my-first-campaign",
+    "playerName": "Adventurer"
+  }'
+```
+
+### 3. Process Player Input
+
+```bash
+curl -X POST http://localhost:3001/game/process \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "gameId": "GAME_ID_FROM_PREVIOUS_RESPONSE",
+    "playerInput": "I want to explore the village square",
+    "context": {
+      "timeOfDay": "morning"
+    }
+  }'
+```
+
+## Customizing Your Campaign
+
+### 1. Adding Custom Rulesets
+
+Create a custom ruleset in `packages/rulesets/src/`:
+
+```typescript
+// packages/rulesets/src/custom-fantasy.ts
+import { Ruleset, RulesetConfig } from '@novai/rulesets';
+
+const customConfig: RulesetConfig = {
+  name: 'custom-fantasy',
+  description: 'A custom fantasy RPG ruleset',
+  version: '1.0.0',
+  stats: ['strength', 'agility', 'intelligence', 'charisma'],
+  skills: {
+    strength: ['athletics', 'intimidation'],
+    agility: ['acrobatics', 'stealth'],
+    intelligence: ['arcana', 'history'],
+    charisma: ['deception', 'persuasion']
+  },
+  combatRules: {
+    initiative: { type: 'd20', modifier: 'agility' },
+    actions: [
+      {
+        name: 'attack',
+        type: 'attack',
+        range: 5,
+        damage: { die: 6, count: 1, modifier: 'strength' }
+      }
+    ],
+    damage: { type: 'hp', deathThreshold: 0 },
+    conditions: []
+  },
+  statCheckRules: {
+    baseDie: 20,
+    modifierCalculation: (stat) => Math.floor((stat - 10) / 2),
+    criticalSuccess: 20,
+    criticalFailure: 1
+  }
+};
+
+export const CustomFantasyRuleset = new Ruleset(customConfig);
+```
+
+### 2. Creating Custom Prompts
+
+Create custom prompt templates in `packages/prompts/src/`:
+
+```typescript
+// packages/prompts/src/custom-adventure.ts
+import { PromptTemplate } from '@novai/prompts';
+
+export const CustomAdventurePrompt = new PromptTemplate({
+  name: 'custom-adventure',
+  systemTemplate: `You are a master storyteller running a {genre} adventure.
+
+CAMPAIGN: {campaign}
+STYLE: {style}
+TONE: {tone}
+
+RULES:
+- Use {perspective} narration
+- Provide {choiceCount} meaningful choices
+- Include {mechanics} when relevant
+- Maintain {consistency} throughout the story`,
+  userTemplate: `PLAYER: {playerName}
+LOCATION: {location}
+INVENTORY: {inventory}
+COMPANIONS: {companions}
+
+INPUT: {input}
+
+Respond as the Game Master, continuing the narrative.`,
+  variables: ['genre', 'style', 'tone', 'perspective', 'choiceCount', 'mechanics', 'consistency']
+});
+```
+
+## Next Steps
+
+Now that you have your first campaign running, here are some next steps to explore:
+
+### 1. Explore the Documentation
+
+- Read the [Engine Overview](/engine/overview) to understand the core concepts
+- Learn about [Campaign Management](/engine/campaigns) for creating more complex campaigns
+- Understand [LLM Integration](/engine/llm-integration) for customizing AI behavior
+
+### 2. Build Custom Components
+
+- Create custom UI components using [@novai/ui](/packages/ui)
+- Develop custom prompt templates with [@novai/prompts](/packages/prompts)
+- Design custom rulesets with [@novai/rulesets](/packages/rulesets)
+
+### 3. Deploy Your Application
+
+- Set up production environment variables
+- Configure your database for production
+- Deploy to your preferred hosting platform
+
+### 4. Join the Community
+
+- Share your campaigns with the community
+- Contribute to the NovAI project
+- Get help and support from other developers
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. OpenAI API Key Issues
+
+**Problem**: "Invalid API key" errors
+
+**Solution**: 
+- Verify your API key is correct
+- Ensure you have sufficient credits in your OpenAI account
+- Check that the API key has the necessary permissions
+
+#### 2. Campaign Loading Errors
+
+**Problem**: Campaign not found or invalid
+
+**Solution**:
+- Verify campaign files are in the correct directory structure
+- Check JSON syntax in campaign configuration files
+- Ensure all required files (`campaign.json`, `intro.md`) exist
+
+#### 3. Development Server Issues
+
+**Problem**: Port conflicts or server won't start
+
+**Solution**:
+- Check if ports 3000, 3001, or 3002 are already in use
+- Kill existing processes on those ports
+- Use different ports by modifying the configuration
+
+#### 4. Database Connection Issues
+
+**Problem**: Database connection errors
+
+**Solution**:
+- Verify your database URL is correct
+- Ensure the database server is running
+- Check network connectivity to the database
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. Check the [GitHub Issues](https://github.com/yourusername/novai/issues)
+2. Join the [Discord Community](https://discord.gg/novai)
+3. Review the [API Documentation](/api-reference/introduction)
+4. Consult the [Development Guide](/guides/setup)
+
+## What's Next?
+
+Congratulations! You've successfully set up NovAI and created your first AI-powered tabletop RPG campaign. Here are some advanced topics to explore:
+
+- **Advanced Campaign Design**: Create complex campaigns with multiple plot threads
+- **Custom Rulesets**: Design your own game mechanics and systems
+- **UI Customization**: Build custom interfaces for your games
+- **API Integration**: Integrate NovAI into your own applications
+- **Performance Optimization**: Scale your games for multiple players
+
+Happy adventuring!

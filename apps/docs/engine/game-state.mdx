@@ -1,0 +1,337 @@
+---
+title: "Game State Management"
+description: "Learn how NovAI manages persistent game state, character progression, and narrative history"
+---
+
+# Game State Management
+
+The NovAI game engine maintains a comprehensive game state that tracks all aspects of the player's journey, from character progression to narrative history.
+
+## Game State Structure
+
+The game state is the central data structure that represents the current state of a game session.
+
+```typescript
+interface GameState {
+  id: string;                    // Unique game session identifier
+  campaignId: string;            // Associated campaign
+  playerName: string;            // Player character name
+  currentLocation: string;       // Current location in the world
+  companions: string[];          // NPC companions traveling with player
+  inventory: string[];           // Items in player's possession
+  stats: Record<string, number>; // Character statistics
+  choices: string[];             // History of player choices
+  narrative: NarrativeEntry[];   // Complete conversation history
+  metadata?: Record<string, unknown>; // Additional game-specific data
+}
+```
+
+## Core Components
+
+### Character Information
+
+```typescript
+// Player character details
+playerName: string;
+stats: Record<string, number>;
+
+// Example stats for D&D 5e
+stats: {
+  strength: 15,
+  dexterity: 12,
+  constitution: 14,
+  intelligence: 10,
+  wisdom: 16,
+  charisma: 8
+}
+```
+
+### World State
+
+```typescript
+// Current location and companions
+currentLocation: string;  // e.g., "tavern", "forest", "dungeon"
+companions: string[];     // e.g., ["Gandalf", "Aragorn"]
+
+// Inventory management
+inventory: string[];      // e.g., ["sword", "potion", "gold coins"]
+```
+
+### Narrative History
+
+The engine maintains a complete history of all interactions:
+
+```typescript
+interface NarrativeEntry {
+  timestamp: string;  // ISO timestamp
+  content: string;    // The actual text content
+  type: 'narration' | 'choice' | 'combat' | 'stat-check';
+}
+```
+
+## State Updates
+
+### Creating New Games
+
+```typescript
+async createNewGame(campaignId: string, playerName: string): Promise<GameState> {
+  const campaign = await this.campaignService.loadCampaign(campaignId);
+  const intro = await this.campaignService.getCampaignIntro(campaignId);
+
+  const initialGameState: GameState = {
+    id: `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    campaignId,
+    playerName,
+    currentLocation: 'start',
+    companions: [],
+    inventory: [],
+    stats: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 10,
+      intelligence: 10,
+      wisdom: 10,
+      charisma: 10,
+    },
+    choices: [],
+    narrative: [
+      {
+        timestamp: new Date().toISOString(),
+        content: intro,
+        type: 'narration',
+      },
+    ],
+  };
+
+  return initialGameState;
+}
+```
+
+### Updating State
+
+The engine updates state immutably to maintain data integrity:
+
+```typescript
+private updateGameState(
+  gameState: GameState,
+  playerInput: string,
+  aiResponse: string
+): GameState {
+  const timestamp = new Date().toISOString();
+
+  return {
+    ...gameState,
+    narrative: [
+      ...gameState.narrative,
+      {
+        timestamp,
+        content: `Player: ${playerInput}`,
+        type: 'choice',
+      },
+      {
+        timestamp,
+        content: aiResponse,
+        type: 'narration',
+      },
+    ],
+  };
+}
+```
+
+## Memory Management
+
+### Narrative Memory
+
+The engine uses a sliding window approach to manage context:
+
+```typescript
+private getNarrativeMemory(gameState: GameState): string[] {
+  // Get last 5 narrative entries for context
+  return gameState.narrative
+    .map((n) => n.content)
+    .slice(-5);
+}
+```
+
+### State Validation
+
+All state updates are validated using Zod schemas:
+
+```typescript
+export const GameStateSchema = z.object({
+  id: z.string(),
+  campaignId: z.string(),
+  playerName: z.string(),
+  currentLocation: z.string(),
+  companions: z.array(z.string()),
+  inventory: z.array(z.string()),
+  stats: z.record(z.number()),
+  choices: z.array(z.string()),
+  narrative: z.array(
+    z.object({
+      timestamp: z.string(),
+      content: z.string(),
+      type: z.enum(['narration', 'choice', 'combat', 'stat-check']),
+    })
+  ),
+  metadata: z.record(z.unknown()).optional(),
+});
+```
+
+## State Persistence
+
+### Save/Load Operations
+
+```typescript
+// Save game state
+async saveGameState(gameState: GameState): Promise<void> {
+  const stateData = JSON.stringify(gameState, null, 2);
+  await fs.writeFile(
+    `saves/${gameState.id}.json`,
+    stateData,
+    'utf8'
+  );
+}
+
+// Load game state
+async loadGameState(gameId: string): Promise<GameState> {
+  const stateData = await fs.readFile(
+    `saves/${gameId}.json`,
+    'utf8'
+  );
+  const gameState = JSON.parse(stateData);
+  
+  // Validate loaded state
+  return GameStateSchema.parse(gameState);
+}
+```
+
+## Advanced Features
+
+### Metadata Support
+
+The game state supports custom metadata for campaign-specific data:
+
+```typescript
+metadata: {
+  questProgress: {
+    "main_quest": 0.5,
+    "side_quest_1": 1.0
+  },
+  reputation: {
+    "townsfolk": 75,
+    "thieves_guild": -25
+  },
+  discoveredLocations: ["tavern", "shop", "dungeon_entrance"],
+  unlockedAbilities: ["fireball", "stealth"]
+}
+```
+
+### Choice History
+
+Track player decisions for narrative consistency:
+
+```typescript
+choices: [
+  "I chose to help the merchant",
+  "I decided to explore the cave",
+  "I refused the dark offer"
+]
+```
+
+### Companion Management
+
+```typescript
+companions: [
+  "Gandalf the Grey",
+  "Aragorn son of Arathorn"
+]
+
+// Companion-specific data can be stored in metadata
+metadata: {
+  companions: {
+    "Gandalf the Grey": {
+      loyalty: 85,
+      abilities: ["fireball", "light"],
+      quests: ["ring_bearer"]
+    }
+  }
+}
+```
+
+## Performance Optimization
+
+### Memory Limits
+
+- **Narrative History**: Limited to last 50 entries by default
+- **Choice History**: Limited to last 20 choices
+- **Inventory**: No limit but validated for reasonable size
+- **Metadata**: Size limits enforced to prevent abuse
+
+### Caching Strategy
+
+```typescript
+class GameStateCache {
+  private cache = new Map<string, GameState>();
+  private maxSize = 100;
+
+  async get(gameId: string): Promise<GameState | null> {
+    if (this.cache.has(gameId)) {
+      return this.cache.get(gameId)!;
+    }
+    
+    const gameState = await this.loadFromStorage(gameId);
+    if (gameState) {
+      this.cache.set(gameId, gameState);
+      this.cleanup();
+    }
+    
+    return gameState;
+  }
+
+  private cleanup(): void {
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+  }
+}
+```
+
+## Error Handling
+
+### State Recovery
+
+```typescript
+async recoverGameState(gameId: string): Promise<GameState | null> {
+  try {
+    return await this.loadGameState(gameId);
+  } catch (error) {
+    console.error(`Failed to load game state: ${error}`);
+    
+    // Attempt to load from backup
+    return await this.loadBackupState(gameId);
+  }
+}
+```
+
+### Validation Errors
+
+```typescript
+function validateGameState(gameState: unknown): GameState {
+  try {
+    return GameStateSchema.parse(gameState);
+  } catch (error) {
+    throw new Error(`Invalid game state: ${error.message}`);
+  }
+}
+```
+
+## Best Practices
+
+1. **Immutable Updates**: Always create new state objects
+2. **Validation**: Validate all state changes
+3. **Persistence**: Save state regularly and handle failures gracefully
+4. **Memory Management**: Limit history size to prevent context overflow
+5. **Error Recovery**: Implement backup and recovery mechanisms
+6. **Performance**: Use caching for frequently accessed states 

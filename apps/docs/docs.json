@@ -1,0 +1,143 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "NovAI Documentation",
+  "description": "AI-powered tabletop RPG game engine and documentation",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Getting Started",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "index",
+              "quickstart",
+              "development"
+            ]
+          },
+          {
+            "group": "Game Engine",
+            "pages": [
+              "engine/overview",
+              "engine/architecture",
+              "engine/game-state",
+              "engine/campaigns",
+              "engine/llm-integration"
+            ]
+          },
+          {
+            "group": "Packages",
+            "pages": [
+              "packages/engine",
+              "packages/prompts",
+              "packages/rulesets",
+              "packages/ui"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "REST API",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/auth",
+              "api-reference/tenants",
+              "api-reference/users"
+            ]
+          },
+          {
+            "group": "Game Engine API",
+            "pages": [
+              "api-reference/engine/game-request",
+              "api-reference/engine/game-response",
+              "api-reference/engine/campaigns",
+              "api-reference/engine/llm-config"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Development",
+            "pages": [
+              "guides/setup",
+              "guides/campaigns",
+              "guides/rulesets",
+              "guides/deployment"
+            ]
+          },
+          {
+            "group": "AI Tools",
+            "pages": [
+              "ai-tools/cursor",
+              "ai-tools/claude-code",
+              "ai-tools/windsurf"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/yourusername/novai",
+          "icon": "github"
+        },
+        {
+          "anchor": "Discord",
+          "href": "https://discord.gg/novai",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@novai.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Try Demo",
+      "href": "https://demo.novai.com"
+    }
+  },
+  "contextual": {
+    "options": [
+     "copy",
+     "view",
+     "chatgpt",
+     "claude",
+     "perplexity",
+     "mcp",
+     "cursor",
+     "vscode"
+   ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/novai",
+      "github": "https://github.com/yourusername/novai",
+      "discord": "https://discord.gg/novai"
+    }
+  }
+}

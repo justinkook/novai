@@ -1,0 +1,683 @@
+---
+title: "@novai/ui"
+description: "Beautiful, accessible UI components built with shadcn/ui for NovAI applications"
+---
+
+# @novai/ui
+
+The UI package provides a comprehensive set of beautiful, accessible components built with shadcn/ui and Tailwind CSS. These components are designed specifically for NovAI applications and provide a consistent, modern design system.
+
+## Installation
+
+```bash
+npm install @novai/ui
+# or
+pnpm add @novai/ui
+```
+
+## Quick Start
+
+```typescript
+import { Button, Card, Input, Dialog } from '@novai/ui';
+
+// Basic component usage
+function GameInterface() {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title>Adventure Log</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <p>You stand at the entrance to the ancient dungeon...</p>
+      </Card.Content>
+      <Card.Footer>
+        <Button>Continue Adventure</Button>
+      </Card.Footer>
+    </Card>
+  );
+}
+```
+
+## Core Components
+
+### Layout Components
+
+#### Card
+
+Versatile container component for content organization.
+
+```typescript
+import { Card } from '@novai/ui';
+
+<Card>
+  <Card.Header>
+    <Card.Title>Character Sheet</Card.Title>
+    <Card.Description>Level 5 Fighter</Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <div className="grid grid-cols-2 gap-4">
+      <div>Strength: 16</div>
+      <div>Dexterity: 14</div>
+    </div>
+  </Card.Content>
+  <Card.Footer>
+    <Button variant="outline">Edit</Button>
+    <Button>Save</Button>
+  </Card.Footer>
+</Card>
+```
+
+#### Dialog
+
+Modal dialog for important interactions.
+
+```typescript
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@novai/ui';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Roll Dice</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Dice Roll Result</DialogTitle>
+    </DialogHeader>
+    <div className="text-center">
+      <div className="text-4xl font-bold">15</div>
+      <p className="text-muted-foreground">d20 + 3 (Strength)</p>
+    </div>
+  </DialogContent>
+</Dialog>
+```
+
+#### Sheet
+
+Side panel for additional content.
+
+```typescript
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@novai/ui';
+
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Inventory</Button>
+  </SheetTrigger>
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>Character Inventory</SheetTitle>
+    </SheetHeader>
+    <div className="space-y-4">
+      <div className="flex justify-between">
+        <span>Longsword</span>
+        <span>1</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Healing Potion</span>
+        <span>3</span>
+      </div>
+    </div>
+  </SheetContent>
+</Sheet>
+```
+
+### Form Components
+
+#### Input
+
+Text input with various styles and validation.
+
+```typescript
+import { Input, Label } from '@novai/ui';
+
+<div className="space-y-2">
+  <Label htmlFor="character-name">Character Name</Label>
+  <Input
+    id="character-name"
+    placeholder="Enter your character's name"
+    defaultValue="Aragorn"
+  />
+</div>
+```
+
+#### Select
+
+Dropdown selection component.
+
+```typescript
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@novai/ui';
+
+<Select defaultValue="fighter">
+  <SelectTrigger>
+    <SelectValue placeholder="Choose your class" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="fighter">Fighter</SelectItem>
+    <SelectItem value="wizard">Wizard</SelectItem>
+    <SelectItem value="rogue">Rogue</SelectItem>
+    <SelectItem value="cleric">Cleric</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+#### Textarea
+
+Multi-line text input for longer content.
+
+```typescript
+import { Textarea, Label } from '@novai/ui';
+
+<div className="space-y-2">
+  <Label htmlFor="adventure-log">Adventure Log</Label>
+  <Textarea
+    id="adventure-log"
+    placeholder="Record your adventures here..."
+    rows={4}
+  />
+</div>
+```
+
+### Interactive Components
+
+#### Button
+
+Versatile button component with multiple variants.
+
+```typescript
+import { Button } from '@novai/ui';
+
+// Primary button
+<Button>Start Adventure</Button>
+
+// Secondary button
+<Button variant="secondary">Load Game</Button>
+
+// Outline button
+<Button variant="outline">Settings</Button>
+
+// Destructive button
+<Button variant="destructive">Delete Character</Button>
+
+// Ghost button
+<Button variant="ghost">Cancel</Button>
+
+// With icons
+<Button>
+  <Dice className="mr-2 h-4 w-4" />
+  Roll Dice
+</Button>
+```
+
+#### Checkbox
+
+Selection component for multiple choice.
+
+```typescript
+import { Checkbox, Label } from '@novai/ui';
+
+<div className="flex items-center space-x-2">
+  <Checkbox id="auto-save" defaultChecked />
+  <Label htmlFor="auto-save">Auto-save game progress</Label>
+</div>
+```
+
+#### Radio Group
+
+Single selection from multiple options.
+
+```typescript
+import { RadioGroup, RadioGroupItem, Label } from '@novai/ui';
+
+<RadioGroup defaultValue="fighter">
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="fighter" id="fighter" />
+    <Label htmlFor="fighter">Fighter</Label>
+  </div>
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="wizard" id="wizard" />
+    <Label htmlFor="wizard">Wizard</Label>
+  </div>
+  <div className="flex items-center space-x-2">
+    <RadioGroupItem value="rogue" id="rogue" />
+    <Label htmlFor="rogue">Rogue</Label>
+  </div>
+</RadioGroup>
+```
+
+### Navigation Components
+
+#### Tabs
+
+Organized content sections.
+
+```typescript
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@novai/ui';
+
+<Tabs defaultValue="character">
+  <TabsList>
+    <TabsTrigger value="character">Character</TabsTrigger>
+    <TabsTrigger value="inventory">Inventory</TabsTrigger>
+    <TabsTrigger value="spells">Spells</TabsTrigger>
+  </TabsList>
+  <TabsContent value="character">
+    <div>Character information...</div>
+  </TabsContent>
+  <TabsContent value="inventory">
+    <div>Inventory items...</div>
+  </TabsContent>
+  <TabsContent value="spells">
+    <div>Spell list...</div>
+  </TabsContent>
+</Tabs>
+```
+
+#### Breadcrumb
+
+Navigation hierarchy indicator.
+
+```typescript
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@novai/ui';
+
+<Breadcrumb>
+  <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/campaigns">Campaigns</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/campaigns/baldurs-gate">Baldur's Gate</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+      <BreadcrumbPage>Character Creation</BreadcrumbPage>
+    </BreadcrumbItem>
+  </BreadcrumbList>
+</Breadcrumb>
+```
+
+### Data Display Components
+
+#### Table
+
+Structured data presentation.
+
+```typescript
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@novai/ui';
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Class</TableHead>
+      <TableHead>Level</TableHead>
+      <TableHead>HP</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Aragorn</TableCell>
+      <TableCell>Fighter</TableCell>
+      <TableCell>5</TableCell>
+      <TableCell>45</TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>Gandalf</TableCell>
+      <TableCell>Wizard</TableCell>
+      <TableCell>7</TableCell>
+      <TableCell>32</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+#### Badge
+
+Status and category indicators.
+
+```typescript
+import { Badge } from '@novai/ui';
+
+<Badge>Active</Badge>
+<Badge variant="secondary">Level 5</Badge>
+<Badge variant="destructive">Critical</Badge>
+<Badge variant="outline">Rare Item</Badge>
+```
+
+#### Progress
+
+Visual progress indicators.
+
+```typescript
+import { Progress } from '@novai/ui';
+
+<div className="space-y-2">
+  <div className="flex justify-between text-sm">
+    <span>Experience</span>
+    <span>75%</span>
+  </div>
+  <Progress value={75} className="w-full" />
+</div>
+```
+
+## Game-Specific Components
+
+### DiceRoller
+
+Interactive dice rolling component.
+
+```typescript
+import { DiceRoller, DiceResult } from '@novai/ui';
+
+<DiceRoller
+  dice={[
+    { sides: 20, count: 1, modifier: 3, label: 'Strength Check' },
+    { sides: 6, count: 2, modifier: 0, label: 'Damage' }
+  ]}
+  onRoll={(results: DiceResult[]) => {
+    console.log('Dice results:', results);
+  }}
+/>
+```
+
+### CharacterSheet
+
+Complete character information display.
+
+```typescript
+import { CharacterSheet, CharacterStats, CharacterInventory } from '@novai/ui';
+
+<CharacterSheet>
+  <CharacterStats
+    stats={{
+      strength: 16,
+      dexterity: 14,
+      constitution: 12,
+      intelligence: 10,
+      wisdom: 8,
+      charisma: 6
+    }}
+    level={5}
+    experience={12500}
+  />
+  <CharacterInventory
+    items={[
+      { name: 'Longsword', quantity: 1, weight: 3 },
+      { name: 'Healing Potion', quantity: 3, weight: 0.5 }
+    ]}
+    maxWeight={50}
+  />
+</CharacterSheet>
+```
+
+### CombatTracker
+
+Turn-based combat management.
+
+```typescript
+import { CombatTracker, Combatant, CombatAction } from '@novai/ui';
+
+<CombatTracker
+  combatants={[
+    { name: 'Player', initiative: 15, hp: 45, maxHp: 45 },
+    { name: 'Goblin', initiative: 12, hp: 7, maxHp: 7 },
+    { name: 'Orc', initiative: 8, hp: 15, maxHp: 15 }
+  ]}
+  currentTurn={0}
+  onAction={(action: CombatAction) => {
+    console.log('Combat action:', action);
+  }}
+/>
+```
+
+### ChatInterface
+
+Game conversation interface.
+
+```typescript
+import { ChatInterface, ChatMessage, ChatInput } from '@novai/ui';
+
+<ChatInterface>
+  <div className="space-y-4">
+    <ChatMessage
+      sender="Game Master"
+      content="You stand at the entrance to the ancient dungeon. The stone walls are covered in mysterious runes."
+      timestamp={new Date()}
+    />
+    <ChatMessage
+      sender="Player"
+      content="I want to examine the runes more closely."
+      timestamp={new Date()}
+    />
+  </div>
+  <ChatInput
+    placeholder="What would you like to do?"
+    onSend={(message: string) => {
+      console.log('Player input:', message);
+    }}
+  />
+</ChatInterface>
+```
+
+## Theming and Customization
+
+### Color Schemes
+
+```typescript
+import { ThemeProvider } from '@novai/ui';
+
+<ThemeProvider defaultTheme="dark" storageKey="novai-theme">
+  <div className="min-h-screen bg-background text-foreground">
+    {/* Your app content */}
+  </div>
+</ThemeProvider>
+```
+
+### Custom Variants
+
+```typescript
+import { Button } from '@novai/ui';
+
+// Custom button variant
+<Button variant="magical" className="bg-gradient-to-r from-purple-500 to-pink-500">
+  Cast Spell
+</Button>
+```
+
+### Responsive Design
+
+```typescript
+import { ResponsiveContainer } from '@novai/ui';
+
+<ResponsiveContainer>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <Card>Character Info</Card>
+    <Card>Inventory</Card>
+    <Card>Spells</Card>
+  </div>
+</ResponsiveContainer>
+```
+
+## Accessibility Features
+
+### Screen Reader Support
+
+All components include proper ARIA labels and roles.
+
+```typescript
+import { Button, Dialog } from '@novai/ui';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button aria-label="Open character sheet">
+      <User className="h-4 w-4" />
+    </Button>
+  </DialogTrigger>
+  <DialogContent role="dialog" aria-labelledby="character-title">
+    <DialogTitle id="character-title">Character Sheet</DialogTitle>
+    {/* Content */}
+  </DialogContent>
+</Dialog>
+```
+
+### Keyboard Navigation
+
+Components support full keyboard navigation.
+
+```typescript
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@novai/ui';
+
+<Select>
+  <SelectTrigger tabIndex={0}>
+    <SelectValue placeholder="Choose class" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="fighter" tabIndex={0}>Fighter</SelectItem>
+    <SelectItem value="wizard" tabIndex={0}>Wizard</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+## Performance Optimization
+
+### Lazy Loading
+
+```typescript
+import { lazy, Suspense } from 'react';
+import { Skeleton } from '@novai/ui';
+
+const CharacterSheet = lazy(() => import('@novai/ui').then(m => ({ default: m.CharacterSheet })));
+
+<Suspense fallback={<Skeleton className="h-96" />}>
+  <CharacterSheet />
+</Suspense>
+```
+
+### Memoization
+
+```typescript
+import { memo } from 'react';
+import { Card, CardContent } from '@novai/ui';
+
+const CharacterCard = memo(({ character }) => (
+  <Card>
+    <CardContent>
+      <h3>{character.name}</h3>
+      <p>Level {character.level} {character.class}</p>
+    </CardContent>
+  </Card>
+));
+```
+
+## Testing
+
+### Component Testing
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { Button } from '@novai/ui';
+
+describe('Button Component', () => {
+  it('renders with correct text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+  });
+
+  it('handles click events', () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    
+    screen.getByRole('button').click();
+    expect(handleClick).toHaveBeenCalled();
+  });
+});
+```
+
+### Integration Testing
+
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Dialog, DialogTrigger, DialogContent } from '@novai/ui';
+
+describe('Dialog Integration', () => {
+  it('opens and closes correctly', () => {
+    render(
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent>Content</DialogContent>
+      </Dialog>
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+    expect(screen.getByText('Content')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    expect(screen.queryByText('Content')).not.toBeInTheDocument();
+  });
+});
+```
+
+## API Reference
+
+### Button
+
+#### Props
+
+```typescript
+interface ButtonProps {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  disabled?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+```
+
+### Card
+
+#### Props
+
+```typescript
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface CardHeaderProps {
+  children: React.ReactNode;
+}
+
+interface CardContentProps {
+  children: React.ReactNode;
+}
+
+interface CardFooterProps {
+  children: React.ReactNode;
+}
+```
+
+### Dialog
+
+#### Props
+
+```typescript
+interface DialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
+}
+
+interface DialogContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add your UI components
+4. Include tests for new components
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details. 

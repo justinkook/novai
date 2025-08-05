@@ -1,0 +1,719 @@
+---
+title: "Development Setup"
+description: "Complete guide for setting up the NovAI development environment"
+---
+
+# Development Setup
+
+This guide provides comprehensive instructions for setting up the NovAI development environment, including all necessary tools, dependencies, and configuration steps.
+
+## System Requirements
+
+### Minimum Requirements
+
+- **Node.js**: v18.0.0 or higher
+- **pnpm**: v8.0.0 or higher (recommended) or npm v9.0.0 or higher
+- **Git**: v2.30.0 or higher
+- **Memory**: 8GB RAM minimum, 16GB recommended
+- **Storage**: 2GB free space
+
+### Recommended Setup
+
+- **Node.js**: v20.0.0 or higher
+- **pnpm**: v9.0.0 or higher
+- **Git**: v2.40.0 or higher
+- **Memory**: 16GB RAM
+- **Storage**: 5GB free space
+- **Database**: PostgreSQL v14 or higher (for production features)
+
+## Initial Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/novai.git
+cd novai
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install pnpm if not already installed
+npm install -g pnpm
+
+# Install project dependencies
+pnpm install
+```
+
+### 3. Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+Edit the `.env` file with your configuration:
+
+```bash
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/novai
+
+# Authentication
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
+
+# Development Settings
+NODE_ENV=development
+LOG_LEVEL=debug
+
+# Optional: Local LLM Configuration
+LOCAL_LLM_URL=http://localhost:11434
+LOCAL_LLM_MODEL=llama2:7b
+```
+
+### 4. Database Setup
+
+#### Option A: Local PostgreSQL
+
+```bash
+# Install PostgreSQL (macOS)
+brew install postgresql
+brew services start postgresql
+
+# Create database
+createdb novai
+
+# Run migrations
+pnpm db:migrate
+```
+
+#### Option B: Docker PostgreSQL
+
+```bash
+# Start PostgreSQL with Docker
+docker run --name novai-postgres \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=novai \
+  -p 5432:5432 \
+  -d postgres:15
+
+# Run migrations
+pnpm db:migrate
+```
+
+#### Option C: Cloud Database
+
+Use a cloud database service like Supabase, Railway, or Neon:
+
+```bash
+# Update DATABASE_URL in .env with your cloud database URL
+DATABASE_URL=postgresql://username:password@host:port/database
+```
+
+## Development Workflow
+
+### 1. Starting Development Servers
+
+#### All Services (Recommended)
+
+```bash
+# Start all development servers
+pnpm dev
+```
+
+This starts:
+- Web application: `http://localhost:3000`
+- API server: `http://localhost:3001`
+- Documentation: `http://localhost:3002`
+
+#### Individual Services
+
+```bash
+# Web application only
+pnpm dev:web
+
+# API server only
+pnpm dev:api
+
+# Documentation only
+pnpm dev:docs
+
+# Database migrations
+pnpm db:migrate
+
+# Database seeding
+pnpm db:seed
+```
+
+### 2. Package Development
+
+#### Engine Package
+
+```bash
+# Navigate to engine package
+cd packages/engine
+
+# Install dependencies
+pnpm install
+
+# Run tests
+pnpm test
+
+# Build package
+pnpm build
+
+# Watch for changes
+pnpm dev
+```
+
+#### UI Package
+
+```bash
+# Navigate to UI package
+cd packages/ui
+
+# Install dependencies
+pnpm install
+
+# Run Storybook
+pnpm storybook
+
+# Build package
+pnpm build
+```
+
+### 3. Testing
+
+#### Run All Tests
+
+```bash
+# Run all tests across packages
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run tests in watch mode
+pnpm test:watch
+```
+
+#### Package-Specific Tests
+
+```bash
+# Engine package tests
+pnpm --filter @novai/engine test
+
+# UI package tests
+pnpm --filter @novai/ui test
+
+# Web app tests
+pnpm --filter @novai/web test
+```
+
+### 4. Linting and Formatting
+
+NovAI uses **Biome** as the preferred linting and formatting tool. Biome is a fast formatter and linter that replaces Prettier, ESLint, and other tools with a single, unified solution.
+
+```bash
+# Run linting
+pnpm lint
+
+# Fix linting issues
+pnpm lint:fix
+
+# Format code
+pnpm format
+
+# Type checking
+pnpm type-check
+```
+
+#### Biome Configuration
+
+The project includes a `biome.json` configuration file that defines the linting and formatting rules:
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingComma": "es5",
+      "semicolons": "always"
+    }
+  }
+}
+```
+
+#### IDE Integration
+
+For the best development experience, install the Biome extension for your IDE:
+
+**VS Code:**
+- Install the "Biome" extension
+- Configure VS Code to use Biome as the default formatter
+
+**Other IDEs:**
+- Most modern IDEs support Biome through their extension systems
+- Configure your IDE to run `biome format` on save
+
+## Project Structure
+
+```
+novai/
+├── apps/
+│   ├── api/                 # NestJS API server
+│   ├── web/                 # Next.js web application
+│   └── docs/                # Documentation site
+├── packages/
+│   ├── engine/              # Core game engine
+│   ├── prompts/             # Prompt templates
+│   ├── rulesets/            # Game rulesets
+│   ├── ui/                  # UI components
+│   └── typescript-config/   # TypeScript configurations
+├── campaigns/               # Campaign definitions
+├── scripts/                 # Build and utility scripts
+├── biome.json              # Biome configuration
+└── docs/                    # Additional documentation
+```
+
+## Development Tools
+
+### 1. IDE Configuration
+
+#### VS Code Setup
+
+Install recommended extensions:
+
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "biomejs.biome",
+    "formulahendry.auto-rename-tag",
+    "ms-vscode.vscode-json"
+  ]
+}
+```
+
+#### Workspace Settings
+
+```json
+// .vscode/settings.json
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": true,
+    "source.organizeImports.biome": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
+}
+```
+
+### 2. Git Hooks
+
+Install and configure Git hooks:
+
+```bash
+# Install husky
+pnpm install
+
+# Enable Git hooks
+npx husky install
+```
+
+### 3. Debugging
+
+#### VS Code Debug Configuration
+
+```json
+// .vscode/launch.json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/api/src/main.ts",
+      "cwd": "${workspaceFolder}/apps/api",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Debug Web",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/web/node_modules/.bin/next",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}/apps/web",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
+```
+
+## Package Development
+
+### 1. Creating New Packages
+
+```bash
+# Create a new package
+mkdir packages/my-package
+cd packages/my-package
+
+# Initialize package
+pnpm init
+
+# Add to workspace
+echo '{"name": "@novai/my-package"}' > package.json
+```
+
+### 2. Package Dependencies
+
+```bash
+# Add dependency to specific package
+pnpm --filter @novai/engine add lodash
+
+# Add dev dependency
+pnpm --filter @novai/engine add -D @types/lodash
+
+# Add internal dependency
+pnpm --filter @novai/web add @novai/engine
+```
+
+### 3. Building Packages
+
+```bash
+# Build all packages
+pnpm build
+
+# Build specific package
+pnpm --filter @novai/engine build
+
+# Build in watch mode
+pnpm --filter @novai/engine build:watch
+```
+
+## Database Development
+
+### 1. Migration Management
+
+```bash
+# Create new migration
+pnpm db:migration:create --name add_user_table
+
+# Run migrations
+pnpm db:migrate
+
+# Rollback migration
+pnpm db:migrate:rollback
+
+# Reset database
+pnpm db:reset
+```
+
+### 2. Seeding Data
+
+```bash
+# Run seeders
+pnpm db:seed
+
+# Create new seeder
+pnpm db:seed:create --name users
+```
+
+### 3. Database Schema
+
+```sql
+-- Example migration
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Testing Strategy
+
+### 1. Unit Tests
+
+```typescript
+// packages/engine/src/__tests__/GameEngineService.test.ts
+import { GameEngineService } from '../GameEngineService';
+
+describe('GameEngineService', () => {
+  let engine: GameEngineService;
+
+  beforeEach(() => {
+    engine = new GameEngineService({
+      provider: 'openai',
+      apiKey: 'test-key'
+    });
+  });
+
+  it('should create a new game', async () => {
+    const gameState = await engine.createNewGame('test-campaign', 'Player');
+    expect(gameState.playerName).toBe('Player');
+  });
+});
+```
+
+### 2. Integration Tests
+
+```typescript
+// apps/api/test/game.e2e-spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
+
+describe('Game Controller (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  it('/game/create (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/game/create')
+      .send({ campaignId: 'test', playerName: 'Player' })
+      .expect(201);
+  });
+});
+```
+
+### 3. Component Tests
+
+```typescript
+// packages/ui/src/__tests__/Button.test.tsx
+import { render, screen } from '@testing-library/react';
+import { Button } from '../Button';
+
+describe('Button', () => {
+  it('renders with correct text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button')).toHaveTextContent('Click me');
+  });
+});
+```
+
+## Performance Optimization
+
+### 1. Bundle Analysis
+
+```bash
+# Analyze bundle size
+pnpm build:analyze
+
+# Generate bundle report
+pnpm build:report
+```
+
+### 2. Performance Monitoring
+
+```bash
+# Run performance tests
+pnpm test:perf
+
+# Monitor memory usage
+pnpm dev:monitor
+```
+
+### 3. Caching Strategy
+
+```typescript
+// Example caching implementation
+class GameStateCache {
+  private cache = new Map<string, GameState>();
+  private maxSize = 1000;
+
+  get(gameId: string): GameState | null {
+    return this.cache.get(gameId) || null;
+  }
+
+  set(gameId: string, state: GameState): void {
+    this.cache.set(gameId, state);
+    this.cleanup();
+  }
+
+  private cleanup(): void {
+    if (this.cache.size > this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+  }
+}
+```
+
+## Deployment Preparation
+
+### 1. Environment Variables
+
+```bash
+# Production environment
+NODE_ENV=production
+DATABASE_URL=your_production_database_url
+OPENAI_API_KEY=your_production_openai_key
+NEXTAUTH_SECRET=your_production_secret
+NEXTAUTH_URL=https://your-domain.com
+```
+
+### 2. Build Process
+
+```bash
+# Build all packages
+pnpm build
+
+# Build for production
+pnpm build:prod
+
+# Generate deployment artifacts
+pnpm build:deploy
+```
+
+### 3. Docker Configuration
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
+
+COPY . .
+RUN pnpm build
+
+EXPOSE 3000 3001
+
+CMD ["pnpm", "start"]
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Port Conflicts
+
+```bash
+# Check what's using the ports
+lsof -i :3000
+lsof -i :3001
+lsof -i :3002
+
+# Kill processes
+kill -9 <PID>
+```
+
+#### 2. Database Connection Issues
+
+```bash
+# Test database connection
+psql $DATABASE_URL -c "SELECT 1"
+
+# Reset database
+pnpm db:reset
+```
+
+#### 3. Package Build Issues
+
+```bash
+# Clean all builds
+pnpm clean
+
+# Reinstall dependencies
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+#### 4. TypeScript Errors
+
+```bash
+# Check TypeScript
+pnpm type-check
+
+# Fix type issues
+pnpm type-check:fix
+```
+
+#### 5. Biome Issues
+
+```bash
+# Check Biome configuration
+npx @biomejs/biome check --verbose
+
+# Format all files
+npx @biomejs/biome format --write .
+
+# Lint all files
+npx @biomejs/biome lint --write .
+```
+
+### Getting Help
+
+1. **Check the logs**: Look at console output for error messages
+2. **Review documentation**: Consult the relevant package documentation
+3. **Search issues**: Check GitHub issues for similar problems
+4. **Ask the community**: Join the Discord server for help
+
+## Next Steps
+
+Now that you have the development environment set up, you can:
+
+1. **Explore the codebase**: Familiarize yourself with the project structure
+2. **Run the tests**: Ensure everything is working correctly
+3. **Create your first campaign**: Follow the quickstart guide
+4. **Contribute to the project**: Pick up an issue or create a feature
+5. **Join the community**: Connect with other developers
+
+Happy coding! 
