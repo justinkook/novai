@@ -1,0 +1,6 @@
+# Serwist
+public/sw*
+public/swe-worker*
+
+# Sentry
+.env.sentry-build-plugin
