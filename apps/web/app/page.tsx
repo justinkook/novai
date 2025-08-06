@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
 import { Metadata } from 'next';
 import { Button } from '@workspace/ui/components/button';
 import { ArrowRight, Sparkles, Users, Shield, Zap } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
   title: 'NovAI - AI-Powered RPG Engine',
@@ -56,9 +56,10 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
-  const session = await getServerSession();
-  
-  if (session) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
     return redirect('/dashboard');
   }
 
