@@ -42,9 +42,5 @@ credentials.json
 # LangGraph API
 .langgraph_api
 
-# Serwist
-public/sw*
-public/swe-worker*
-
 # Sentry
 .env.sentry-build-plugin

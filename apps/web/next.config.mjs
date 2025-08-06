@@ -1,10 +1,4 @@
 import {withSentryConfig} from '@sentry/nextjs';
-import withSerwistInit from '@serwist/next';
-
-const withSerwist = withSerwistInit({
-  swSrc: 'app/sw.ts',
-  swDest: 'public/sw.js',
-});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -31,7 +25,7 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
 };
 
-const sentryConfig = withSentryConfig(nextConfig, {
+export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
@@ -62,5 +56,3 @@ const sentryConfig = withSentryConfig(nextConfig, {
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
 });
-
-export default withSerwist(sentryConfig);
