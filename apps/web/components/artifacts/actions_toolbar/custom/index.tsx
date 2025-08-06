@@ -13,15 +13,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { CustomQuickAction } from "@opencanvas/shared/types";
+} from "@workspace/ui/components/dropdown-menu";
+import { CustomQuickAction } from "@workspace/shared/types";
 import { NewCustomQuickActionDialog } from "./NewCustomQuickActionDialog";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useStore } from "@/hooks/useStore";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import { TighterText } from "@/components/ui/header";
-import { GraphInput } from "@opencanvas/shared/types";
+import { cn } from "@workspace/ui/lib/utils";
+import { useToast } from "@workspace/ui/hooks/use-toast";
+import { TighterText } from "@workspace/ui/components/header";
+import { GraphInput } from "@workspace/shared/types";
 import { User } from "@supabase/supabase-js";
 
 export interface CustomQuickActionsProps {
@@ -47,7 +47,8 @@ const DropdownMenuItemWithDelete = ({
   const [isHovering, setIsHovering] = useState(false);
 
   return (
-    <div
+    <button
+      type="button"
       className="flex flex-row gap-0 items-center justify-between w-full"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -77,7 +78,7 @@ const DropdownMenuItemWithDelete = ({
       >
         <Trash2 className="text-[#575757] hover:text-red-500 transition-colors ease-in" />
       </TooltipIconButton>
-    </div>
+    </button>
   );
 };
 
@@ -102,15 +103,17 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
     setIsEditingId(id);
   };
 
-  const getAndSetCustomQuickActions = async (userId: string) => {
+  const getAndSetCustomQuickActions = useCallback(async (userId: string) => {
     const actions = await getCustomQuickActions(userId);
     setCustomQuickActions(actions);
-  };
+  }, [getCustomQuickActions]);
 
   useEffect(() => {
-    if (typeof window === undefined || !assistantId || !user) return;
+    if (typeof window === 'undefined' || !assistantId || !user) {
+      return;
+    }
     getAndSetCustomQuickActions(user.id);
-  }, [assistantId, user]);
+  }, [assistantId, user, getAndSetCustomQuickActions]);
 
   const handleNewActionClick = (e: Event) => {
     e.preventDefault();
@@ -150,7 +153,9 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
           title: "Custom quick action deleted successfully",
         });
         setCustomQuickActions((actions) => {
-          if (!actions) return actions;
+          if (!actions) {
+            return actions;
+          }
           return actions.filter((action) => action.id !== id);
         });
       } else {
@@ -171,7 +176,9 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
     <DropdownMenu
       open={open}
       onOpenChange={(o) => {
-        if (props.isTextSelected) return;
+        if (props.isTextSelected) {
+          return;
+        }
         setOpen(o);
       }}
     >

@@ -1,7 +1,7 @@
-import { ProgrammingLanguageOptions } from "@opencanvas/shared/types";
-import { useToast } from "@/hooks/use-toast";
+import { ProgrammingLanguageOptions } from "@workspace/shared/types";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import { ProgrammingLanguageList } from "@/components/ui/programming-lang-dropdown";
-import { GraphInput } from "@opencanvas/shared/types";
+import { GraphInput } from "@workspace/shared/types";
 
 export interface PortToLanguageOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;

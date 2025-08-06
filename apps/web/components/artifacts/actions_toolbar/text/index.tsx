@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Languages, BookOpen, SlidersVertical, SmilePlus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { ReadingLevelOptions } from "./ReadingLevelOptions";
 import { TranslateOptions } from "./TranslateOptions";
 import { LengthOptions } from "./LengthOptions";
 import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
 import { MagicPencilSVG } from "@/components/icons/magic_pencil";
-import { GraphInput } from "@opencanvas/shared/types";
+import { GraphInput } from "@workspace/shared/types";
 
 type SharedComponentProps = {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -58,7 +58,7 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
   const { streamMessage } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeOption, setActiveOption] = useState<string | null>(null);
-  const toolbarRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,7 +79,9 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
 
   const toggleExpand = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (props.isTextSelected) return;
+    if (props.isTextSelected) {
+      return;
+    }
     setIsExpanded(!isExpanded);
     setActiveOption(null);
   };
@@ -106,7 +108,8 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
   };
 
   return (
-    <div
+    <button
+      type="button"
       ref={toolbarRef}
       className={cn(
         "fixed bottom-4 right-4 transition-all duration-300 ease-in-out text-black flex flex-col items-center justify-center bg-white",
@@ -120,23 +123,23 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
         <div className="flex flex-col gap-3 items-center w-full border-[1px] border-gray-200 rounded-3xl py-4 px-3">
           {activeOption && activeOption !== "addEmojis"
             ? toolbarOptions
-                .find((option) => option.id === activeOption)
-                ?.component?.({
-                  ...props,
-                  handleClose,
-                })
+              .find((option) => option.id === activeOption)
+              ?.component?.({
+                ...props,
+                handleClose,
+              })
             : toolbarOptions.map((option) => (
-                <TooltipIconButton
-                  key={option.id}
-                  tooltip={option.tooltip}
-                  variant="ghost"
-                  className="transition-colors w-[36px] h-[36px]"
-                  delayDuration={400}
-                  onClick={async (e) => await handleOptionClick(e, option.id)}
-                >
-                  {option.icon}
-                </TooltipIconButton>
-              ))}
+              <TooltipIconButton
+                key={option.id}
+                tooltip={option.tooltip}
+                variant="ghost"
+                className="transition-colors w-[36px] h-[36px]"
+                delayDuration={400}
+                onClick={async (e) => await handleOptionClick(e, option.id)}
+              >
+                {option.icon}
+              </TooltipIconButton>
+            ))}
         </div>
       ) : (
         <TooltipIconButton
@@ -164,6 +167,6 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
           />
         </TooltipIconButton>
       )}
-    </div>
+    </button>
   );
 }

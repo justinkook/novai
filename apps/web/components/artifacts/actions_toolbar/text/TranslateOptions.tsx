@@ -5,9 +5,9 @@ import {
   SpanishFlag,
   FrenchFlag,
 } from "@/components/icons/flags";
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
-import { GraphInput } from "@opencanvas/shared/types";
-import { LanguageOptions } from "@opencanvas/shared/types";
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { GraphInput } from "@workspace/shared/types";
+import { LanguageOptions } from "@workspace/shared/types";
 
 export interface TranslateOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -30,7 +30,6 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="English"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("english")}
       >
         <UsaFlag />
@@ -39,7 +38,6 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Mandarin"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("mandarin")}
       >
         <ChinaFlag />
@@ -48,7 +46,6 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Hindi"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("hindi")}
       >
         <IndiaFlag />
@@ -57,7 +54,6 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Spanish"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("spanish")}
       >
         <SpanishFlag />
@@ -66,7 +62,6 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="French"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("french")}
       >
         <FrenchFlag />

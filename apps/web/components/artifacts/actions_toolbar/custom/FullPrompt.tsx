@@ -3,15 +3,15 @@ import {
   CUSTOM_QUICK_ACTION_ARTIFACT_PROMPT_PREFIX,
   CUSTOM_QUICK_ACTION_CONVERSATION_CONTEXT,
   REFLECTIONS_QUICK_ACTION_PROMPT,
-} from "@opencanvas/shared/prompts/quick-actions";
+} from "@workspace/shared/prompts/quick-actions";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { CustomQuickAction } from "@opencanvas/shared/types";
+} from "@workspace/ui/components/tooltip";
+import { cn } from "@workspace/ui/lib/utils";
+import { CustomQuickAction } from "@workspace/shared/types";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -44,7 +44,7 @@ const HighlightToDeleteText = (props: HighlightToDeleteTextProps) => {
       }, 1250);
       return () => clearTimeout(timer);
     }
-  }, [props.highlight]);
+  }, [props.highlight, isInitialLoad]);
 
   const handleClick = () => {
     setIsDeleting(true);

@@ -5,9 +5,9 @@ import {
   School,
   Swords,
 } from "lucide-react";
-import { ReadingLevelOptions as ReadingLevelOptionsType } from "@opencanvas/shared/types";
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
-import { GraphInput } from "@opencanvas/shared/types";
+import { ReadingLevelOptions as ReadingLevelOptionsType } from "@workspace/shared/types";
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import { GraphInput } from "@workspace/shared/types";
 
 export interface ReadingLevelOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -30,7 +30,6 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="PhD"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("phd")}
       >
         <GraduationCap />
@@ -39,7 +38,6 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="College"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("college")}
       >
         <School />
@@ -48,7 +46,6 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Teenager"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("teenager")}
       >
         <PersonStanding />
@@ -57,7 +54,6 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Child"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("child")}
       >
         <Baby />
@@ -66,7 +62,6 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Pirate"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        delayDuration={400}
         onClick={async () => await handleSubmit("pirate")}
       >
         <Swords />
