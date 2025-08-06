@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 
-import '@workspace/ui/styles/globals.css';
+import '@workspace/ui/globals.css';
 
 import type { Metadata } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
