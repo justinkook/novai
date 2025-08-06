@@ -2,7 +2,32 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["**/dist/**"]
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "lint:fix": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "format:check": {
+      "outputs": []
+    },
+    "check": {
+      "outputs": []
+    },
+    "check:fix": {
+      "outputs": []
+    },
+    "organize-imports": {
+      "outputs": []
     }
   }
 }
