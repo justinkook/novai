@@ -34,7 +34,7 @@ function SearchResultCard({ result }: { result: SearchResult }) {
               {result.metadata?.title || 'Untitled'}
             </a>
           ) : (
-            <>{result.metadata?.title || 'Untitled'}</>
+            result.metadata?.title || 'Untitled'
           )}
         </CardTitle>
         <CardDescription>

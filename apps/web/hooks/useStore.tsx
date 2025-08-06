@@ -249,7 +249,7 @@ export function useStore() {
 
       if (!res.ok) {
         throw new Error(
-          'Failed to put context documents' + res.statusText + res.status
+          `Failed to put context documents${res.statusText}${res.status}`
         );
       }
     } catch (e) {

@@ -381,7 +381,7 @@ export function CreateEditAssistantDialog(
                   value={iconColor}
                   onChange={(e) => {
                     if (!e.target.value.startsWith('#')) {
-                      setIconColor('#' + e.target.value);
+                      setIconColor(`#${e.target.value}`);
                     } else {
                       setIconColor(e.target.value);
                     }

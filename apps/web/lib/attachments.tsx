@@ -24,7 +24,7 @@ export function contextDocumentToFile(document: ContextDocument): File {
 
   // For non-text documents, handle as base64
   let base64String = document.data;
-  if (base64String && base64String.includes(',')) {
+  if (base64String?.includes(',')) {
     base64String = base64String.split(',')[1] ?? '';
   }
 
@@ -74,7 +74,7 @@ export async function transcribeAudio(file: File, userId: string) {
   const res = await client.storage
     .from('documents')
     .upload(
-      `${userId}/${new Date().getTime()}-${file.name.replace(/\//g, '-').replace(/\s/g, '-')}`,
+      `${userId}/${Date.now()}-${file.name.replace(/\//g, '-').replace(/\s/g, '-')}`,
       file,
       {
         upsert: true,
@@ -171,12 +171,12 @@ export async function convertToAudio(
     // Generate a filename for the new audio file
     // You can customize this naming convention
     const originalName = videoFile.name;
-    const audioFileName = originalName.replace(/\.[^/.]+$/, '') + '.mp3';
+    const audioFileName = `${originalName.replace(/\.[^/.]+$/, '')}.mp3`;
 
     // Create and return a new File object
     return new File([audioBlob], audioFileName, {
       type: 'audio/mp3',
-      lastModified: new Date().getTime(),
+      lastModified: Date.now(),
     });
   } catch (error) {
     console.error('Error converting video to audio:', error);

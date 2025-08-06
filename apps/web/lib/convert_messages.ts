@@ -63,8 +63,7 @@ function getMessageContentOrThrow(message: unknown): string {
   } else if (typeof castMsg.content === 'string') {
     content = castMsg.content;
   } else if (
-    castMsg?.kwargs &&
-    castMsg.kwargs?.content &&
+    castMsg?.kwargs?.content &&
     typeof castMsg.kwargs?.content === 'string'
   ) {
     content = castMsg.kwargs.content;

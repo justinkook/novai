@@ -1,12 +1,17 @@
-import { v4 as uuidv4 } from 'uuid';
-import { useUserContext } from '@/contexts/UserContext';
+import { AIMessage, type BaseMessage } from '@langchain/core/messages';
+import type { Thread } from '@langchain/langgraph-sdk';
 import {
-  isArtifactCodeContent,
-  isArtifactMarkdownContent,
-  isDeprecatedArtifactType,
-} from '@workspace/shared/utils/artifacts';
-import { reverseCleanContent } from '@/lib/normalize_string';
+  DEFAULT_INPUTS,
+  OC_WEB_SEARCH_RESULTS_MESSAGE_KEY,
+} from '@workspace/shared/constants';
 import {
+  type ALL_MODEL_NAMES,
+  DEFAULT_MODEL_CONFIG,
+  DEFAULT_MODEL_NAME,
+  NON_STREAMING_TEXT_MODELS,
+  NON_STREAMING_TOOL_CALLING_MODELS,
+} from '@workspace/shared/models';
+import type {
   ArtifactType,
   ArtifactV3,
   CustomModelConfig,
@@ -16,34 +21,38 @@ import {
   SearchResult,
   TextHighlight,
 } from '@workspace/shared/types';
-import { AIMessage, BaseMessage } from '@langchain/core/messages';
-import { useRuns } from '@/hooks/useRuns';
-import { createClient } from '@/hooks/utils';
-import { WEB_SEARCH_RESULTS_QUERY_PARAM } from '@/lib/constants';
 import {
-  DEFAULT_INPUTS,
-  OC_WEB_SEARCH_RESULTS_MESSAGE_KEY,
-} from '@workspace/shared/constants';
+  isArtifactCodeContent,
+  isArtifactMarkdownContent,
+  isDeprecatedArtifactType,
+} from '@workspace/shared/utils/artifacts';
 import {
-  ALL_MODEL_NAMES,
-  NON_STREAMING_TEXT_MODELS,
-  NON_STREAMING_TOOL_CALLING_MODELS,
-  DEFAULT_MODEL_CONFIG,
-  DEFAULT_MODEL_NAME,
-} from '@workspace/shared/models';
-import { Thread } from '@langchain/langgraph-sdk';
+  handleRewriteArtifactThinkingModel,
+  isThinkingModel,
+} from '@workspace/shared/utils/thinking';
 import { useToast } from '@workspace/ui/hooks/use-toast';
+import { debounce } from 'lodash';
+import { useQueryState } from 'nuqs';
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { useUserContext } from '@/contexts/UserContext';
+import { useRuns } from '@/hooks/useRuns';
+import { createClient } from '@/hooks/utils';
+import { WEB_SEARCH_RESULTS_QUERY_PARAM } from '@/lib/constants';
+import { reverseCleanContent } from '@/lib/normalize_string';
+import { StreamWorkerService } from '@/workers/graph-stream/streamWorker';
+import { useAssistantContext } from './AssistantContext';
+import { useThreadContext } from './ThreadProvider';
 import {
   convertToArtifactV3,
   extractChunkFields,
@@ -54,15 +63,6 @@ import {
   updateHighlightedMarkdown,
   updateRewrittenArtifact,
 } from './utils';
-import {
-  handleRewriteArtifactThinkingModel,
-  isThinkingModel,
-} from '@workspace/shared/utils/thinking';
-import { debounce } from 'lodash';
-import { useThreadContext } from './ThreadProvider';
-import { useAssistantContext } from './AssistantContext';
-import { StreamWorkerService } from '@/workers/graph-stream/streamWorker';
-import { useQueryState } from 'nuqs';
 
 interface GraphData {
   runId: string | undefined;
@@ -470,17 +470,16 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       }
 
       // The metadata generated when re-writing an artifact
-      let rewriteArtifactMeta: RewriteArtifactMetaToolResponse | undefined =
-        undefined;
+      let rewriteArtifactMeta: RewriteArtifactMetaToolResponse | undefined;
 
       // For generating an artifact
       let generateArtifactToolCallStr = '';
 
       // For updating code artifacts
       // All the text up until the startCharIndex
-      let updatedArtifactStartContent: string | undefined = undefined;
+      let updatedArtifactStartContent: string | undefined;
       // All the text after the endCharIndex
-      let updatedArtifactRestContent: string | undefined = undefined;
+      let updatedArtifactRestContent: string | undefined;
       // Whether or not the first update has been made when updating highlighted code.
       let isFirstUpdate = true;
 
@@ -491,7 +490,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       let newArtifactContent = '';
 
       // The updated full markdown text when using the highlight update tool
-      let highlightedText: TextHighlight | undefined = undefined;
+      let highlightedText: TextHighlight | undefined;
 
       // The ID of the message for the web search operation during this turn
       let webSearchMessageId = '';
@@ -1323,7 +1322,6 @@ export function GraphProvider({ children }: { children: ReactNode }) {
                 generateArtifactToolCallStr
               );
               if (result && result === 'continue') {
-                continue;
               } else if (result && typeof result === 'object') {
                 setFirstTokenReceived(true);
                 setArtifact(result);

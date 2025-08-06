@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     console.error('Failed to process feedback request:', error);
 
     return NextResponse.json(
-      { error: 'Failed to submit feedback.' + error.message },
+      { error: `Failed to submit feedback.${error.message}` },
       { status: 500 }
     );
   }

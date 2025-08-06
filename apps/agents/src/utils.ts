@@ -97,7 +97,7 @@ export const formatReflections = (
     return contentString;
   }
 
-  return styleString + '\n\n' + contentString;
+  return `${styleString}\n\n${contentString}`;
 };
 
 export const ensureStoreInConfig = (
@@ -487,7 +487,7 @@ export function createContextDocumentMessagesGemini(
         text: doc.data,
       };
     }
-    throw new Error('Unsupported document type: ' + doc.type);
+    throw new Error(`Unsupported document type: ${doc.type}`);
   });
 }
 

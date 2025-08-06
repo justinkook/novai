@@ -1,5 +1,5 @@
-import { spawn } from 'child_process';
-import * as path from 'path';
+import { spawn } from 'node:child_process';
+import * as path from 'node:path';
 
 /**
  * Checks if the development server starts successfully.
@@ -20,12 +20,12 @@ function checkDevServer(): Promise<void> {
     });
 
     let errorDetected = false;
-    let output = '';
+    let _output = '';
     let serverReady = false;
 
     serverProcess.stdout.on('data', (data) => {
       const message = data.toString();
-      output += message;
+      _output += message;
       console.log(message);
       const lowerCaseMessage = message.toLowerCase();
 
@@ -60,7 +60,7 @@ function checkDevServer(): Promise<void> {
 
     serverProcess.stderr.on('data', (data) => {
       const message = data.toString();
-      output += message;
+      _output += message;
       console.error('stderr:', message); // Log stderr for debugging
       const lowerCaseMessage = message.toLowerCase();
 
