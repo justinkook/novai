@@ -2,14 +2,14 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
-import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
-import { Icons } from "../../ui/icons";
-import { Label } from "../../ui/label";
+import { cn } from "@workspace/ui/lib/utils";
+import { Input } from "@workspace/ui/components/input";
+import { Button } from "@workspace/ui/components/button";
+import { Icons } from "@workspace/ui/components/icons";
+import { Label } from "@workspace/ui/components/label";
 import { LoginWithEmailInput } from "./Login";
 import { useState } from "react";
-import { PasswordInput } from "../../ui/password-input";
+import { PasswordInput } from "@workspace/ui/components/password-input";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   onLoginWithEmail: (input: LoginWithEmailInput) => Promise<void>;

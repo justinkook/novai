@@ -20,13 +20,13 @@ import {
 } from "./tooltip-icon-button";
 import { withDefaults } from "./utils/withDefaults";
 import { AvatarFallback, AvatarImage, AvatarRoot } from "./avatar";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../tooltip";
+} from "@workspace/ui/components/tooltip";
 
 const AttachmentRoot = withDefaults(AttachmentPrimitive.Root, {
   className: "aui-attachment-root",
@@ -61,10 +61,16 @@ const useFileSrc = (file: File | undefined) => {
 const useAttachmentSrc = () => {
   const { file, src } = useAttachment(
     useShallow((a): { file?: File; src?: string } => {
-      if (a.type !== "image") return {};
-      if (a.file) return { file: a.file };
+      if (a.type !== "image") {
+        return {};
+      }
+      if (a.file) {
+        return { file: a.file };
+      }
       const src = a.content?.filter((c) => c.type === "image")[0]?.image;
-      if (!src) return {};
+      if (!src) {
+        return {};
+      }
       return { src };
     })
   );
@@ -92,7 +98,7 @@ const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
         overflow: "clip",
       }}
       onLoad={() => setIsLoaded(true)}
-      alt="Image Preview"
+      alt="Preview"
     />
   );
 };
@@ -100,7 +106,9 @@ const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
 const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
   const src = useAttachmentSrc();
 
-  if (!src) return children;
+  if (!src) {
+    return children;
+  }
 
   return (
     <Dialog>
@@ -141,9 +149,10 @@ export const AttachmentUI: FC = () => {
         return "Document";
       case "file":
         return "File";
-      default:
+      default: {
         const _exhaustiveCheck: never = type;
         throw new Error(`Unknown attachment type: ${_exhaustiveCheck}`);
+      }
     }
   });
   return (

@@ -1,13 +1,13 @@
-import { ProgrammingLanguageOptions } from "@opencanvas/shared/types";
+import type { ProgrammingLanguageOptions } from "@workspace/shared/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "@workspace/ui/components/dropdown-menu";
 import { Code } from "lucide-react";
-import { Button } from "./button";
+import { Button } from "@workspace/ui/components/button";
 import { TooltipIconButton } from "./assistant-ui/tooltip-icon-button";
 
 interface ProgrammingLanguageListProps {

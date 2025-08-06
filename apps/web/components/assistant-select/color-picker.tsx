@@ -24,7 +24,9 @@ export function ColorPicker(props: ColorPickerProps) {
   } = props;
 
   const handleMouseEnter = () => {
-    if (props.disabled) return;
+    if (props.disabled) {
+      return;
+    }
     const timer = setTimeout(() => {
       setShowColorPicker(true);
     }, 200);
@@ -40,7 +42,8 @@ export function ColorPicker(props: ColorPickerProps) {
 
   return (
     <div className="relative">
-      <div
+      <button
+        type="button"
         className="h-9 w-9 rounded-md cursor-pointer hover:ring-2 ring-offset-2 ring-gray-400 transition-all ease-in-out duration-200"
         style={{ backgroundColor: iconColor }}
         onMouseEnter={handleMouseEnter}
@@ -65,7 +68,9 @@ export function ColorPicker(props: ColorPickerProps) {
               aria-disabled={props.disabled}
               color={iconColor}
               onChange={(e) => {
-                if (props.disabled) return;
+                if (props.disabled) {
+                  return;
+                }
 
                 if (!e.startsWith("#")) {
                   setIconColor("#" + e);

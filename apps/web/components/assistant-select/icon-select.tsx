@@ -7,14 +7,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "@workspace/ui/components/dropdown-menu";
+import { Input } from "@workspace/ui/components/input";
 import React from "react";
 import debounce from "lodash/debounce";
 import startCase from "lodash/startCase";
 import uniq from "lodash/uniq";
 import uniqBy from "lodash/uniqBy";
-import { Button } from "../ui/button";
+import { Button } from "@workspace/ui/components/button";
 
 type KeyofIcons = keyof typeof Icons;
 

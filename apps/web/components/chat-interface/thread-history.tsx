@@ -1,15 +1,15 @@
 import { isToday, isYesterday, isWithinInterval, subDays } from "date-fns";
 import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { Button } from "../ui/button";
+import { Button } from "@workspace/ui/components/button";
 import { Trash2 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "../ui/sheet";
-import { Skeleton } from "../ui/skeleton";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@workspace/ui/components/sheet";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { useEffect, useState } from "react";
 import { Thread } from "@langchain/langgraph-sdk";
 import { PiChatsCircleLight } from "react-icons/pi";
-import { TighterText } from "../ui/header";
+import { TighterText } from "@workspace/ui/components/header";
 import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import React from "react";
 import { useUserContext } from "@/contexts/UserContext";
 import { useThreadContext } from "@/contexts/ThreadProvider";
@@ -30,7 +30,8 @@ const ThreadItem = (props: ThreadProps) => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
-    <div
+    <button
+      type="button"
       className="flex flex-row gap-0 items-center justify-start w-full"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -54,7 +55,7 @@ const ThreadItem = (props: ThreadProps) => {
           <Trash2 className="w-12 h-12 text-[#575757] hover:text-red-500 transition-colors ease-in" />
         </TooltipIconButton>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -205,10 +206,12 @@ export function ThreadHistoryComponent(props: ThreadHistoryProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window == "undefined" || userThreads.length || !user) return;
+    if (typeof window === "undefined" || userThreads.length || !user) {
+      return;
+    }
 
     getUserThreads();
-  }, [user]);
+  }, [user, getUserThreads, userThreads.length]);
 
   const handleDeleteThread = async (id: string) => {
     if (!user) {
@@ -262,6 +265,7 @@ export function ThreadHistoryComponent(props: ThreadHistoryProps) {
         {isUserThreadsLoading && !userThreads.length ? (
           <div className="flex flex-col gap-1 px-2 pt-3">
             {Array.from({ length: 25 }).map((_, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: This is a loading state
               <LoadingThread key={`loading-thread-${i}`} />
             ))}
           </div>

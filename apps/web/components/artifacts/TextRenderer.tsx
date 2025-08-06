@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { ArtifactMarkdownV3 } from "@opencanvas/shared/types";
+import { ArtifactMarkdownV3 } from "@workspace/shared/types";
 import "@blocknote/core/fonts/inter.css";
 import {
   getDefaultReactSlashMenuItems,
@@ -8,19 +8,19 @@ import {
 } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
-import { isArtifactMarkdownContent } from "@opencanvas/shared/utils/artifacts";
+import { isArtifactMarkdownContent } from "@workspace/shared/utils/artifacts";
 import { CopyText } from "./components/CopyText";
-import { getArtifactContent } from "@opencanvas/shared/utils/artifacts";
+import { getArtifactContent } from "@workspace/shared/utils/artifacts";
 import { useGraphContext } from "@/contexts/GraphContext";
 import React from "react";
 import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
 import { Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
-import { Textarea } from "../ui/textarea";
-import { cn } from "@/lib/utils";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { cn } from "@workspace/ui/lib/utils";
 
 const cleanText = (text: string) => {
-  return text.replaceAll("\\\n", "\n");
+  return text.replace(/\\\n/g, "\n");
 };
 
 function ViewRawText({
@@ -112,13 +112,13 @@ export function TextRendererComponent(props: TextRendererProps) {
         });
       })();
     }
-  }, [editor.getSelectedText()]);
+  }, [editor.getSelectedText, artifact, editor.getSelection, setSelectedBlocks, editor.blocksToMarkdownLossy, editor.document]);
 
   useEffect(() => {
     if (!props.isInputVisible) {
       setSelectedBlocks(undefined);
     }
-  }, [props.isInputVisible]);
+  }, [props.isInputVisible, setSelectedBlocks]);
 
   useEffect(() => {
     if (!artifact) {
@@ -137,7 +137,9 @@ export function TextRendererComponent(props: TextRendererProps) {
       const currentContent = artifact.contents.find(
         (c) => c.index === currentIndex && c.type === "text"
       ) as ArtifactMarkdownV3 | undefined;
-      if (!currentContent) return;
+      if (!currentContent) {
+        return;
+      }
 
       // Blocks are not found in the artifact, so once streaming is done we should update the artifact state with the blocks
       (async () => {
@@ -152,7 +154,7 @@ export function TextRendererComponent(props: TextRendererProps) {
       setManuallyUpdatingArtifact(false);
       setUpdateRenderedArtifactRequired(false);
     }
-  }, [artifact, updateRenderedArtifactRequired]);
+  }, [artifact, updateRenderedArtifactRequired, editor.document, editor.replaceBlocks, editor.tryParseMarkdownToBlocks, setUpdateRenderedArtifactRequired, isStreaming, manuallyUpdatingArtifact]);
 
   useEffect(() => {
     if (isRawView) {
@@ -170,7 +172,7 @@ export function TextRendererComponent(props: TextRendererProps) {
         setManuallyUpdatingArtifact(false);
       }
     }
-  }, [isRawView, editor]);
+  }, [isRawView, editor, rawMarkdown]);
 
   const isComposition = useRef(false);
 
@@ -179,8 +181,9 @@ export function TextRendererComponent(props: TextRendererProps) {
       isStreaming ||
       manuallyUpdatingArtifact ||
       updateRenderedArtifactRequired
-    )
+    ) {
       return;
+    }
 
     const fullMarkdown = await editor.blocksToMarkdownLossy(editor.document);
     setArtifact((prev) => {
@@ -281,8 +284,12 @@ export function TextRendererComponent(props: TextRendererProps) {
             theme="light"
             formattingToolbar={false}
             slashMenu={false}
-            onCompositionStartCapture={() => (isComposition.current = true)}
-            onCompositionEndCapture={() => (isComposition.current = false)}
+            onCompositionStartCapture={() => {
+              isComposition.current = true;
+            }}
+            onCompositionEndCapture={() => {
+              isComposition.current = false;
+            }}
             onChange={onChange}
             editable={
               !isStreaming || props.isEditing || !manuallyUpdatingArtifact

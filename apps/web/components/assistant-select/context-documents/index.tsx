@@ -1,11 +1,11 @@
-import { TighterText } from "@/components/ui/header";
-import { InlineContextTooltip } from "@/components/ui/inline-context-tooltip";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ALLOWED_AUDIO_TYPES, ALLOWED_VIDEO_TYPES } from "@/constants";
+import { TighterText } from "@workspace/ui/components/header";
+import { InlineContextTooltip } from "@workspace/ui/components/inline-context-tooltip";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { ALLOWED_AUDIO_TYPES, ALLOWED_VIDEO_TYPES } from "@/lib/constants";
 import { LoaderCircle, Plus, X } from "lucide-react";
 import { UploadedFiles } from "./uploaded-file";
-import { Button } from "@/components/ui/button";
+import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 const ContextDocumentsWhatsThis = (): React.ReactNode => (
@@ -133,7 +133,9 @@ export function ContextDocuments(props: ContextDocumentsProps) {
         accept=".txt,.md,.json,.xml,.css,.html,.csv,.pdf,.doc,.docx,.mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm"
         onChange={(e) => {
           const newFiles = e.target.files;
-          if (!newFiles) return;
+          if (!newFiles) {
+            return;
+          }
 
           // Create array from existing files if any
           const existingFiles = documents ? Array.from(documents) : [];
@@ -152,20 +154,20 @@ export function ContextDocuments(props: ContextDocumentsProps) {
 
           for (let i = 0; i < newFiles.length; i += 1) {
             const file = newFiles[i];
-            const isAudio = ALLOWED_AUDIO_TYPES.has(file.type);
-            const isVideo = ALLOWED_VIDEO_TYPES.has(file.type);
+            const isAudio = ALLOWED_AUDIO_TYPES.has(file?.type || "");
+            const isVideo = ALLOWED_VIDEO_TYPES.has(file?.type || "");
 
             // Check size limits based on file type
-            if (isAudio && file.size > twentyFiveMbBytes) {
-              alert(`Audio file "${file.name}" exceeds the 25MB size limit`);
+            if (isAudio && file?.size && file.size > twentyFiveMbBytes) {
+              alert(`Audio file "${file?.name}" exceeds the 25MB size limit`);
               e.target.value = "";
               return;
-            } else if (isVideo && file.size > oneGbBytes) {
-              alert(`Video file "${file.name}" exceeds the 1GB size limit`);
+            } else if (isVideo && file?.size && file.size > oneGbBytes) {
+              alert(`Video file "${file?.name}" exceeds the 1GB size limit`);
               e.target.value = "";
               return;
-            } else if (!isAudio && !isVideo && file.size > tenMbBytes) {
-              alert(`Document "${file.name}" exceeds the 10MB size limit`);
+            } else if (!isAudio && !isVideo && file?.size && file.size > tenMbBytes) {
+              alert(`Document "${file?.name}" exceeds the 10MB size limit`);
               e.target.value = "";
               return;
             }
@@ -194,7 +196,7 @@ export function ContextDocuments(props: ContextDocumentsProps) {
         {showUrlInputs || urls.length > 0 ? (
           urls.map((url, index) => (
             <UrlInputRow
-              key={index}
+              key={url}
               value={url}
               onChange={(value) => handleUrlChange(index, value)}
               onRemove={() => handleUrlRemove(index)}

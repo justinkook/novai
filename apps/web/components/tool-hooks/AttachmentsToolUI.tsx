@@ -1,4 +1,4 @@
-import { ContextDocument } from "@opencanvas/shared/types";
+import type { ContextDocument } from "@workspace/shared/types";
 import { HumanMessage } from "@langchain/core/messages";
 import { UploadedFiles } from "../assistant-select/context-documents/uploaded-file";
 

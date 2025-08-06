@@ -1,13 +1,13 @@
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { LangGraphRunnableConfig } from '@langchain/langgraph';
 import {
   getArtifactContent,
   isArtifactCodeContent,
-} from "@workspace/shared/utils/artifacts";
+} from '@workspace/shared/utils/artifacts';
 import {
   ArtifactCodeV3,
   ArtifactV3,
   Reflections,
-} from "@workspace/shared/types";
+} from '@workspace/shared/types';
 import {
   createContextDocumentMessages,
   ensureStoreInConfig,
@@ -15,12 +15,12 @@ import {
   getModelConfig,
   getModelFromConfig,
   isUsingO1MiniModel,
-} from "../../utils.js";
-import { UPDATE_HIGHLIGHTED_ARTIFACT_PROMPT } from "../prompts.js";
+} from '../../utils.js';
+import { UPDATE_HIGHLIGHTED_ARTIFACT_PROMPT } from '../prompts.js';
 import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../state.js";
+} from '../state.js';
 
 /**
  * Update an existing artifact based on the user's query.
@@ -31,7 +31,7 @@ export const updateArtifact = async (
 ): Promise<OpenCanvasGraphReturnType> => {
   const { modelProvider, modelName } = getModelConfig(config);
   let smallModel: Awaited<ReturnType<typeof getModelFromConfig>>;
-  if (modelProvider.includes("openai") || modelName.includes("3-5-sonnet")) {
+  if (modelProvider.includes('openai') || modelName.includes('3-5-sonnet')) {
     // Custom model is intelligent enough for updating artifacts
     smallModel = await getModelFromConfig(config, {
       temperature: 0,
@@ -42,7 +42,7 @@ export const updateArtifact = async (
       {
         ...config,
         configurable: {
-          customModelName: "gpt-4o",
+          customModelName: 'gpt-4o',
         },
       },
       {
@@ -54,28 +54,28 @@ export const updateArtifact = async (
   const store = ensureStoreInConfig(config);
   const assistantId = config.configurable?.assistant_id;
   if (!assistantId) {
-    throw new Error("`assistant_id` not found in configurable");
+    throw new Error('`assistant_id` not found in configurable');
   }
-  const memoryNamespace = ["memories", assistantId];
-  const memoryKey = "reflection";
+  const memoryNamespace = ['memories', assistantId];
+  const memoryKey = 'reflection';
   const memories = await store.get(memoryNamespace, memoryKey);
   const memoriesAsString = memories?.value
     ? formatReflections(memories.value as Reflections)
-    : "No reflections found.";
+    : 'No reflections found.';
 
   const currentArtifactContent = state.artifact
     ? getArtifactContent(state.artifact)
     : undefined;
   if (!currentArtifactContent) {
-    throw new Error("No artifact found");
+    throw new Error('No artifact found');
   }
   if (!isArtifactCodeContent(currentArtifactContent)) {
-    throw new Error("Current artifact content is not markdown");
+    throw new Error('Current artifact content is not markdown');
   }
 
   if (!state.highlightedCode) {
     throw new Error(
-      "Can not partially regenerate an artifact without a highlight"
+      'Can not partially regenerate an artifact without a highlight'
     );
   }
 
@@ -100,24 +100,24 @@ export const updateArtifact = async (
   ) as string;
 
   const formattedPrompt = UPDATE_HIGHLIGHTED_ARTIFACT_PROMPT.replace(
-    "{highlightedText}",
+    '{highlightedText}',
     highlightedText
   )
-    .replace("{beforeHighlight}", beforeHighlight)
-    .replace("{afterHighlight}", afterHighlight)
-    .replace("{reflections}", memoriesAsString);
+    .replace('{beforeHighlight}', beforeHighlight)
+    .replace('{afterHighlight}', afterHighlight)
+    .replace('{reflections}', memoriesAsString);
 
   const recentHumanMessage = state._messages.findLast(
-    (message) => message.getType() === "human"
+    (message) => message.getType() === 'human'
   );
   if (!recentHumanMessage) {
-    throw new Error("No recent human message found");
+    throw new Error('No recent human message found');
   }
 
   const contextDocumentMessages = await createContextDocumentMessages(config);
   const isO1MiniModel = isUsingO1MiniModel(config);
   const updatedArtifact = await smallModel.invoke([
-    { role: isO1MiniModel ? "user" : "system", content: formattedPrompt },
+    { role: isO1MiniModel ? 'user' : 'system', content: formattedPrompt },
     ...contextDocumentMessages,
     recentHumanMessage,
   ]);

@@ -1,12 +1,12 @@
 import { Dispatch, FormEvent, forwardRef, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
 import { CircleArrowUp } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ArtifactV3 } from "@opencanvas/shared/types";
-import { getArtifactContent } from "@opencanvas/shared/utils/artifacts";
-import { isArtifactCodeContent } from "@opencanvas/shared/utils/artifacts";
-import { useToast } from "@/hooks/use-toast";
+import { cn } from "@workspace/ui/lib/utils";
+import { ArtifactV3 } from "@workspace/shared/types";
+import { getArtifactContent } from "@workspace/shared/utils/artifacts";
+import { isArtifactCodeContent } from "@workspace/shared/utils/artifacts";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 
 interface AskOpenCanvasProps {
   isInputVisible: boolean;
@@ -21,7 +21,7 @@ interface AskOpenCanvasProps {
   setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export const AskOpenCanvas = forwardRef<HTMLDivElement, AskOpenCanvasProps>(
+export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
   (props, ref) => {
     const { toast } = useToast();
 
@@ -75,7 +75,8 @@ export const AskOpenCanvas = forwardRef<HTMLDivElement, AskOpenCanvasProps>(
     };
 
     return (
-      <div
+      <button
+        type="button"
         ref={ref}
         className={cn(
           "absolute bg-white border border-gray-200 shadow-md p-2 flex gap-2",
@@ -124,7 +125,7 @@ export const AskOpenCanvas = forwardRef<HTMLDivElement, AskOpenCanvasProps>(
             Ask Open Canvas
           </Button>
         )}
-      </div>
+      </button>
     );
   }
 );

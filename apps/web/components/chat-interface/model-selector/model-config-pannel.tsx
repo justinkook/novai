@@ -2,19 +2,19 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@workspace/ui/components/popover";
 import {
   CustomModelConfig,
   ModelConfigurationParams,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@workspace/ui/components/button";
+import { Slider } from "@workspace/ui/components/slider";
 import {
   ALL_MODEL_NAMES,
   TEMPERATURE_EXCLUDED_MODELS,
-} from "@opencanvas/shared/models";
-import { cn } from "@/lib/utils";
+} from "@workspace/shared/models";
+import { cn } from "@workspace/ui/lib/utils";
 import { GearIcon, ResetIcon } from "@radix-ui/react-icons";
 import { useCallback } from "react";
 
@@ -46,7 +46,7 @@ export function ModelConfigPanel({
         ...modelConfig,
         temperatureRange: {
           ...modelConfig.temperatureRange,
-          current: value[0],
+          current: value[0] || 0,
         },
       });
     },
@@ -59,7 +59,7 @@ export function ModelConfigPanel({
         ...modelConfig,
         maxTokens: {
           ...modelConfig.maxTokens,
-          current: value[0],
+          current: value[0] || 0,
         },
       });
     },
@@ -83,7 +83,10 @@ export function ModelConfigPanel({
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger onClick={onClick} asChild>
-        <button className="flex-shrink-0 flex size-6 items-center justify-center focus:outline-none focus:ring-0 focus:ring-offset-0">
+        <button
+          type="button"
+          className="flex-shrink-0 flex size-6 items-center justify-center focus:outline-none focus:ring-0 focus:ring-offset-0"
+        >
           <GearIcon className="size-4" />
         </button>
       </PopoverTrigger>

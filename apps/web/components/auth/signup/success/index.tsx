@@ -30,7 +30,7 @@ export function SignupSuccess() {
 
     // Cleanup function
     return () => clearInterval(intervalId);
-  }, [getUser]);
+  }, [getUser, user]);
 
   useEffect(() => {
     if (user) {

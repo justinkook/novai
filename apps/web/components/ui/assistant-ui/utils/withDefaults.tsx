@@ -1,5 +1,5 @@
 import { ComponentPropsWithoutRef, ElementType, forwardRef } from "react";
-import classNames from "classnames";
+import { cn } from "@workspace/ui/lib/utils";
 import { ComponentRef } from "react";
 
 export const withDefaultProps =
@@ -7,13 +7,13 @@ export const withDefaultProps =
     className,
     ...defaultProps
   }: Partial<TProps>) =>
-  ({ className: classNameProp, ...props }: TProps) => {
-    return {
-      className: classNames(className, classNameProp),
-      ...defaultProps,
-      ...props,
-    } as TProps;
-  };
+    ({ className: classNameProp, ...props }: TProps) => {
+      return {
+        className: cn(className, classNameProp),
+        ...defaultProps,
+        ...props,
+      } as TProps;
+    };
 
 export const withDefaults = <TComponent extends ElementType>(
   Component: TComponent,

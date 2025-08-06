@@ -1,12 +1,12 @@
-import { SearchResult } from "@workspace/shared/types";
-import { WebSearchState } from "../state.js";
-import ExaClient from "exa-js";
-import { ExaRetriever } from "@langchain/exa";
+import { SearchResult } from '@workspace/shared/types';
+import { WebSearchState } from '../state.js';
+import ExaClient from 'exa-js';
+import { ExaRetriever } from '@langchain/exa';
 
 export async function search(
   state: WebSearchState
 ): Promise<Partial<WebSearchState>> {
-  const exaClient = new ExaClient(process.env.EXA_API_KEY || "");
+  const exaClient = new ExaClient(process.env.EXA_API_KEY || '');
   const retriever = new ExaRetriever({
     client: exaClient,
     searchArgs: {
@@ -15,7 +15,7 @@ export async function search(
     },
   });
 
-  const query = state.messages[state.messages.length - 1].content as string;
+  const query = state.messages[state.messages.length - 1]?.content as string;
   const results = await retriever.invoke(query);
 
   return {

@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@workspace/ui/components/accordion";
 import {
   ActionBarPrimitive,
   getExternalStoreMessage,
@@ -16,15 +16,15 @@ import {
 import React, { Dispatch, SetStateAction, type FC } from "react";
 
 import { MarkdownText } from "@/components/ui/assistant-ui/markdown-text";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import { FeedbackButton } from "./feedback";
-import { TighterText } from "../ui/header";
+import { TighterText } from "@workspace/ui/components/header";
 import { useFeedback } from "@/hooks/useFeedback";
 import { ContextDocumentsUI } from "../tool-hooks/AttachmentsToolUI";
 import { HumanMessage } from "@langchain/core/messages";
-import { OC_HIDE_FROM_UI_KEY } from "@opencanvas/shared/constants";
-import { Button } from "../ui/button";
-import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/constants";
+import { OC_HIDE_FROM_UI_KEY } from "@workspace/shared/constants";
+import { Button } from "@workspace/ui/components/button";
+import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/lib/constants";
 import { Globe } from "lucide-react";
 import { useQueryState } from "nuqs";
 
@@ -144,7 +144,9 @@ export const UserMessage: FC = () => {
   const msg = useMessage(getExternalStoreMessage<HumanMessage>);
   const humanMessage = Array.isArray(msg) ? msg[0] : msg;
 
-  if (humanMessage?.additional_kwargs?.[OC_HIDE_FROM_UI_KEY]) return null;
+  if (humanMessage?.additional_kwargs?.[OC_HIDE_FROM_UI_KEY]) {
+    return null;
+  }
 
   return (
     <MessagePrimitive.Root className="grid w-full max-w-2xl auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] gap-y-2 py-4">

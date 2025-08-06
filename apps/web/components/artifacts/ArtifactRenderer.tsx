@@ -1,11 +1,11 @@
 import { convertToOpenAIFormat } from "@/lib/convert_messages";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import {
   ArtifactCodeV3,
   ArtifactMarkdownV3,
   ProgrammingLanguageOptions,
-} from "@opencanvas/shared/types";
-import { EditorView } from "@codemirror/view";
+} from "@workspace/shared/types";
+import type { EditorView } from "@uiw/react-codemirror";
 import { HumanMessage } from "@langchain/core/messages";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +13,7 @@ import { ActionsToolbar, CodeToolBar } from "./actions_toolbar";
 import { CodeRenderer } from "./CodeRenderer";
 import { TextRenderer } from "./TextRenderer";
 import { CustomQuickActions } from "./actions_toolbar/custom";
-import { getArtifactContent } from "@opencanvas/shared/utils/artifacts";
+import { getArtifactContent } from "@workspace/shared/utils/artifacts";
 import { ArtifactLoading } from "./ArtifactLoading";
 import { AskOpenCanvas } from "./components/AskOpenCanvas";
 import { useGraphContext } from "@/contexts/GraphContext";
@@ -50,10 +50,10 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
     setSelectedBlocks,
   } = graphData;
   const editorRef = useRef<EditorView | null>(null);
-  const artifactContentRef = useRef<HTMLDivElement>(null);
+  const artifactContentRef = useRef<HTMLButtonElement>(null);
   const highlightLayerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const selectionBoxRef = useRef<HTMLDivElement>(null);
+  const selectionBoxRef = useRef<HTMLButtonElement>(null);
   const [selectionBox, setSelectionBox] = useState<SelectionBox>();
   const [selectionIndexes, setSelectionIndexes] = useState<{
     start: number;
@@ -65,6 +65,15 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
   const [isHoveringOverArtifact, setIsHoveringOverArtifact] = useState(false);
   const [isValidSelectionOrigin, setIsValidSelectionOrigin] = useState(false);
 
+  const handleCleanupState = useCallback(() => {
+    setIsInputVisible(false);
+    setSelectionBox(undefined);
+    setSelectionIndexes(undefined);
+    setIsSelectionActive(false);
+    setIsValidSelectionOrigin(false);
+    setInputValue("");
+  }, []);
+
   const handleMouseUp = useCallback(() => {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0 && contentRef.current) {
@@ -74,8 +83,12 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
       // Check if the selection originated from within the artifact content
       if (selectedText && artifactContentRef.current) {
         const isWithinArtifact = (node: Node | null): boolean => {
-          if (!node) return false;
-          if (node === artifactContentRef.current) return true;
+          if (!node) {
+            return false;
+          }
+          if (node === artifactContentRef.current) {
+            return true;
+          }
           return isWithinArtifact(node.parentNode);
         };
 
@@ -91,18 +104,18 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
           const contentRect = contentRef.current.getBoundingClientRect();
 
           const boxWidth = 400; // Approximate width of the selection box
-          let left = lastRect.right - contentRect.left - boxWidth;
+          let left = lastRect?.right! - contentRect.left - boxWidth;
 
           if (left < 0) {
-            left = Math.min(0, firstRect.left - contentRect.left);
+            left = Math.min(0, firstRect?.left! - contentRect.left);
           }
           // Ensure the box doesn't go beyond the left edge
           if (left < 0) {
-            left = Math.min(0, firstRect.left - contentRect.left);
+            left = Math.min(0, firstRect?.left! - contentRect.left);
           }
 
           setSelectionBox({
-            top: lastRect.bottom - contentRect.top,
+            top: lastRect?.bottom! - contentRect.top,
             left: left,
             text: selectedText,
           });
@@ -114,16 +127,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         }
       }
     }
-  }, []);
-
-  const handleCleanupState = () => {
-    setIsInputVisible(false);
-    setSelectionBox(undefined);
-    setSelectionIndexes(undefined);
-    setIsSelectionActive(false);
-    setIsValidSelectionOrigin(false);
-    setInputValue("");
-  };
+  }, [handleCleanupState]);
 
   const handleDocumentMouseDown = useCallback(
     (event: MouseEvent) => {
@@ -135,7 +139,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         handleCleanupState();
       }
     },
-    [isSelectionActive]
+    [isSelectionActive, handleCleanupState]
   );
 
   const handleSelectionBoxMouseDown = useCallback((event: React.MouseEvent) => {
@@ -232,10 +236,10 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
 
                 // Adjust the positioning and size
                 const verticalPadding = 3;
-                highlightEl.style.left = `${rect.left - layerRect.left}px`;
-                highlightEl.style.top = `${rect.top - layerRect.top - verticalPadding}px`;
-                highlightEl.style.width = `${rect.width}px`;
-                highlightEl.style.height = `${rect.height + verticalPadding * 2}px`;
+                highlightEl.style.left = `${rect?.left! - layerRect.left}px`;
+                highlightEl.style.top = `${rect?.top! - layerRect.top - verticalPadding}px`;
+                highlightEl.style.width = `${rect?.width! - layerRect.left}px`;
+                highlightEl.style.height = `${rect?.height! + verticalPadding * 2}px`;
 
                 highlightLayer.appendChild(highlightEl);
               }
@@ -246,14 +250,14 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
     } catch (e) {
       console.error("Failed to get artifact selection", e);
     }
-  }, [isSelectionActive, selectionBox]);
+  }, [isSelectionActive, selectionBox, artifact]);
 
   useEffect(() => {
     if (!!selectedBlocks && !isSelectionActive) {
       // Selection is not active but selected blocks are present. Clear them.
       setSelectedBlocks(undefined);
     }
-  }, [selectedBlocks, isSelectionActive]);
+  }, [selectedBlocks, isSelectionActive, setSelectedBlocks]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -282,7 +286,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
 
     document.addEventListener("keydown", handleKeyPress);
     return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [isInputVisible, selectionBox, isSelectionActive]);
+  }, [isInputVisible, selectionBox, isSelectionActive, handleCleanupState]);
 
   const currentArtifactContent = artifact
     ? getArtifactContent(artifact)
@@ -332,7 +336,8 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
             currentArtifactContent.type === "code" ? "min-w-full" : "min-w-full"
           )}
         >
-          <div
+          <button
+            type="button"
             className="h-full"
             ref={artifactContentRef}
             onMouseEnter={() => setIsHoveringOverArtifact(true)}
@@ -351,7 +356,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
                 isHovering={isHoveringOverArtifact}
               />
             ) : null}
-          </div>
+          </button>
           <div
             ref={highlightLayerRef}
             className="absolute top-0 left-0 w-full h-full pointer-events-none"

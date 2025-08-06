@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 
 export const MagicPencilSVG = ({ className }: { className?: string }) => (
   <svg
@@ -8,6 +8,8 @@ export const MagicPencilSVG = ({ className }: { className?: string }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     className={cn("text-token-primary m-auto icon-lg", className)}
+    role="img"
+    aria-label="Magic Pencil"
   >
     <path
       d="M2.5 5.5C4.3 5.2 5.2 4 5.5 2.5C5.8 4 6.7 5.2 8.5 5.5C6.7 5.8 5.8 7 5.5 8.5C5.2 7 4.3 5.8 2.5 5.5Z"

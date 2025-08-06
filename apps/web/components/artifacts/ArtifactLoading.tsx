@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
+import { cn } from "@workspace/ui/lib/utils";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 export function ArtifactLoading() {
   return (
@@ -19,11 +19,12 @@ export function ArtifactLoading() {
       <div className="flex flex-col gap-1 m-4">
         {Array.from({ length: 25 }).map((_, i) => (
           <Skeleton
+            // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton mapping
             key={i}
             className={cn(
               "h-5",
               ["w-1/4", "w-1/3", "w-2/5", "w-1/2", "w-3/5", "w-2/3", "w-3/4"][
-                Math.floor(Math.random() * 7)
+              Math.floor(Math.random() * 7)
               ]
             )}
           />

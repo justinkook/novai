@@ -1,6 +1,6 @@
 import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@/hooks/use-toast";
-import { ProgrammingLanguageOptions } from "@opencanvas/shared/types";
+import { useToast } from "@workspace/ui/hooks/use-toast";
+import type { ProgrammingLanguageOptions } from "@workspace/shared/types";
 import { ThreadPrimitive } from "@assistant-ui/react";
 import { Thread as ThreadType } from "@langchain/langgraph-sdk";
 import { ArrowDownIcon, PanelRightOpen, SquarePen } from "lucide-react";
@@ -8,7 +8,7 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { ReflectionsDialog } from "../reflections-dialog/ReflectionsDialog";
 import { useLangSmithLinkToolUI } from "../tool-hooks/LangSmithLinkToolUI";
 import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { TighterText } from "../ui/header";
+import { TighterText } from "@workspace/ui/components/header";
 import { Composer } from "./composer";
 import { AssistantMessage, UserMessage } from "./messages";
 import ModelSelector from "./model-selector";

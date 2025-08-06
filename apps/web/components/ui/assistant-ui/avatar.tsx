@@ -9,7 +9,9 @@ export type AvatarProps = {
 };
 
 export const Avatar: FC<AvatarProps> = ({ src, alt, fallback }) => {
-  if (src == null && fallback == null) return null;
+  if (src == null && fallback == null) {
+    return null;
+  }
 
   return (
     <AvatarRoot>

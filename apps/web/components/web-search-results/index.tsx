@@ -1,17 +1,17 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/constants";
+import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/lib/constants";
 import { useGraphContext } from "@/contexts/GraphContext";
-import { SearchResult } from "@opencanvas/shared/types";
-import { TighterText } from "../ui/header";
+import type { SearchResult } from "@workspace/shared/types";
+import { TighterText } from "@workspace/ui/components/header";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+} from "@workspace/ui/components/card";
+import { cn } from "@workspace/ui/lib/utils";
 import { TooltipIconButton } from "../assistant-ui/tooltip-icon-button";
 import { X } from "lucide-react";
 import { format } from "date-fns";
@@ -110,7 +110,7 @@ export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
     setOpen(true);
     setSearchResults(searchResults || []);
     setStatus(status);
-  }, [webSearchResultsId, messages]);
+  }, [webSearchResultsId, messages, open, setOpen, setWebSearchResultsId]);
 
   const handleClose = () => {
     setOpen(false);

@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
-import { createClient } from "@/lib/supabase/server";
-import { LoginWithEmailInput } from "./Login";
+import { createClient } from '@/lib/supabase/server';
+import { LoginWithEmailInput } from './Login';
 
 export async function login(input: LoginWithEmailInput) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const data = {
     email: input.email,
@@ -18,9 +18,9 @@ export async function login(input: LoginWithEmailInput) {
 
   if (error) {
     console.error(error);
-    redirect("/auth/login?error=true");
+    redirect('/auth/login?error=true');
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  revalidatePath('/', 'layout');
+  redirect('/');
 }

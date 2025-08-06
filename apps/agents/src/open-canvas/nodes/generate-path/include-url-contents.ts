@@ -1,8 +1,8 @@
-import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firecrawl";
-import { HumanMessage } from "@langchain/core/messages";
-import { initChatModel } from "langchain/chat_models/universal";
-import { traceable } from "langsmith/traceable";
-import z from "zod";
+import { FireCrawlLoader } from '@langchain/community/document_loaders/web/firecrawl';
+import { HumanMessage } from '@langchain/core/messages';
+import { initChatModel } from 'langchain/chat_models/universal';
+import { traceable } from 'langsmith/traceable';
+import z from 'zod';
 
 const PROMPT = `You're an advanced AI assistant.
 You have been tasked with analyzing the user's message and determining if the user wants the contents of the URL included in their message included in their prompt.
@@ -20,7 +20,7 @@ const schema = z
     shouldIncludeUrlContents: z
       .boolean()
       .describe(
-        "Whether or not to include the contents of the URL in the prompt."
+        'Whether or not to include the contents of the URL in the prompt.'
       ),
   })
   .describe(
@@ -32,20 +32,20 @@ async function fetchUrlContentsFunc(
 ): Promise<{ url: string; pageContent: string }> {
   const loader = new FireCrawlLoader({
     url,
-    mode: "scrape",
+    mode: 'scrape',
     params: {
-      formats: ["markdown"],
+      formats: ['markdown'],
     },
   });
 
   const docs = await loader.load();
   return {
     url,
-    pageContent: docs[0]?.pageContent || "",
+    pageContent: docs[0]?.pageContent || '',
   };
 }
 const fetchUrlContents = traceable(fetchUrlContentsFunc, {
-  name: "fetch_url_contents",
+  name: 'fetch_url_contents',
 });
 
 /**
@@ -63,28 +63,28 @@ async function includeURLContentsFunc(
     const prompt = message.content as string;
 
     const model = (
-      await initChatModel("gemini-2.0-flash", {
-        modelProvider: "google-genai",
+      await initChatModel('gemini-2.0-flash', {
+        modelProvider: 'google-genai',
         temperature: 0,
       })
     ).bindTools(
       [
         {
-          name: "determine_include_url_contents",
+          name: 'determine_include_url_contents',
           description: schema.description,
           schema,
         },
       ],
       {
-        tool_choice: "determine_include_url_contents",
+        tool_choice: 'determine_include_url_contents',
       }
     );
 
-    const formattedPrompt = PROMPT.replace("{message}", prompt);
+    const formattedPrompt = PROMPT.replace('{message}', prompt);
 
-    const result = await model.invoke([["user", formattedPrompt]]);
+    const result = await model.invoke([['user', formattedPrompt]]);
 
-    const args = result.tool_calls?.[0].args as
+    const args = result.tool_calls?.[0]?.args as
       | z.infer<typeof schema>
       | undefined;
     const shouldIncludeUrlContents = args?.shouldIncludeUrlContents;
@@ -110,11 +110,11 @@ async function includeURLContentsFunc(
       content: transformedPrompt,
     });
   } catch (e) {
-    console.error("Failed to handle included URLs", e);
+    console.error('Failed to handle included URLs', e);
     return undefined;
   }
 }
 
 export const includeURLContents = traceable(includeURLContentsFunc, {
-  name: "include_url_contents",
+  name: 'include_url_contents',
 });

@@ -3,21 +3,21 @@ import {
   getModelConfig,
   getModelFromConfig,
   isUsingO1MiniModel,
-} from "../../utils.js";
-import { BaseLanguageModelInput } from "@langchain/core/language_models/base";
-import { AIMessageChunk } from "@langchain/core/messages";
-import { RunnableBinding } from "@langchain/core/runnables";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { ConfigurableChatModelCallOptions } from "langchain/chat_models/universal";
+} from '../../utils.js';
+import { BaseLanguageModelInput } from '@langchain/core/language_models/base';
+import { AIMessageChunk } from '@langchain/core/messages';
+import { RunnableBinding } from '@langchain/core/runnables';
+import { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { ConfigurableChatModelCallOptions } from 'langchain/chat_models/universal';
 import {
   getArtifactContent,
   isArtifactMarkdownContent,
-} from "@workspace/shared/utils/artifacts";
-import { ArtifactMarkdownV3 } from "@workspace/shared/types";
+} from '@workspace/shared/utils/artifacts';
+import { ArtifactMarkdownV3 } from '@workspace/shared/types';
 import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../state.js";
+} from '../state.js';
 
 const PROMPT = `You are an expert AI writing assistant, tasked with rewriting some text a user has selected. The selected text is nested inside a larger 'block'. You should always respond with ONLY the updated text block in accordance with the user's request.
 You should always respond with the full markdown text block, as it will simply replace the existing block in the artifact.
@@ -51,13 +51,13 @@ export const updateHighlightedText = async (
     AIMessageChunk,
     ConfigurableChatModelCallOptions
   >;
-  if (modelProvider.includes("openai") || modelName.includes("3-5-sonnet")) {
+  if (modelProvider.includes('openai') || modelName.includes('3-5-sonnet')) {
     // Custom model is intelligent enough for updating artifacts
     model = (
       await getModelFromConfig(config, {
         temperature: 0,
       })
-    ).withConfig({ runName: "update_highlighted_markdown" });
+    ).withConfig({ runName: 'update_highlighted_markdown' });
   } else {
     // Custom model is not intelligent enough for updating artifacts
     model = (
@@ -65,48 +65,48 @@ export const updateHighlightedText = async (
         {
           ...config,
           configurable: {
-            customModelName: "gpt-4o",
+            customModelName: 'gpt-4o',
           },
         },
         {
           temperature: 0,
         }
       )
-    ).withConfig({ runName: "update_highlighted_markdown" });
+    ).withConfig({ runName: 'update_highlighted_markdown' });
   }
 
   const currentArtifactContent = state.artifact
     ? getArtifactContent(state.artifact)
     : undefined;
   if (!currentArtifactContent) {
-    throw new Error("No artifact found");
+    throw new Error('No artifact found');
   }
   if (!isArtifactMarkdownContent(currentArtifactContent)) {
-    throw new Error("Artifact is not markdown content");
+    throw new Error('Artifact is not markdown content');
   }
 
   if (!state.highlightedText) {
     throw new Error(
-      "Can not partially regenerate an artifact without a highlight"
+      'Can not partially regenerate an artifact without a highlight'
     );
   }
 
   const { markdownBlock, selectedText, fullMarkdown } = state.highlightedText;
   const formattedPrompt = PROMPT.replace(
-    "{highlightedText}",
+    '{highlightedText}',
     selectedText
-  ).replace("{textBlocks}", markdownBlock);
+  ).replace('{textBlocks}', markdownBlock);
 
   const recentUserMessage = state._messages[state._messages.length - 1];
-  if (recentUserMessage.getType() !== "human") {
-    throw new Error("Expected a human message");
+  if (recentUserMessage?.getType() !== 'human') {
+    throw new Error('Expected a human message');
   }
 
   const contextDocumentMessages = await createContextDocumentMessages(config);
   const isO1MiniModel = isUsingO1MiniModel(config);
   const response = await model.invoke([
     {
-      role: isO1MiniModel ? "user" : "system",
+      role: isO1MiniModel ? 'user' : 'system',
       content: formattedPrompt,
     },
     ...contextDocumentMessages,
@@ -116,14 +116,14 @@ export const updateHighlightedText = async (
 
   const newCurrIndex = state.artifact.contents.length + 1;
   const prevContent = state.artifact.contents.find(
-    (c) => c.index === state.artifact.currentIndex && c.type === "text"
+    (c) => c.index === state.artifact.currentIndex && c.type === 'text'
   ) as ArtifactMarkdownV3 | undefined;
   if (!prevContent) {
-    throw new Error("Previous content not found");
+    throw new Error('Previous content not found');
   }
 
   if (!fullMarkdown.includes(markdownBlock)) {
-    throw new Error("Selected text not found in current content");
+    throw new Error('Selected text not found in current content');
   }
   const newFullMarkdown = fullMarkdown.replace(markdownBlock, responseContent);
 

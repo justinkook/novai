@@ -1,21 +1,23 @@
-import { extractUrls } from "@workspace/shared/utils/urls";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { extractUrls } from '@workspace/shared/utils/urls';
+import { LangGraphRunnableConfig } from '@langchain/langgraph';
 import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../../state.js";
-import { BaseMessage, HumanMessage } from "@langchain/core/messages";
-import { dynamicDeterminePath } from "./dynamic-determine-path.js";
+} from '../../state.js';
+import { BaseMessage, HumanMessage } from '@langchain/core/messages';
+import { dynamicDeterminePath } from './dynamic-determine-path.js';
 import {
   convertContextDocumentToHumanMessage,
   fixMisFormattedContextDocMessage,
-} from "./documents.js";
-import { getStringFromContent } from ".././../../utils.js";
-import { includeURLContents } from "./include-url-contents.js";
+} from './documents.js';
+import { getStringFromContent } from '.././../../utils.js';
+import { includeURLContents } from './include-url-contents.js';
 
 function extractURLsFromLastMessage(messages: BaseMessage[]): string[] {
   const recentMessage = messages[messages.length - 1];
-  const recentMessageContent = getStringFromContent(recentMessage.content);
+  const recentMessageContent = getStringFromContent(
+    recentMessage?.content ?? []
+  );
   const messageUrls = extractUrls(recentMessageContent);
   return messageUrls;
 }
@@ -37,7 +39,7 @@ export async function generatePath(
     (m) =>
       Array.isArray(m.content) &&
       m.content.some(
-        (c) => c.type === "document" || c.type === "application/pdf"
+        (c) => c.type === 'document' || c.type === 'application/pdf'
       )
   );
 
@@ -55,7 +57,7 @@ export async function generatePath(
 
   if (state.highlightedCode) {
     return {
-      next: "updateArtifact",
+      next: 'updateArtifact',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -63,7 +65,7 @@ export async function generatePath(
   }
   if (state.highlightedText) {
     return {
-      next: "updateHighlightedText",
+      next: 'updateHighlightedText',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -77,7 +79,7 @@ export async function generatePath(
     state.readingLevel
   ) {
     return {
-      next: "rewriteArtifactTheme",
+      next: 'rewriteArtifactTheme',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -91,7 +93,7 @@ export async function generatePath(
     state.fixBugs
   ) {
     return {
-      next: "rewriteCodeArtifactTheme",
+      next: 'rewriteCodeArtifactTheme',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -100,7 +102,7 @@ export async function generatePath(
 
   if (state.customQuickActionId) {
     return {
-      next: "customAction",
+      next: 'customAction',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -109,7 +111,7 @@ export async function generatePath(
 
   if (state.webSearchEnabled) {
     return {
-      next: "webSearch",
+      next: 'webSearch',
       ...(newMessages.length
         ? { messages: newMessages, _messages: newMessages }
         : {}),
@@ -122,7 +124,7 @@ export async function generatePath(
   let updatedMessageWithContents: HumanMessage | undefined = undefined;
   if (messageUrls.length) {
     updatedMessageWithContents = await includeURLContents(
-      state._messages[state._messages.length - 1],
+      state._messages[state._messages.length - 1] as HumanMessage,
       messageUrls
     );
   }
@@ -148,7 +150,7 @@ export async function generatePath(
   });
   const route = routingResult?.route;
   if (!route) {
-    throw new Error("Route not found");
+    throw new Error('Route not found');
   }
 
   // Create the messages object including the new messages if any

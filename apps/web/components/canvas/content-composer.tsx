@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import {
   convertLangchainMessages,
   convertToOpenAIFormat,
@@ -8,7 +8,7 @@ import {
 import {
   ProgrammingLanguageOptions,
   ContextDocument,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 import {
   AppendMessage,
   AssistantRuntimeProvider,
@@ -19,7 +19,7 @@ import { BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { Thread as ThreadType } from "@langchain/langgraph-sdk";
 import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Toaster } from "../ui/toaster";
+import { Toaster } from "@workspace/ui/components/toaster";
 import { Thread } from "@/components/chat-interface";
 import { useGraphContext } from "@/contexts/GraphContext";
 import {
@@ -67,7 +67,9 @@ export function ContentComposerChatInterfaceComponent(
   async function onNew(message: AppendMessage): Promise<void> {
     // Explicitly check for false and not ! since this does not provide a default value
     // so we should assume undefined is true.
-    if (message.startRun === false) return;
+    if (message.startRun === false) {
+      return;
+    }
     if (!userData.user) {
       toast({
         title: "User not found",

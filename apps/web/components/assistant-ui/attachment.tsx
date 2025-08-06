@@ -14,16 +14,16 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@workspace/ui/components/tooltip";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+} from "@workspace/ui/components/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@workspace/ui/components/avatar";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -48,10 +48,16 @@ const useFileSrc = (file: File | undefined) => {
 const useAttachmentSrc = () => {
   const { file, src } = useAttachment(
     useShallow((a): { file?: File; src?: string } => {
-      if (a.type !== "image") return {};
-      if (a.file) return { file: a.file };
+      if (a.type !== "image") {
+        return {};
+      }
+      if (a.file) {
+        return { file: a.file };
+      }
       const src = a.content?.filter((c) => c.type === "image")[0]?.image;
-      if (!src) return {};
+      if (!src) {
+        return {};
+      }
       return { src };
     })
   );
@@ -87,7 +93,9 @@ const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
 const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
   const src = useAttachmentSrc();
 
-  if (!src) return children;
+  if (!src) {
+    return children;
+  }
 
   return (
     <Dialog>
@@ -131,9 +139,10 @@ const AttachmentUI: FC = () => {
         return "Document";
       case "file":
         return "File";
-      default:
+      default: {
         const _exhaustiveCheck: never = type;
         throw new Error(`Unknown attachment type: ${_exhaustiveCheck}`);
+      }
     }
   });
   return (

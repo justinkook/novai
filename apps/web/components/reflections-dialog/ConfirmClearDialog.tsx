@@ -5,9 +5,9 @@ import {
   DialogHeader,
   DialogDescription,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { TighterText } from "../ui/header";
+} from "@workspace/ui/components/dialog";
+import { Button } from "@workspace/ui/components/button";
+import { TighterText } from "@workspace/ui/components/header";
 
 export interface ReflectionsProps {
   handleDeleteReflections: () => Promise<boolean>;

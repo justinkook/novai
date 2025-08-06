@@ -1,4 +1,4 @@
-import { ArtifactCodeV3 } from "@opencanvas/shared/types";
+import { ArtifactCodeV3 } from "@workspace/shared/types";
 import React, { MutableRefObject, useEffect } from "react";
 import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -15,9 +15,9 @@ import { clojure } from "@nextjournal/lang-clojure";
 import { csharp } from "@replit/codemirror-lang-csharp";
 import styles from "./CodeRenderer.module.css";
 import { cleanContent } from "@/lib/normalize_string";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { CopyText } from "./components/CopyText";
-import { getArtifactContent } from "@opencanvas/shared/utils/artifacts";
+import { getArtifactContent } from "@workspace/shared/utils/artifacts";
 import { useGraphContext } from "@/contexts/GraphContext";
 
 export interface CodeRendererProps {
@@ -73,7 +73,7 @@ export function CodeRendererComponent(props: Readonly<CodeRendererProps>) {
     if (updateRenderedArtifactRequired) {
       setUpdateRenderedArtifactRequired(false);
     }
-  }, [updateRenderedArtifactRequired]);
+  }, [updateRenderedArtifactRequired, setUpdateRenderedArtifactRequired]);
 
   if (!artifact) {
     return null;

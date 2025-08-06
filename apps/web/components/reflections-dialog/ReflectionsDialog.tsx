@@ -6,16 +6,16 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
+} from "@workspace/ui/components/dialog";
+import { Button } from "@workspace/ui/components/button";
 import { BrainCog, Loader } from "lucide-react";
 import { ConfirmClearDialog } from "./ConfirmClearDialog";
 import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { TighterText } from "../ui/header";
+import { TighterText } from "@workspace/ui/components/header";
 import { useStore } from "@/hooks/useStore";
-import { useToast } from "@/hooks/use-toast";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { Badge } from "../ui/badge";
+import { useToast } from "@workspace/ui/hooks/use-toast";
+import type { Assistant } from "@langchain/langgraph-sdk";
+import { Badge } from "@workspace/ui/components/badge";
 import { getIcon } from "../assistant-select/utils";
 
 export interface NoReflectionsProps {
@@ -70,16 +70,19 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
   } = useStore();
 
   useEffect(() => {
-    if (!selectedAssistant || typeof window === "undefined") return;
+    if (!selectedAssistant || typeof window === "undefined") {
+      return;
+    }
     // Don't re-fetch reflections if they already exist & are for the same assistant
     if (
       (reflections?.content || reflections?.styleRules) &&
       reflections.assistantId === selectedAssistant.assistant_id
-    )
+    ) {
       return;
+    }
 
     getReflections(selectedAssistant.assistant_id);
-  }, [selectedAssistant]);
+  }, [selectedAssistant, getReflections, reflections?.content, reflections?.styleRules, reflections?.assistantId]);
 
   const handleDelete = async () => {
     if (!selectedAssistant) {
@@ -121,13 +124,13 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                 style={{
                   ...(iconData
                     ? {
-                        color: iconData.iconColor,
-                        backgroundColor: `${iconData.iconColor}20`, // 33 in hex is ~20% opacity
-                      }
+                      color: iconData.iconColor,
+                      backgroundColor: `${iconData.iconColor}20`, // 33 in hex is ~20% opacity
+                    }
                     : {
-                        color: "#000000",
-                        backgroundColor: "#00000020",
-                      }),
+                      color: "#000000",
+                      backgroundColor: "#00000020",
+                    }),
                 }}
                 className="flex items-center justify-center gap-2 px-2 py-1"
               >
@@ -170,6 +173,7 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">
                     {reflections.styleRules?.map((rule, index) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                       <li key={index} className="flex items-baseline">
                         <span className="mr-2">•</span>
                         <TighterText className="text-gray-600 font-light">
@@ -187,6 +191,7 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">
                     {reflections.content.map((rule, index) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                       <li key={index} className="flex items-baseline">
                         <span className="mr-2">•</span>
                         <TighterText className="text-gray-600 font-light">

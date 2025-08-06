@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import NextImage from "next/image";
 import Link from "next/link";
-import { buttonVariants } from "../../ui/button";
+import { buttonVariants } from "@workspace/ui/components/button";
 import { UserAuthForm } from "./user-auth-form-signup";
 import { signup } from "./actions";
 import { createSupabaseClient } from "@/lib/supabase/client";

@@ -1,6 +1,6 @@
 import React, { DragEvent } from "react";
 import { useComposer, useComposerRuntime } from "@assistant-ui/react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 
 interface DragAndDropWrapperProps {
   children: React.ReactNode;
@@ -11,22 +11,22 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
   const disabled = useComposer((c) => !c.isEditing);
   const composerRuntime = useComposerRuntime();
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragEnter = (e: DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = (e: DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: DragEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -83,7 +83,8 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
   };
 
   return (
-    <div
+    <button
+      type="button"
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -95,6 +96,6 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
       }}
     >
       {children}
-    </div>
+    </button>
   );
 }

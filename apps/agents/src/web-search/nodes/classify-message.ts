@@ -1,6 +1,6 @@
-import { ChatAnthropic } from "@langchain/anthropic";
-import { WebSearchState } from "../state.js";
-import z from "zod";
+import { WebSearchState } from '../state.js';
+import { getModelFromConfig } from '../../utils.js';
+import z from 'zod';
 
 const CLASSIFIER_PROMPT = `You're a helpful AI assistant tasked with classifying the user's latest message.
 The user has enabled web search for their conversation, however not all messages should be searched.
@@ -24,21 +24,30 @@ const classificationSchema = z
 export async function classifyMessage(
   state: WebSearchState
 ): Promise<Partial<WebSearchState>> {
-  const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-latest",
-    temperature: 0,
-  }).withStructuredOutput(classificationSchema, {
-    name: "classify_message",
+  const baseModel = await getModelFromConfig(
+    {},
+    {
+      temperature: 0,
+      isToolCalling: true,
+    }
+  );
+
+  const model = baseModel.withStructuredOutput(classificationSchema, {
+    name: 'classify_message',
   });
 
-  const latestMessageContent = state.messages[state.messages.length - 1]
-    .content as string;
+  const latestMessage = state.messages[state.messages.length - 1];
+  if (!latestMessage) {
+    throw new Error('No messages found');
+  }
+
+  const latestMessageContent = latestMessage.content as string;
   const formattedPrompt = CLASSIFIER_PROMPT.replace(
-    "{message}",
+    '{message}',
     latestMessageContent
   );
 
-  const response = await model.invoke([["user", formattedPrompt]]);
+  const response = await model.invoke([['user', formattedPrompt]]);
 
   return {
     shouldSearch: response.shouldSearch,

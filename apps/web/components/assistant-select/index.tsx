@@ -7,18 +7,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@workspace/ui/components/dropdown-menu";
 import { useState } from "react";
 import * as Icons from "lucide-react";
 import React from "react";
-import { TighterText } from "../ui/header";
-import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
+import { TighterText } from "@workspace/ui/components/header";
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { CreateEditAssistantDialog } from "./create-edit-assistant-dialog";
 import { getIcon } from "./utils";
 import { AssistantItem } from "./assistant-item";
 import { Assistant } from "@langchain/langgraph-sdk";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { useToast } from "@workspace/ui/hooks/use-toast";
+import { cn } from "@workspace/ui/lib/utils";
 import { useAssistantContext } from "@/contexts/AssistantContext";
 
 interface AssistantSelectProps {
@@ -85,7 +85,6 @@ function AssistantSelectComponent(props: AssistantSelectProps) {
             tooltip="Change assistant"
             variant="ghost"
             className={cn("size-7 mt-1", props.className)}
-            delayDuration={200}
             style={{ color: metadata?.iconData?.iconColor || "#4b5563" }}
             onClick={(e) => {
               e.preventDefault();

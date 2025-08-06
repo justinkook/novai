@@ -1,7 +1,7 @@
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
 import { Dispatch, MouseEventHandler, SetStateAction } from "react";
 import { Assistant } from "@langchain/langgraph-sdk";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { getIcon } from "./utils";
 import { EditDeleteDropdown } from "./edit-delete-dropdown";
 

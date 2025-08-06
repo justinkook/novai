@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
   CreateCustomAssistantArgs,
   EditCustomAssistantArgs,
@@ -19,17 +20,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { TighterText } from "../ui/header";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+} from "@workspace/ui/components/dialog";
+import { Button } from "@workspace/ui/components/button";
+import { TighterText } from "@workspace/ui/components/header";
+import { Label } from "@workspace/ui/components/label";
+import { Input } from "@workspace/ui/components/input";
 import { IconSelect } from "./icon-select";
-import React from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import { ColorPicker } from "./color-picker";
-import { Textarea } from "../ui/textarea";
-import { InlineContextTooltip } from "../ui/inline-context-tooltip";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { InlineContextTooltip } from "@workspace/ui/components/inline-context-tooltip";
 import { useStore } from "@/hooks/useStore";
 import { arrayToFileList, contextDocumentToFile } from "@/lib/attachments";
 import { ContextDocuments } from "./context-documents";
@@ -152,7 +152,7 @@ export function CreateEditAssistantDialog(
       setDocuments(undefined);
       setUrls([]);
     }
-  }, [props.assistant, props.isEditing]);
+  }, [props.assistant, props.isEditing, metadata?.description, metadata?.iconData?.iconName, metadata?.iconData?.iconColor, setProcessedContextDocuments, setLoadingDocuments, setUrls, setDocuments, getContextDocuments]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -247,7 +247,9 @@ export function CreateEditAssistantDialog(
 
   const handleRemoveFile = (index: number) => {
     setDocuments((prev) => {
-      if (!prev) return prev;
+      if (!prev) {
+        return prev;
+      }
       const files = Array.from(prev);
       const newFiles = files.filter((_, i) => i !== index);
       return arrayToFileList(newFiles);

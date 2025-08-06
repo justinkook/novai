@@ -3,13 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "lib": ["es2023", "DOM", "DOM.Iterable"],
+    "target": "ES2023"
   },
-  "include": [
-    "src/"
-  ],
-  "exclude": [
-    "node_modules/",
-    "dist"
-  ]
+  "include": ["src/"],
+  "exclude": ["node_modules/", "dist"]
 }

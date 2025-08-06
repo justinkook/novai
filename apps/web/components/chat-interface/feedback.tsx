@@ -1,8 +1,8 @@
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import { FeedbackResponse } from "@/hooks/useFeedback";
 import { ThumbsUpIcon, ThumbsDownIcon } from "lucide-react";
 import { Dispatch, FC, SetStateAction } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
 
 interface FeedbackButtonProps {

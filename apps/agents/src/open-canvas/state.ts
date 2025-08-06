@@ -1,4 +1,4 @@
-import { BaseMessage, BaseMessageLike } from "@langchain/core/messages";
+import { BaseMessage, BaseMessageLike } from '@langchain/core/messages';
 import {
   ArtifactLengthOptions,
   LanguageOptions,
@@ -8,13 +8,13 @@ import {
   ArtifactV3,
   TextHighlight,
   SearchResult,
-} from "@workspace/shared/types";
+} from '@workspace/shared/types';
 import {
   Annotation,
   MessagesAnnotation,
   messagesStateReducer,
-} from "@langchain/langgraph";
-import { OC_SUMMARIZED_MESSAGE_KEY } from "@workspace/shared/constants";
+} from '@langchain/langgraph';
+import { OC_SUMMARIZED_MESSAGE_KEY } from '@workspace/shared/constants';
 
 export type Messages =
   | Array<BaseMessage | BaseMessageLike>
@@ -22,12 +22,16 @@ export type Messages =
   | BaseMessageLike;
 
 function isSummaryMessage(msg: unknown): boolean {
-  if (typeof msg !== "object" || Array.isArray(msg) || !msg) return false;
+  if (typeof msg !== 'object' || Array.isArray(msg) || !msg) {
+    return false;
+  }
 
-  if (!("additional_kwargs" in msg) && !("kwargs" in msg)) return false;
+  if (!('additional_kwargs' in msg) && !('kwargs' in msg)) {
+    return false;
+  }
 
   if (
-    "additional_kwargs" in msg &&
+    'additional_kwargs' in msg &&
     (msg.additional_kwargs as Record<string, any>)?.[
       OC_SUMMARIZED_MESSAGE_KEY
     ] === true
@@ -36,7 +40,7 @@ function isSummaryMessage(msg: unknown): boolean {
   }
 
   if (
-    "kwargs" in msg &&
+    'kwargs' in msg &&
     (msg.kwargs as Record<string, any>)?.additional_kwargs?.[
       OC_SUMMARIZED_MESSAGE_KEY
     ] === true

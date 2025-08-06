@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ComposerAddAttachment } from "../assistant-ui/attachment";
 import { AssistantSelect } from "../assistant-select";
 import { TooltipIconButton } from "../assistant-ui/tooltip-icon-button";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { useGraphContext } from "@/contexts/GraphContext";
 import { useAssistantContext } from "@/contexts/AssistantContext";
 

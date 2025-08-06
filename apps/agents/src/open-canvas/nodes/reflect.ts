@@ -1,6 +1,6 @@
-import { Client } from "@langchain/langgraph-sdk";
-import { OpenCanvasGraphAnnotation } from "../state.js";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { Client } from '@langchain/langgraph-sdk';
+import { OpenCanvasGraphAnnotation } from '../state.js';
+import { LangGraphRunnableConfig } from '@langchain/langgraph';
 
 export const reflectNode = async (
   state: typeof OpenCanvasGraphAnnotation.State,
@@ -35,22 +35,22 @@ export const reflectNode = async (
       // this node is executed again.
       newThread.thread_id,
       // Pass the name of the graph to run.
-      "reflection",
+      'reflection',
       {
         input: reflectionInput,
         config: reflectionConfig,
         // This memory-formation run will be enqueued and run later
         // If a new run comes in before it is scheduled, it will be cancelled,
         // then when this node is executed again, a *new* run will be scheduled
-        multitaskStrategy: "enqueue",
+        multitaskStrategy: 'enqueue',
         // This lets us "debounce" repeated requests to the memory graph
         // if the user is actively engaging in a conversation. This saves us $$ and
         // can help reduce the occurrence of duplicate memories.
         afterSeconds: 5 * 60, // 5 minutes
       }
     );
-  } catch (e) {
-    console.error("Failed to start reflection");
+  } catch (_) {
+    console.error('Failed to start reflection');
   }
 
   return {};

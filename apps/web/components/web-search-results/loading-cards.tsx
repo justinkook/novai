@@ -4,13 +4,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "../ui/skeleton";
+} from "@workspace/ui/components/card";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 export function LoadingSearchResultCards() {
   return (
     <>
       {Array.from({ length: 5 }).map((_, i) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: This is a hardcoded loading array that never changes
         <Card className="w-full" key={`card-loading-web-search-${i}`}>
           <CardHeader>
             <CardTitle>

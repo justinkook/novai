@@ -5,16 +5,16 @@ import {
   getModelFromConfig,
   isUsingO1MiniModel,
   optionallyGetSystemPromptFromConfig,
-} from "../../../utils.js";
-import { ArtifactV3 } from "@workspace/shared/types";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+} from '../../../utils.js';
+import { ArtifactV3 } from '@workspace/shared/types';
+import { LangGraphRunnableConfig } from '@langchain/langgraph';
 import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../../state.js";
-import { ARTIFACT_TOOL_SCHEMA } from "./schemas.js";
-import { createArtifactContent, formatNewArtifactPrompt } from "./utils.js";
-import { z } from "zod";
+} from '../../state.js';
+import { ARTIFACT_TOOL_SCHEMA } from './schemas.js';
+import { createArtifactContent, formatNewArtifactPrompt } from './utils.js';
+import { z } from 'zod';
 
 /**
  * Generate a new artifact based on the user's query.
@@ -34,13 +34,13 @@ export const generateArtifact = async (
   const modelWithArtifactTool = smallModel.bindTools(
     [
       {
-        name: "generate_artifact",
+        name: 'generate_artifact',
         description: ARTIFACT_TOOL_SCHEMA.description,
         schema: ARTIFACT_TOOL_SCHEMA,
       },
     ],
     {
-      tool_choice: "generate_artifact",
+      tool_choice: 'generate_artifact',
     }
   );
 
@@ -59,17 +59,17 @@ export const generateArtifact = async (
   const isO1MiniModel = isUsingO1MiniModel(config);
   const response = await modelWithArtifactTool.invoke(
     [
-      { role: isO1MiniModel ? "user" : "system", content: fullSystemPrompt },
+      { role: isO1MiniModel ? 'user' : 'system', content: fullSystemPrompt },
       ...contextDocumentMessages,
       ...state._messages,
     ],
-    { runName: "generate_artifact" }
+    { runName: 'generate_artifact' }
   );
-  const args = response.tool_calls?.[0].args as
+  const args = response.tool_calls?.[0]?.args as
     | z.infer<typeof ARTIFACT_TOOL_SCHEMA>
     | undefined;
   if (!args) {
-    throw new Error("No args found in response");
+    throw new Error('No args found in response');
   }
 
   const newArtifactContent = createArtifactContent(args);

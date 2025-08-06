@@ -4,6 +4,8 @@ export const UsaFlag = () => (
     width="32"
     height="32"
     viewBox="0 0 32 32"
+    role="img"
+    aria-label="USA Flag"
   >
     <rect x="1" y="4" width="30" height="24" rx="4" ry="4" fill="#fff"></rect>
     <path
@@ -116,6 +118,8 @@ export const ChinaFlag = () => (
     width="32"
     height="32"
     viewBox="0 0 32 32"
+    role="img"
+    aria-label="China Flag"
   >
     <rect
       x="1"
@@ -164,6 +168,8 @@ export const IndiaFlag = () => (
     width="32"
     height="32"
     viewBox="0 0 32 32"
+    role="img"
+    aria-label="India Flag"
   >
     <path fill="#fff" d="M1 11H31V21H1z"></path>
     <path
@@ -197,6 +203,8 @@ export const FrenchFlag = () => (
     width="32"
     height="32"
     viewBox="0 0 32 32"
+    role="img"
+    aria-label="France Flag"
   >
     <path fill="#fff" d="M10 4H22V28H10z"></path>
     <path
@@ -226,6 +234,8 @@ export const SpanishFlag = () => (
     width="32"
     height="32"
     viewBox="0 0 32 32"
+    role="img"
+    aria-label="Spain Flag"
   >
     <path fill="#f1c142" d="M1 10H31V22H1z"></path>
     <path

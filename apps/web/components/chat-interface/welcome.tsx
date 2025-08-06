@@ -1,11 +1,11 @@
-import { ProgrammingLanguageOptions } from "@opencanvas/shared/types";
+import type { ProgrammingLanguageOptions } from "@workspace/shared/types";
 import { ThreadPrimitive, useThreadRuntime } from "@assistant-ui/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { FC, useMemo } from "react";
-import { TighterText } from "../ui/header";
+import { TighterText } from "@workspace/ui/components/header";
 import { NotebookPen } from "lucide-react";
-import { ProgrammingLanguagesDropdown } from "../ui/programming-lang-dropdown";
-import { Button } from "../ui/button";
+import { ProgrammingLanguagesDropdown } from "@/components/ui/programming-lang-dropdown";
+import { Button } from "@workspace/ui/components/button";
 
 const QUICK_START_PROMPTS_SEARCH = [
   "Write a market analysis of AI chip manufacturers in 2025",
@@ -77,6 +77,7 @@ const QuickStartPrompts = ({ searchEnabled }: QuickStartPromptsProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
         {selectedPrompts.map((prompt, index) => (
           <Button
+            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={`quick-start-prompt-${index}`}
             onClick={() => handleClick(prompt)}
             variant="outline"

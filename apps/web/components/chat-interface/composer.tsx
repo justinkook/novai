@@ -38,11 +38,11 @@ const SEARCH_PLACEHOLDERS = [
 const getRandomPlaceholder = (searchEnabled: boolean) => {
   return searchEnabled
     ? SEARCH_PLACEHOLDERS[
-        Math.floor(Math.random() * SEARCH_PLACEHOLDERS.length)
-      ]
+    Math.floor(Math.random() * SEARCH_PLACEHOLDERS.length)
+    ]
     : GENERIC_PLACEHOLDERS[
-        Math.floor(Math.random() * GENERIC_PLACEHOLDERS.length)
-      ];
+    Math.floor(Math.random() * GENERIC_PLACEHOLDERS.length)
+    ];
 };
 
 const CircleStopIcon = () => {
@@ -53,6 +53,8 @@ const CircleStopIcon = () => {
       fill="currentColor"
       width="16"
       height="16"
+      role="img"
+      aria-label="Stop"
     >
       <rect width="10" height="10" x="3" y="3" rx="2" />
     </svg>
@@ -69,7 +71,7 @@ export const Composer: FC<ComposerProps> = (props: ComposerProps) => {
   const [placeholder, setPlaceholder] = useState("");
 
   useEffect(() => {
-    setPlaceholder(getRandomPlaceholder(props.searchEnabled));
+    setPlaceholder(getRandomPlaceholder(props.searchEnabled) || "");
   }, [props.searchEnabled]);
 
   return (

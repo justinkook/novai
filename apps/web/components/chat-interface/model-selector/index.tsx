@@ -6,12 +6,12 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@workspace/ui/components/command";
 import {
   ALL_MODEL_NAMES,
   ALL_MODELS,
   LANGCHAIN_USER_ONLY_MODELS,
-} from "@opencanvas/shared/models";
+} from "@workspace/shared/models";
 import {
   Dispatch,
   SetStateAction,
@@ -21,11 +21,11 @@ import {
 } from "react";
 import { ModelConfigPanel } from "./model-config-pannel";
 import { IsNewBadge } from "./new-badge";
-import { cn } from "@/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import {
   CustomModelConfig,
   ModelConfigurationParams,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 import { CaretSortIcon, GearIcon } from "@radix-ui/react-icons";
 import {
   Popover,
@@ -99,6 +99,7 @@ function CommandModelItem({
         />
       ) : (
         <button
+          type="button"
           className="ml-auto flex-shrink-0 flex size-6 items-center justify-center focus:outline-none focus:ring-0"
           onClick={(e) => {
             e.stopPropagation();
@@ -124,7 +125,9 @@ export default function ModelSelector({
   const [openConfigModelId, setOpenConfigModelId] = useState<ALL_MODEL_NAMES>();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     setIsLangChainUser(user?.email?.endsWith("@langchain.dev") || false);
   }, [user]);
 
@@ -248,6 +251,9 @@ export default function ModelSelector({
               <CommandGroup heading="OpenAI" className="w-full">
                 {openaiModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -268,6 +274,9 @@ export default function ModelSelector({
               <CommandGroup heading="Azure OpenAI" className="w-full">
                 {azureModelGroup.map((model) => {
                   const config = modelConfigs[model.name.replace("azure/", "")];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -288,6 +297,9 @@ export default function ModelSelector({
               <CommandGroup heading="Anthropic" className="w-full">
                 {anthropicModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -308,6 +320,9 @@ export default function ModelSelector({
               <CommandGroup heading="Google GenAI" className="w-full">
                 {genAiModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -328,6 +343,9 @@ export default function ModelSelector({
               <CommandGroup heading="Groq" className="w-full">
                 {groqModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -348,6 +366,9 @@ export default function ModelSelector({
               <CommandGroup heading="Fireworks" className="w-full">
                 {fireworksModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}
@@ -368,6 +389,9 @@ export default function ModelSelector({
               <CommandGroup heading="Ollama" className="w-full">
                 {ollamaModelGroup.map((model) => {
                   const config = modelConfigs[model.name];
+                  if (!config) {
+                    return null;
+                  }
                   return (
                     <CommandModelItem
                       key={model.name}

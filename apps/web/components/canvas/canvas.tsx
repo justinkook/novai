@@ -6,9 +6,9 @@ import {
   ALL_MODEL_NAMES,
   DEFAULT_MODEL_CONFIG,
   DEFAULT_MODEL_NAME,
-} from "@opencanvas/shared/models";
+} from "@workspace/shared/models";
 import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@workspace/ui/hooks/use-toast";
 import { getLanguageTemplate } from "@/lib/get_language_template";
 import {
   ArtifactCodeV3,
@@ -16,7 +16,7 @@ import {
   ArtifactV3,
   CustomModelConfig,
   ProgrammingLanguageOptions,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 import React, { useEffect, useState } from "react";
 import { ContentComposerChatInterface } from "./content-composer";
 import NoSSRWrapper from "../NoSSRWrapper";
@@ -25,8 +25,8 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { CHAT_COLLAPSED_QUERY_PARAM } from "@/constants";
+} from "@workspace/ui/components/resizable";
+import { CHAT_COLLAPSED_QUERY_PARAM } from "@/lib/constants";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export function CanvasComponent() {
@@ -41,18 +41,19 @@ export function CanvasComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const chatCollapsedSearchParam = searchParams.get(CHAT_COLLAPSED_QUERY_PARAM);
+
   useEffect(() => {
     try {
       if (chatCollapsedSearchParam) {
         setChatCollapsed(JSON.parse(chatCollapsedSearchParam));
       }
-    } catch (e) {
+    } catch {
       setChatCollapsed(false);
       const queryParams = new URLSearchParams(searchParams.toString());
       queryParams.delete(CHAT_COLLAPSED_QUERY_PARAM);
       router.replace(`?${queryParams.toString()}`, { scroll: false });
     }
-  }, [chatCollapsedSearchParam]);
+  }, [chatCollapsedSearchParam, router, searchParams]);
 
   const handleQuickStart = (
     type: "text" | "code",

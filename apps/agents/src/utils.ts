@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { isArtifactCodeContent } from "@workspace/shared/utils/artifacts";
+import { v4 as uuidv4 } from 'uuid';
+import { isArtifactCodeContent } from '@workspace/shared/utils/artifacts';
 import {
   CustomModelConfig,
   ArtifactCodeV3,
@@ -7,26 +7,26 @@ import {
   Reflections,
   ContextDocument,
   SearchResult,
-} from "@workspace/shared/types";
-import { BaseStore, LangGraphRunnableConfig } from "@langchain/langgraph";
-import { initChatModel } from "langchain/chat_models/universal";
-import pdfParse from "pdf-parse";
+} from '@workspace/shared/types';
+import { BaseStore, LangGraphRunnableConfig } from '@langchain/langgraph';
+import { initChatModel } from 'langchain/chat_models/universal';
+import pdfParse from 'pdf-parse';
 import {
   AIMessage,
   BaseMessage,
   MessageContent,
   MessageContentComplex,
   MessageFieldWithRole,
-} from "@langchain/core/messages";
+} from '@langchain/core/messages';
 import {
   CONTEXT_DOCUMENTS_NAMESPACE,
   OC_WEB_SEARCH_RESULTS_MESSAGE_KEY,
-} from "@workspace/shared/constants";
+} from '@workspace/shared/constants';
 import {
   TEMPERATURE_EXCLUDED_MODELS,
   LANGCHAIN_USER_ONLY_MODELS,
-} from "@workspace/shared/models";
-import { createClient, Session, User } from "@supabase/supabase-js";
+} from '@workspace/shared/models';
+import { createClient, Session, User } from '@supabase/supabase-js';
 
 export const formatReflections = (
   reflections: Reflections,
@@ -45,37 +45,37 @@ export const formatReflections = (
 ): string => {
   if (extra?.onlyStyle && extra?.onlyContent) {
     throw new Error(
-      "Cannot specify both `onlyStyle` and `onlyContent` as true."
+      'Cannot specify both `onlyStyle` and `onlyContent` as true.'
     );
   }
 
   let styleRulesArr = reflections.styleRules;
-  let styleRulesStr = "No style guidelines found.";
+  let styleRulesStr = 'No style guidelines found.';
   if (!Array.isArray(styleRulesArr)) {
     try {
       styleRulesArr = JSON.parse(styleRulesArr);
-      styleRulesStr = styleRulesArr.join("\n- ");
+      styleRulesStr = styleRulesArr.join('\n- ');
     } catch (_) {
       console.error(
-        "FAILED TO PARSE STYLE RULES. \n\ntypeof:",
+        'FAILED TO PARSE STYLE RULES. \n\ntypeof:',
         typeof styleRulesArr,
-        "\n\nstyleRules:",
+        '\n\nstyleRules:',
         styleRulesArr
       );
     }
   }
 
   let contentRulesArr = reflections.content;
-  let contentRulesStr = "No memories/facts found.";
+  let contentRulesStr = 'No memories/facts found.';
   if (!Array.isArray(contentRulesArr)) {
     try {
       contentRulesArr = JSON.parse(contentRulesArr);
-      contentRulesStr = contentRulesArr.join("\n- ");
+      contentRulesStr = contentRulesArr.join('\n- ');
     } catch (_) {
       console.error(
-        "FAILED TO PARSE CONTENT RULES. \n\ntypeof:",
+        'FAILED TO PARSE CONTENT RULES. \n\ntypeof:',
         typeof contentRulesArr,
-        "\ncontentRules:",
+        '\ncontentRules:',
         contentRulesArr
       );
     }
@@ -97,14 +97,14 @@ export const formatReflections = (
     return contentString;
   }
 
-  return styleString + "\n\n" + contentString;
+  return styleString + '\n\n' + contentString;
 };
 
 export const ensureStoreInConfig = (
   config: LangGraphRunnableConfig
 ): BaseStore => {
   if (!config.store) {
-    throw new Error("`store` not found in config");
+    throw new Error('`store` not found in config');
   }
   return config.store;
 };
@@ -113,19 +113,19 @@ export async function getFormattedReflections(
   config: LangGraphRunnableConfig
 ): Promise<string> {
   if (!config.store) {
-    return "No reflections found.";
+    return 'No reflections found.';
   }
   const store = ensureStoreInConfig(config);
   const assistantId = config.configurable?.assistant_id;
   if (!assistantId) {
-    throw new Error("`assistant_id` not found in configurable");
+    throw new Error('`assistant_id` not found in configurable');
   }
-  const memoryNamespace = ["memories", assistantId];
-  const memoryKey = "reflection";
+  const memoryNamespace = ['memories', assistantId];
+  const memoryKey = 'reflection';
   const memories = await store.get(memoryNamespace, memoryKey);
   const memoriesAsString = memories?.value
     ? formatReflections(memories.value as Reflections)
-    : "No reflections found.";
+    : 'No reflections found.';
 
   return memoriesAsString;
 }
@@ -154,7 +154,7 @@ export const formatArtifactContentWithTemplate = (
   shortenContent?: boolean
 ): string => {
   return template.replace(
-    "{artifact}",
+    '{artifact}',
     formatArtifactContent(content, shortenContent)
   );
 };
@@ -179,27 +179,29 @@ export const getModelConfig = (
   baseUrl?: string;
 } => {
   const customModelName = config.configurable?.customModelName as string;
-  if (!customModelName) throw new Error("Model name is missing in config.");
+  if (!customModelName) {
+    throw new Error('Model name is missing in config.');
+  }
 
   const modelConfig = config.configurable?.modelConfig as CustomModelConfig;
 
-  if (customModelName.startsWith("azure/")) {
-    let actualModelName = customModelName.replace("azure/", "");
-    if (extra?.isToolCalling && actualModelName.includes("o1")) {
+  if (customModelName.startsWith('azure/')) {
+    let actualModelName = customModelName.replace('azure/', '');
+    if (extra?.isToolCalling && actualModelName.includes('o1')) {
       // Fallback to 4o model for tool calling since o1 does not support tools.
-      actualModelName = "gpt-4o";
+      actualModelName = 'gpt-4o';
     }
     return {
       modelName: actualModelName,
-      modelProvider: "azure_openai",
+      modelProvider: 'azure_openai',
       azureConfig: {
-        azureOpenAIApiKey: process.env._AZURE_OPENAI_API_KEY || "",
+        azureOpenAIApiKey: process.env._AZURE_OPENAI_API_KEY || '',
         azureOpenAIApiInstanceName:
-          process.env._AZURE_OPENAI_API_INSTANCE_NAME || "",
+          process.env._AZURE_OPENAI_API_INSTANCE_NAME || '',
         azureOpenAIApiDeploymentName:
-          process.env._AZURE_OPENAI_API_DEPLOYMENT_NAME || "",
+          process.env._AZURE_OPENAI_API_DEPLOYMENT_NAME || '',
         azureOpenAIApiVersion:
-          process.env._AZURE_OPENAI_API_VERSION || "2024-08-01-preview",
+          process.env._AZURE_OPENAI_API_VERSION || '2024-08-01-preview',
         azureOpenAIBasePath: process.env._AZURE_OPENAI_API_BASE_PATH,
       },
     };
@@ -211,94 +213,94 @@ export const getModelConfig = (
   };
 
   if (
-    customModelName.includes("gpt-") ||
-    customModelName.includes("o1") ||
-    customModelName.includes("o3")
+    customModelName.includes('gpt-') ||
+    customModelName.includes('o1') ||
+    customModelName.includes('o3')
   ) {
     let actualModelName = providerConfig.modelName;
-    if (extra?.isToolCalling && actualModelName.includes("o1")) {
+    if (extra?.isToolCalling && actualModelName.includes('o1')) {
       // Fallback to 4o model for tool calling since o1 does not support tools.
-      actualModelName = "gpt-4o";
+      actualModelName = 'gpt-4o';
     }
     return {
       ...providerConfig,
       modelName: actualModelName,
-      modelProvider: "openai",
+      modelProvider: 'openai',
       apiKey: process.env.OPENAI_API_KEY,
     };
   }
 
-  if (customModelName.includes("claude-")) {
+  if (customModelName.includes('claude-')) {
     return {
       ...providerConfig,
-      modelProvider: "anthropic",
+      modelProvider: 'anthropic',
       apiKey: process.env.ANTHROPIC_API_KEY,
     };
   }
 
-  if (customModelName.includes("fireworks/")) {
+  if (customModelName.includes('fireworks/')) {
     let actualModelName = providerConfig.modelName;
     if (
       extra?.isToolCalling &&
-      actualModelName !== "accounts/fireworks/models/llama-v3p3-70b-instruct"
+      actualModelName !== 'accounts/fireworks/models/llama-v3p3-70b-instruct'
     ) {
-      actualModelName = "accounts/fireworks/models/llama-v3p3-70b-instruct";
+      actualModelName = 'accounts/fireworks/models/llama-v3p3-70b-instruct';
     }
     return {
       ...providerConfig,
       modelName: actualModelName,
-      modelProvider: "fireworks",
+      modelProvider: 'fireworks',
       apiKey: process.env.FIREWORKS_API_KEY,
     };
   }
 
-  if (customModelName.startsWith("groq/")) {
-    const actualModelName = customModelName.replace("groq/", "");
+  if (customModelName.startsWith('groq/')) {
+    const actualModelName = customModelName.replace('groq/', '');
     return {
       modelName: actualModelName,
-      modelProvider: "groq",
+      modelProvider: 'groq',
       apiKey: process.env.GROQ_API_KEY,
     };
   }
 
-  if (customModelName.includes("gemini-")) {
+  if (customModelName.includes('gemini-')) {
     let actualModelName = providerConfig.modelName;
-    if (extra?.isToolCalling && actualModelName.includes("thinking")) {
+    if (extra?.isToolCalling && actualModelName.includes('thinking')) {
       // Gemini thinking does not support tools.
-      actualModelName = "gemini-2.0-flash-exp";
+      actualModelName = 'gemini-2.0-flash-exp';
     }
     return {
       ...providerConfig,
       modelName: actualModelName,
-      modelProvider: "google-genai",
+      modelProvider: 'google-genai',
       apiKey: process.env.GOOGLE_API_KEY,
     };
   }
 
-  if (customModelName.includes("gemini-")) {
+  if (customModelName.includes('gemini-')) {
     let actualModelName = providerConfig.modelName;
-    if (extra?.isToolCalling && actualModelName.includes("thinking")) {
+    if (extra?.isToolCalling && actualModelName.includes('thinking')) {
       // Gemini thinking does not support tools.
-      actualModelName = "gemini-2.0-flash-exp";
+      actualModelName = 'gemini-2.0-flash-exp';
     }
     return {
       ...providerConfig,
       modelName: actualModelName,
-      modelProvider: "google-genai",
+      modelProvider: 'google-genai',
       apiKey: process.env.GOOGLE_API_KEY,
     };
   }
 
-  if (customModelName.startsWith("ollama-")) {
+  if (customModelName.startsWith('ollama-')) {
     return {
-      modelName: customModelName.replace("ollama-", ""),
-      modelProvider: "ollama",
+      modelName: customModelName.replace('ollama-', ''),
+      modelProvider: 'ollama',
       baseUrl:
-        process.env.OLLAMA_API_URL || "http://host.docker.internal:11434",
+        process.env.OLLAMA_API_URL || 'http://host.docker.internal:11434',
     };
   }
 
-  throw new Error("Unknown model provider");
+  throw new Error('Unknown model provider');
 };
 
 export function optionallyGetSystemPromptFromConfig(
@@ -335,7 +337,7 @@ async function getUserFromConfig(
 
 export function isUsingO1MiniModel(config: LangGraphRunnableConfig) {
   const { modelName } = getModelConfig(config);
-  return modelName.includes("o1-mini");
+  return modelName.includes('o1-mini');
 }
 
 export async function getModelFromConfig(
@@ -369,12 +371,12 @@ export async function getModelFromConfig(
     const user = await getUserFromConfig(config);
     if (!user) {
       throw new Error(
-        "Unauthorized. Can not use LangChain only models without a user."
+        'Unauthorized. Can not use LangChain only models without a user.'
       );
     }
-    if (!user.email?.endsWith("@langchain.dev")) {
+    if (!user.email?.endsWith('@langchain.dev')) {
       throw new Error(
-        "Unauthorized. Can not use LangChain only models without a user with a @langchain.dev email."
+        'Unauthorized. Can not use LangChain only models without a user with a @langchain.dev email.'
       );
     }
   }
@@ -409,7 +411,7 @@ export async function getModelFromConfig(
 }
 
 const cleanBase64 = (base64String: string): string => {
-  return base64String.replace(/^data:.*?;base64,/, "");
+  return base64String.replace(/^data:.*?;base64,/, '');
 };
 
 export async function convertPDFToText(base64PDF: string) {
@@ -418,7 +420,7 @@ export async function convertPDFToText(base64PDF: string) {
     const cleanedBase64 = cleanBase64(base64PDF);
 
     // Convert cleaned base64 to buffer
-    const pdfBuffer = Buffer.from(cleanedBase64, "base64");
+    const pdfBuffer = Buffer.from(cleanedBase64, 'base64');
 
     // Parse PDF
     const data = await pdfParse(pdfBuffer);
@@ -426,7 +428,7 @@ export async function convertPDFToText(base64PDF: string) {
     // Get text content
     return data.text;
   } catch (error) {
-    console.error("Error converting PDF to text:", error);
+    console.error('Error converting PDF to text:', error);
     throw error;
   }
 }
@@ -436,28 +438,28 @@ export async function createContextDocumentMessagesAnthropic(
   options?: { nativeSupport: boolean }
 ) {
   const messagesPromises = documents.map(async (doc) => {
-    if (doc.type === "application/pdf" && options?.nativeSupport) {
+    if (doc.type === 'application/pdf' && options?.nativeSupport) {
       return {
-        type: "document",
+        type: 'document',
         source: {
-          type: "base64",
+          type: 'base64',
           media_type: doc.type,
           data: cleanBase64(doc.data),
         },
       };
     }
 
-    let text = "";
-    if (doc.type === "application/pdf" && !options?.nativeSupport) {
+    let text = '';
+    if (doc.type === 'application/pdf' && !options?.nativeSupport) {
       text = await convertPDFToText(doc.data);
-    } else if (doc.type.startsWith("text/")) {
+    } else if (doc.type.startsWith('text/')) {
       text = atob(cleanBase64(doc.data));
-    } else if (doc.type === "text") {
+    } else if (doc.type === 'text') {
       text = doc.data;
     }
 
     return {
-      type: "text",
+      type: 'text',
       text,
     };
   });
@@ -469,23 +471,23 @@ export function createContextDocumentMessagesGemini(
   documents: ContextDocument[]
 ) {
   return documents.map((doc) => {
-    if (doc.type === "application/pdf") {
+    if (doc.type === 'application/pdf') {
       return {
         type: doc.type,
         data: cleanBase64(doc.data),
       };
-    } else if (doc.type.startsWith("text/")) {
+    } else if (doc.type.startsWith('text/')) {
       return {
-        type: "text",
+        type: 'text',
         text: atob(cleanBase64(doc.data)),
       };
-    } else if (doc.type === "text") {
+    } else if (doc.type === 'text') {
       return {
-        type: "text",
+        type: 'text',
         text: doc.data,
       };
     }
-    throw new Error("Unsupported document type: " + doc.type);
+    throw new Error('Unsupported document type: ' + doc.type);
   });
 }
 
@@ -493,18 +495,18 @@ export async function createContextDocumentMessagesOpenAI(
   documents: ContextDocument[]
 ) {
   const messagesPromises = documents.map(async (doc) => {
-    let text = "";
+    let text = '';
 
-    if (doc.type === "application/pdf") {
+    if (doc.type === 'application/pdf') {
       text = await convertPDFToText(doc.data);
-    } else if (doc.type.startsWith("text/")) {
+    } else if (doc.type.startsWith('text/')) {
       text = atob(cleanBase64(doc.data));
-    } else if (doc.type === "text") {
+    } else if (doc.type === 'text') {
       text = doc.data;
     }
 
     return {
-      type: "text",
+      type: 'text',
       text,
     };
   });
@@ -542,35 +544,37 @@ export async function createContextDocumentMessages(
   }
 
   let contextDocumentMessages: Record<string, any>[] = [];
-  if (modelProvider === "openai") {
+  if (modelProvider === 'openai') {
     contextDocumentMessages =
       await createContextDocumentMessagesOpenAI(documents);
-  } else if (modelProvider === "anthropic") {
-    const nativeSupport = modelName.includes("3-5-sonnet");
+  } else if (modelProvider === 'anthropic') {
+    const nativeSupport = modelName.includes('3-5-sonnet');
     contextDocumentMessages = await createContextDocumentMessagesAnthropic(
       documents,
       {
         nativeSupport,
       }
     );
-  } else if (modelProvider === "google-genai") {
+  } else if (modelProvider === 'google-genai') {
     contextDocumentMessages = createContextDocumentMessagesGemini(documents);
   }
 
-  if (!contextDocumentMessages.length) return [];
+  if (!contextDocumentMessages.length) {
+    return [];
+  }
 
   let contextMessages: Array<{
-    role: "user";
+    role: 'user';
     content: MessageContentComplex[];
   }> = [];
   if (contextDocumentMessages?.length) {
     contextMessages = [
       {
-        role: "user",
+        role: 'user',
         content: [
           {
-            type: "text",
-            text: "Use the file(s) and/or text below as context when generating your response.",
+            type: 'text',
+            text: 'Use the file(s) and/or text below as context when generating your response.',
           },
           ...contextDocumentMessages,
         ],
@@ -585,20 +589,20 @@ export function formatMessages(messages: BaseMessage[]): string {
   return messages
     .map((msg, idx) => {
       const msgType =
-        "_getType" in msg
+        '_getType' in msg
           ? msg._getType()
-          : "type" in msg
+          : 'type' in msg
             ? (msg as Record<string, any>)?.type
-            : "unknown";
+            : 'unknown';
       const messageContent =
-        typeof msg.content === "string"
+        typeof msg.content === 'string'
           ? msg.content
           : msg.content
-              .flatMap((c) => ("text" in c ? (c.text as string) : []))
-              .join("\n");
+              .flatMap((c) => ('text' in c ? (c.text as string) : []))
+              .join('\n');
       return `<${msgType} index="${idx}">\n${messageContent}\n</${msgType}>`;
     })
-    .join("\n");
+    .join('\n');
 }
 
 export function createAIMessageFromWebResults(
@@ -609,14 +613,14 @@ export function createAIMessageFromWebResults(
       (r, index) =>
         `<search-result
       index="${index}"
-      publishedDate="${r.metadata?.publishedDate || "Unknown"}"
-      author="${r.metadata?.author || "Unknown"}"
+      publishedDate="${r.metadata?.publishedDate || 'Unknown'}"
+      author="${r.metadata?.author || 'Unknown'}"
     >
-      [${r.metadata?.title || "Unknown title"}](${r.metadata?.url || "Unknown URL"})
+      [${r.metadata?.title || 'Unknown title'}](${r.metadata?.url || 'Unknown URL'})
       ${r.pageContent}
     </search-result>`
     )
-    .join("\n\n");
+    .join('\n\n');
 
   const content = `Here is some additional context I found from searching the web. This may be useful:\n\n${webResultsStr}`;
 
@@ -626,16 +630,16 @@ export function createAIMessageFromWebResults(
     additional_kwargs: {
       [OC_WEB_SEARCH_RESULTS_MESSAGE_KEY]: true,
       webSearchResults: webResults,
-      webSearchStatus: "done",
+      webSearchStatus: 'done',
     },
   });
 }
 
 export function getStringFromContent(content: MessageContent): string {
-  if (typeof content === "string") {
+  if (typeof content === 'string') {
     return content;
   }
   return content
-    .flatMap((c) => ("text" in c ? (c.text as string) : []))
-    .join("\n");
+    .flatMap((c) => ('text' in c ? (c.text as string) : []))
+    .join('\n');
 }
