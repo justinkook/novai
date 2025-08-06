@@ -209,13 +209,14 @@ export function ThreadHistoryComponent(props: ThreadHistoryProps) {
   const { user } = useUserContext();
   const [open, setOpen] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a side effect that should only run once
   useEffect(() => {
     if (typeof window === 'undefined' || userThreads.length || !user) {
       return;
     }
 
     getUserThreads();
-  }, [user, getUserThreads, userThreads.length]);
+  }, [user]);
 
   const handleDeleteThread = async (id: string) => {
     if (!user) {

@@ -6,7 +6,7 @@ import type {
   Reflections,
 } from '@workspace/shared/types';
 import { useToast } from '@workspace/ui/hooks/use-toast';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function useStore() {
   const { toast } = useToast();
@@ -16,7 +16,7 @@ export function useStore() {
     Reflections & { assistantId: string; updatedAt: Date }
   >();
 
-  const getReflections = async (assistantId: string): Promise<void> => {
+  const getReflections = useCallback(async (assistantId: string): Promise<void> => {
     setIsLoadingReflections(true);
     const res = await fetch('/api/store/get', {
       method: 'POST',
@@ -62,7 +62,7 @@ export function useStore() {
       assistantId,
     });
     setIsLoadingReflections(false);
-  };
+  }, []);
 
   const deleteReflections = async (assistantId: string): Promise<boolean> => {
     const res = await fetch('/api/store/delete', {

@@ -148,6 +148,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
     WEB_SEARCH_RESULTS_QUERY_PARAM
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a side effect that should only run once
   useEffect(() => {
     if (typeof window === 'undefined' || !userData.user) {
       return;
@@ -161,12 +162,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
     ) {
       assistantsData.getOrCreateAssistant(userData.user.id);
     }
-  }, [
-    userData.user,
-    assistantsData.selectedAssistant,
-    assistantsData.isLoadingAllAssistants,
-    assistantsData.getOrCreateAssistant,
-  ]);
+  }, [userData.user]);
 
   // Very hacky way of ensuring updateState is not called when a thread is switched
   useEffect(() => {
