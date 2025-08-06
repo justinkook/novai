@@ -7,23 +7,18 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "check": {
       "dependsOn": ["^check"]
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+    "check:fix": {
+      "cache": false
     },
     "type-check": {
       "dependsOn": ["^type-check"]
-    },
-    "format": {
-      "cache": false
-    },
-    "format:check": {
-      "cache": false
-    },
-    "check:fix": {
-      "cache": false
     },
     "lint": {
       "dependsOn": ["^lint"],
@@ -33,12 +28,14 @@
       "dependsOn": ["^lint:fix"],
       "cache": false
     },
-    "organize-imports": {
+    "format": {
       "cache": false
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "format:check": {
+      "cache": false
+    },
+    "organize-imports": {
+      "cache": false
     }
   }
 }
