@@ -50,10 +50,10 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
     setSelectedBlocks,
   } = graphData;
   const editorRef = useRef<EditorView | null>(null);
-  const artifactContentRef = useRef<HTMLButtonElement>(null);
+  const artifactContentRef = useRef<HTMLDivElement>(null);
   const highlightLayerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const selectionBoxRef = useRef<HTMLButtonElement>(null);
+  const selectionBoxRef = useRef<HTMLDivElement>(null);
   const [selectionBox, setSelectionBox] = useState<SelectionBox>();
   const [selectionIndexes, setSelectionIndexes] = useState<{
     start: number;
@@ -336,8 +336,8 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
             currentArtifactContent.type === 'code' ? 'min-w-full' : 'min-w-full'
           )}
         >
-          <button
-            type="button"
+          <div
+            role="application"
             className="h-full"
             ref={artifactContentRef}
             onMouseEnter={() => setIsHoveringOverArtifact(true)}
@@ -356,7 +356,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
                 isHovering={isHoveringOverArtifact}
               />
             ) : null}
-          </button>
+          </div>
           <div
             ref={highlightLayerRef}
             className="absolute top-0 left-0 w-full h-full pointer-events-none"

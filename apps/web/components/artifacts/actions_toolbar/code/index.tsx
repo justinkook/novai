@@ -60,7 +60,7 @@ export function CodeToolBar(props: CodeToolbarProps) {
   const { streamMessage } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeOption, setActiveOption] = useState<string | null>(null);
-  const toolbarRef = useRef<HTMLButtonElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,14 +122,17 @@ export function CodeToolBar(props: CodeToolbarProps) {
   };
 
   return (
-    <button
-      type="button"
+    <div
+      role="application"
       ref={toolbarRef}
       className={cn(
         'fixed bottom-4 right-4 transition-all duration-300 ease-in-out text-black flex flex-col items-center justify-center bg-white',
         isExpanded ? 'w-26 min-h-fit rounded-3xl' : 'w-12 h-12 rounded-full'
       )}
       onClick={toggleExpand}
+      onKeyDown={(e) => {
+        e.preventDefault();
+      }}
     >
       {isExpanded ? (
         <div className="flex flex-col gap-3 items-center w-full border-[1px] border-gray-200 rounded-3xl py-4 px-3">
@@ -179,6 +182,6 @@ export function CodeToolBar(props: CodeToolbarProps) {
           />
         </TooltipIconButton>
       )}
-    </button>
+    </div>
   );
 }

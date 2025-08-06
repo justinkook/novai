@@ -12,22 +12,22 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
   const disabled = useComposer((c) => !c.isEditing);
   const composerRuntime = useComposerRuntime();
 
-  const handleDragOver = (e: DragEvent<HTMLButtonElement>) => {
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDragEnter = (e: DragEvent<HTMLButtonElement>) => {
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDragLeave = (e: DragEvent<HTMLButtonElement>) => {
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = async (e: DragEvent<HTMLButtonElement>) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -84,8 +84,8 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
   };
 
   return (
-    <button
-      type="button"
+    <div
+      role="application"
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -97,6 +97,6 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
       }}
     >
       {children}
-    </button>
+    </div>
   );
 }

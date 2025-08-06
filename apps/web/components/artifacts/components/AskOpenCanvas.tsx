@@ -28,7 +28,7 @@ interface AskOpenCanvasProps {
   setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
+export const AskOpenCanvas = forwardRef<HTMLDivElement, AskOpenCanvasProps>(
   (props, ref) => {
     const { toast } = useToast();
 
@@ -82,8 +82,8 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
     };
 
     return (
-      <button
-        type="button"
+      <div
+        role="application"
         ref={ref}
         className={cn(
           'absolute bg-white border border-gray-200 shadow-md p-2 flex gap-2',
@@ -132,7 +132,7 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
             Ask Open Canvas
           </Button>
         )}
-      </button>
+      </div>
     );
   }
 );
