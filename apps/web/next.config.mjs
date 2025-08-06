@@ -4,6 +4,13 @@ import {withSentryConfig} from '@sentry/nextjs';
 const nextConfig = {
   transpilePackages: ['@workspace/ui'],
 
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.output.globalObject = 'self';
+    }
+    return config;
+  },
+
   async rewrites() {
     return [
       {
