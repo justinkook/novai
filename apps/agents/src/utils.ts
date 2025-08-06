@@ -12,6 +12,7 @@ import {
   OC_WEB_SEARCH_RESULTS_MESSAGE_KEY,
 } from '@workspace/shared/constants';
 import {
+  DEFAULT_MODEL_NAME,
   LANGCHAIN_USER_ONLY_MODELS,
   TEMPERATURE_EXCLUDED_MODELS,
 } from '@workspace/shared/models';
@@ -178,9 +179,12 @@ export const getModelConfig = (
   apiKey?: string;
   baseUrl?: string;
 } => {
-  const customModelName = config.configurable?.customModelName as string;
+  let customModelName = config.configurable?.customModelName as string;
+
+  // If no model name is provided (e.g., in development mode), use a default
   if (!customModelName) {
-    throw new Error('Model name is missing in config.');
+    // Use a default model for development - this should match the web app's default
+    customModelName = DEFAULT_MODEL_NAME;
   }
 
   const modelConfig = config.configurable?.modelConfig as CustomModelConfig;
