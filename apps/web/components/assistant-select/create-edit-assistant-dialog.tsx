@@ -102,6 +102,7 @@ export function CreateEditAssistantDialog(
 
   const metadata = props.assistant?.metadata as Record<string, any> | undefined;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: stable references from hooks
   useEffect(() => {
     if (props.assistant && props.isEditing) {
       setName(props.assistant?.name || '');
@@ -152,18 +153,7 @@ export function CreateEditAssistantDialog(
       setDocuments(undefined);
       setUrls([]);
     }
-  }, [
-    props.assistant,
-    props.isEditing,
-    metadata?.description,
-    metadata?.iconData?.iconName,
-    metadata?.iconData?.iconColor,
-    setProcessedContextDocuments,
-    setLoadingDocuments,
-    setUrls,
-    setDocuments,
-    getContextDocuments,
-  ]);
+  }, [props.assistant, props.isEditing]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
