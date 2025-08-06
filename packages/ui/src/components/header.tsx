@@ -1,4 +1,4 @@
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from '@workspace/ui/lib/utils';
 
 export function TighterText({
   className,
@@ -7,5 +7,5 @@ export function TighterText({
   className?: string;
   children: React.ReactNode;
 }) {
-  return <p className={cn("tracking-tighter", className)}>{children}</p>;
+  return <p className={cn('tracking-tighter', className)}>{children}</p>;
 }

@@ -5,13 +5,10 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "format": "turbo format",
+    "format:check": "turbo format:check",
     "lint": "turbo lint",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
-    "organize-imports": "biome check --write --apply-unsafe ."
+    "lint:fix": "turbo lint:fix"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
@@ -23,5 +20,8 @@
   "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": "20"
+  },
+  "resolutions": {
+    "@langchain/core": "^0.3.38"
   }
 }

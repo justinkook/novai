@@ -1,6 +1,6 @@
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { Client } from '@langchain/langgraph-sdk';
-import { OpenCanvasGraphAnnotation } from '../state.js';
-import { LangGraphRunnableConfig } from '@langchain/langgraph';
+import type { OpenCanvasGraphAnnotation } from '../state.js';
 
 export const reflectNode = async (
   state: typeof OpenCanvasGraphAnnotation.State,

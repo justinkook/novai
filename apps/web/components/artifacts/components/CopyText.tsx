@@ -1,9 +1,12 @@
-import { motion } from "framer-motion";
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { isArtifactCodeContent } from "@workspace/shared/utils/artifacts";
-import { ArtifactCodeV3, ArtifactMarkdownV3 } from "@workspace/shared/types";
-import { Copy } from "lucide-react";
+import type {
+  ArtifactCodeV3,
+  ArtifactMarkdownV3,
+} from '@workspace/shared/types';
+import { isArtifactCodeContent } from '@workspace/shared/utils/artifacts';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { motion } from 'framer-motion';
+import { Copy } from 'lucide-react';
+import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
 
 interface CopyTextProps {
   currentArtifactContent: ArtifactCodeV3 | ArtifactMarkdownV3;
@@ -31,16 +34,16 @@ export function CopyText(props: CopyTextProps) {
               : props.currentArtifactContent.fullMarkdown;
             navigator.clipboard.writeText(text).then(() => {
               toast({
-                title: "Copied to clipboard",
-                description: "The canvas content has been copied.",
+                title: 'Copied to clipboard',
+                description: 'The canvas content has been copied.',
                 duration: 5000,
               });
             });
           } catch (_) {
             toast({
-              title: "Copy error",
+              title: 'Copy error',
               description:
-                "Failed to copy the canvas content. Please try again.",
+                'Failed to copy the canvas content. Please try again.',
               duration: 5000,
             });
           }

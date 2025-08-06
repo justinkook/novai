@@ -1,15 +1,15 @@
-import { LangGraphRunnableConfig } from '@langchain/langgraph';
-import { OpenCanvasGraphAnnotation } from '../../state.js';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { getArtifactContent } from '@workspace/shared/utils/artifacts';
+import type { z } from 'zod';
 import {
   formatArtifactContent,
+  getFormattedReflections,
   getModelFromConfig,
   isUsingO1MiniModel,
 } from '../../../utils.js';
-import { getArtifactContent } from '@workspace/shared/utils/artifacts';
 import { GET_TITLE_TYPE_REWRITE_ARTIFACT } from '../../prompts.js';
+import type { OpenCanvasGraphAnnotation } from '../../state.js';
 import { OPTIONALLY_UPDATE_ARTIFACT_META_SCHEMA } from './schemas.js';
-import { getFormattedReflections } from '../../../utils.js';
-import { z } from 'zod';
 
 export async function optionallyUpdateArtifactMeta(
   state: typeof OpenCanvasGraphAnnotation.State,

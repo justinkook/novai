@@ -1,4 +1,4 @@
-import { DocumentInterface } from "@langchain/core/documents";
+import { DocumentInterface } from '@langchain/core/documents';
 
 export interface ModelConfigurationParams {
   name: string;
@@ -31,9 +31,9 @@ export interface CustomModelConfig {
   };
 }
 
-export type ArtifactLengthOptions = "shortest" | "short" | "long" | "longest";
+export type ArtifactLengthOptions = 'shortest' | 'short' | 'long' | 'longest';
 
-export type ArtifactType = "code" | "text";
+export type ArtifactType = 'code' | 'text';
 
 export interface ArtifactContent {
   index: number;
@@ -58,45 +58,45 @@ export interface ArtifactToolResponse {
 
 export type RewriteArtifactMetaToolResponse =
   | {
-      type: "text";
+      type: 'text';
       title?: string;
       language: ProgrammingLanguageOptions;
     }
   | {
-      type: "code";
+      type: 'code';
       title: string;
       language: ProgrammingLanguageOptions;
     };
 
 export type LanguageOptions =
-  | "english"
-  | "mandarin"
-  | "spanish"
-  | "french"
-  | "hindi";
+  | 'english'
+  | 'mandarin'
+  | 'spanish'
+  | 'french'
+  | 'hindi';
 
 export type ProgrammingLanguageOptions =
-  | "typescript"
-  | "javascript"
-  | "cpp"
-  | "java"
-  | "php"
-  | "python"
-  | "html"
-  | "sql"
-  | "json"
-  | "rust"
-  | "xml"
-  | "clojure"
-  | "csharp"
-  | "other";
+  | 'typescript'
+  | 'javascript'
+  | 'cpp'
+  | 'java'
+  | 'php'
+  | 'python'
+  | 'html'
+  | 'sql'
+  | 'json'
+  | 'rust'
+  | 'xml'
+  | 'clojure'
+  | 'csharp'
+  | 'other';
 
 export type ReadingLevelOptions =
-  | "pirate"
-  | "child"
-  | "teenager"
-  | "college"
-  | "phd";
+  | 'pirate'
+  | 'child'
+  | 'teenager'
+  | 'college'
+  | 'phd';
 
 export interface CodeHighlight {
   startCharIndex: number;
@@ -105,14 +105,14 @@ export interface CodeHighlight {
 
 export interface ArtifactMarkdownV3 {
   index: number;
-  type: "text";
+  type: 'text';
   title: string;
   fullMarkdown: string;
 }
 
 export interface ArtifactCodeV3 {
   index: number;
-  type: "code";
+  type: 'code';
   title: string;
   language: ProgrammingLanguageOptions;
   code: string;

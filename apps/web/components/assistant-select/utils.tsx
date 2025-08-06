@@ -1,5 +1,5 @@
-import * as Icons from "lucide-react";
-import React from "react";
+import * as Icons from 'lucide-react';
+import React from 'react';
 
 export const getIcon = (iconName?: string) => {
   if (iconName && Icons[iconName as keyof typeof Icons]) {

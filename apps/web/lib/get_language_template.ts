@@ -1,4 +1,4 @@
-import { ProgrammingLanguageOptions } from '@workspace/shared/types';
+import type { ProgrammingLanguageOptions } from '@workspace/shared/types';
 
 export const getLanguageTemplate = (
   language: ProgrammingLanguageOptions

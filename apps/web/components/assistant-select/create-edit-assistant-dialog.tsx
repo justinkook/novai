@@ -1,39 +1,39 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  CreateCustomAssistantArgs,
-  EditCustomAssistantArgs,
-} from "@/contexts/AssistantContext";
-import { Assistant } from "@langchain/langgraph-sdk";
-import {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
-import * as Icons from "lucide-react";
+import type { Assistant } from '@langchain/langgraph-sdk';
+import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog";
-import { Button } from "@workspace/ui/components/button";
-import { TighterText } from "@workspace/ui/components/header";
-import { Label } from "@workspace/ui/components/label";
-import { Input } from "@workspace/ui/components/input";
-import { IconSelect } from "./icon-select";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { ColorPicker } from "./color-picker";
-import { Textarea } from "@workspace/ui/components/textarea";
-import { InlineContextTooltip } from "@workspace/ui/components/inline-context-tooltip";
-import { useStore } from "@/hooks/useStore";
-import { arrayToFileList, contextDocumentToFile } from "@/lib/attachments";
-import { ContextDocuments } from "./context-documents";
-import { useContextDocuments } from "@/hooks/useContextDocuments";
+} from '@workspace/ui/components/dialog';
+import { TighterText } from '@workspace/ui/components/header';
+import { InlineContextTooltip } from '@workspace/ui/components/inline-context-tooltip';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import type * as Icons from 'lucide-react';
+import type React from 'react';
+import {
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
+import type {
+  CreateCustomAssistantArgs,
+  EditCustomAssistantArgs,
+} from '@/contexts/AssistantContext';
+import { useContextDocuments } from '@/hooks/useContextDocuments';
+import { useStore } from '@/hooks/useStore';
+import { arrayToFileList, contextDocumentToFile } from '@/lib/attachments';
+import { ColorPicker } from './color-picker';
+import { ContextDocuments } from './context-documents';
+import { IconSelect } from './icon-select';
 
 interface CreateEditAssistantDialogProps {
   open: boolean;
@@ -67,7 +67,7 @@ const SystemPromptWhatsThis = (): React.ReactNode => (
     </p>
     <p>
       We&apos;re looking for feedback on how to best handle customizing
-      assistant prompts. To vote, and give feedback please visit{" "}
+      assistant prompts. To vote, and give feedback please visit{' '}
       <a href={GH_DISCUSSION_URL} target="_blank">
         this GitHub discussion
       </a>
@@ -81,12 +81,12 @@ export function CreateEditAssistantDialog(
 ) {
   const { putContextDocuments, getContextDocuments } = useStore();
   const { toast } = useToast();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [iconName, setIconName] = useState<keyof typeof Icons>("User");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [iconName, setIconName] = useState<keyof typeof Icons>('User');
   const [hasSelectedIcon, setHasSelectedIcon] = useState(false);
-  const [iconColor, setIconColor] = useState("#000000");
+  const [iconColor, setIconColor] = useState('#000000');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
   const {
@@ -98,22 +98,22 @@ export function CreateEditAssistantDialog(
     setLoadingDocuments,
     processDocuments,
     setProcessedContextDocuments,
-  } = useContextDocuments(props.userId || "");
+  } = useContextDocuments(props.userId || '');
 
   const metadata = props.assistant?.metadata as Record<string, any> | undefined;
 
   useEffect(() => {
     if (props.assistant && props.isEditing) {
-      setName(props.assistant?.name || "");
-      setDescription(metadata?.description || "");
+      setName(props.assistant?.name || '');
+      setDescription(metadata?.description || '');
       setSystemPrompt(
         (props.assistant?.config?.configurable?.systemPrompt as
           | string
-          | undefined) || ""
+          | undefined) || ''
       );
       setHasSelectedIcon(true);
-      setIconName(metadata?.iconData?.iconName || "User");
-      setIconColor(metadata?.iconData?.iconColor || "#000000");
+      setIconName(metadata?.iconData?.iconName || 'User');
+      setIconColor(metadata?.iconData?.iconColor || '#000000');
       setLoadingDocuments(true);
       getContextDocuments(props.assistant.assistant_id)
         .then((documents) => {
@@ -144,30 +144,41 @@ export function CreateEditAssistantDialog(
         })
         .finally(() => setLoadingDocuments(false));
     } else if (!props.isEditing) {
-      setName("");
-      setDescription("");
-      setSystemPrompt("");
-      setIconName("User");
-      setIconColor("#000000");
+      setName('');
+      setDescription('');
+      setSystemPrompt('');
+      setIconName('User');
+      setIconColor('#000000');
       setDocuments(undefined);
       setUrls([]);
     }
-  }, [props.assistant, props.isEditing, metadata?.description, metadata?.iconData?.iconName, metadata?.iconData?.iconColor, setProcessedContextDocuments, setLoadingDocuments, setUrls, setDocuments, getContextDocuments]);
+  }, [
+    props.assistant,
+    props.isEditing,
+    metadata?.description,
+    metadata?.iconData?.iconName,
+    metadata?.iconData?.iconColor,
+    setProcessedContextDocuments,
+    setLoadingDocuments,
+    setUrls,
+    setDocuments,
+    getContextDocuments,
+  ]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!props.userId) {
       toast({
-        title: "User not found",
-        variant: "destructive",
+        title: 'User not found',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
     }
     if (props.isEditing && !props.assistant) {
       toast({
-        title: "Assistant not found",
-        variant: "destructive",
+        title: 'Assistant not found',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
@@ -223,13 +234,13 @@ export function CreateEditAssistantDialog(
 
     if (success) {
       toast({
-        title: `Assistant ${props.isEditing ? "edited" : "created"} successfully`,
+        title: `Assistant ${props.isEditing ? 'edited' : 'created'} successfully`,
         duration: 5000,
       });
     } else {
       toast({
-        title: `Failed to ${props.isEditing ? "edit" : "create"} assistant`,
-        variant: "destructive",
+        title: `Failed to ${props.isEditing ? 'edit' : 'create'} assistant`,
+        variant: 'destructive',
         duration: 5000,
       });
     }
@@ -238,11 +249,11 @@ export function CreateEditAssistantDialog(
   };
 
   const handleResetState = () => {
-    setName("");
-    setDescription("");
-    setSystemPrompt("");
-    setIconName("User");
-    setIconColor("#000000");
+    setName('');
+    setDescription('');
+    setSystemPrompt('');
+    setIconName('User');
+    setIconColor('#000000');
   };
 
   const handleRemoveFile = (index: number) => {
@@ -274,7 +285,7 @@ export function CreateEditAssistantDialog(
         <DialogHeader>
           <DialogTitle className="text-3xl font-light text-gray-800">
             <TighterText>
-              {props.isEditing ? "Edit" : "Create"} Assistant
+              {props.isEditing ? 'Edit' : 'Create'} Assistant
             </TighterText>
           </DialogTitle>
           <DialogDescription className="mt-2 text-md font-light text-gray-600">
@@ -369,8 +380,8 @@ export function CreateEditAssistantDialog(
                   placeholder="Assistant for my work emails"
                   value={iconColor}
                   onChange={(e) => {
-                    if (!e.target.value.startsWith("#")) {
-                      setIconColor("#" + e.target.value);
+                    if (!e.target.value.startsWith('#')) {
+                      setIconColor('#' + e.target.value);
                     } else {
                       setIconColor(e.target.value);
                     }

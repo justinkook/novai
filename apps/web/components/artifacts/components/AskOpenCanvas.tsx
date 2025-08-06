@@ -1,12 +1,19 @@
-import { Dispatch, FormEvent, forwardRef, SetStateAction } from "react";
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
-import { CircleArrowUp } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
-import { ArtifactV3 } from "@workspace/shared/types";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import { isArtifactCodeContent } from "@workspace/shared/utils/artifacts";
-import { useToast } from "@workspace/ui/hooks/use-toast";
+import type { ArtifactV3 } from '@workspace/shared/types';
+import {
+  getArtifactContent,
+  isArtifactCodeContent,
+} from '@workspace/shared/utils/artifacts';
+import { Button } from '@workspace/ui/components/button';
+import { Input } from '@workspace/ui/components/input';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { cn } from '@workspace/ui/lib/utils';
+import { CircleArrowUp } from 'lucide-react';
+import {
+  type Dispatch,
+  type FormEvent,
+  forwardRef,
+  type SetStateAction,
+} from 'react';
 
 interface AskOpenCanvasProps {
   isInputVisible: boolean;
@@ -53,9 +60,9 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
         isArtifactCodeContent(artifactContent)
       ) {
         toast({
-          title: "Selection error",
+          title: 'Selection error',
           description:
-            "Failed to get start/end indexes of the selected text. Please try again.",
+            'Failed to get start/end indexes of the selected text. Please try again.',
           duration: 5000,
         });
         handleCleanupState();
@@ -66,8 +73,8 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
         await handleSubmitMessage(inputValue);
       } else {
         toast({
-          title: "Selection error",
-          description: "Failed to get selection box. Please try again.",
+          title: 'Selection error',
+          description: 'Failed to get selection box. Please try again.',
           duration: 5000,
         });
         handleCleanupState();
@@ -79,14 +86,14 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
         type="button"
         ref={ref}
         className={cn(
-          "absolute bg-white border border-gray-200 shadow-md p-2 flex gap-2",
-          isInputVisible ? "rounded-3xl" : "rounded-md"
+          'absolute bg-white border border-gray-200 shadow-md p-2 flex gap-2',
+          isInputVisible ? 'rounded-3xl' : 'rounded-md'
         )}
         style={{
           top: `${selectionBox.top + 65}px`,
           left: `${selectionBox.left}px`,
-          width: isInputVisible ? "400px" : "250px",
-          marginLeft: isInputVisible ? "0" : "150px",
+          width: isInputVisible ? '400px' : '250px',
+          marginLeft: isInputVisible ? '0' : '150px',
         }}
         onMouseDown={handleSelectionBoxMouseDown}
       >
@@ -130,4 +137,4 @@ export const AskOpenCanvas = forwardRef<HTMLButtonElement, AskOpenCanvasProps>(
   }
 );
 
-AskOpenCanvas.displayName = "AskOpenCanvas";
+AskOpenCanvas.displayName = 'AskOpenCanvas';

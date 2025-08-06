@@ -1,4 +1,4 @@
-import { ProgrammingLanguageOptions } from "@workspace/shared/types";
+import type { ProgrammingLanguageOptions } from '@workspace/shared/types';
 
 export type Message = {
   id: string;
@@ -15,7 +15,7 @@ export interface ToolCall {
   result?: any;
 }
 
-export type Model = "gpt-4o-mini" | string; // Add other model options as needed
+export type Model = 'gpt-4o-mini' | string; // Add other model options as needed
 
 export type UserRules = {
   styleRules: string[];
@@ -43,14 +43,14 @@ export interface ArtifactMarkdownContent {
   index: number;
   blocks: MarkdownBlock[];
   title: string;
-  type: "text";
+  type: 'text';
 }
 
 export interface ArtifactCodeContent {
   index: number;
   code: string;
   title: string;
-  type: "code";
+  type: 'code';
   language: ProgrammingLanguageOptions;
 }
 

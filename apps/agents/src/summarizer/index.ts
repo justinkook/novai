@@ -1,11 +1,11 @@
-import { ChatAnthropic } from "@langchain/anthropic";
-import { StateGraph, START } from "@langchain/langgraph";
-import { SummarizerGraphAnnotation, SummarizeState } from "./state.js";
-import { HumanMessage } from "@langchain/core/messages";
-import { OC_SUMMARIZED_MESSAGE_KEY } from "@workspace/shared/constants";
-import { v4 as uuidv4 } from "uuid";
-import { Client } from "@langchain/langgraph-sdk";
-import { formatMessages } from "../utils.js";
+import { ChatAnthropic } from '@langchain/anthropic';
+import { HumanMessage } from '@langchain/core/messages';
+import { START, StateGraph } from '@langchain/langgraph';
+import { Client } from '@langchain/langgraph-sdk';
+import { OC_SUMMARIZED_MESSAGE_KEY } from '@workspace/shared/constants';
+import { v4 as uuidv4 } from 'uuid';
+import { formatMessages } from '../utils.js';
+import { SummarizerGraphAnnotation, type SummarizeState } from './state.js';
 
 const SUMMARIZER_PROMPT = `You're a professional AI summarizer assistant.
 As a professional summarizer, create a concise and comprehensive summary of the provided text, while adhering to these guidelines:
@@ -26,14 +26,14 @@ export async function summarizer(
   state: SummarizeState
 ): Promise<Partial<SummarizeState>> {
   const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-latest",
+    model: 'claude-3-5-sonnet-latest',
   });
 
   const messagesToSummarize = formatMessages(state.messages);
 
   const response = await model.invoke([
-    ["system", SUMMARIZER_PROMPT],
-    ["user", `Here are the messages to summarize:\n${messagesToSummarize}`],
+    ['system', SUMMARIZER_PROMPT],
+    ['user', `Here are the messages to summarize:\n${messagesToSummarize}`],
   ]);
 
   const newMessageContent = `The below content is a summary of past messages between the AI assistant and the user.
@@ -69,9 +69,9 @@ ${response.content}`;
 }
 
 const builder = new StateGraph(SummarizerGraphAnnotation)
-  .addNode("summarize", summarizer)
-  .addEdge(START, "summarize");
+  .addNode('summarize', summarizer)
+  .addEdge(START, 'summarize');
 
 export const graph = builder.compile();
 
-graph.name = "Summarizer Graph";
+graph.name = 'Summarizer Graph';

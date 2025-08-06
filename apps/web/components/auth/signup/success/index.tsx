@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { redirect, RedirectType } from "next/navigation";
-import { useUserContext } from "@/contexts/UserContext";
+import { RedirectType, redirect } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useUserContext } from '@/contexts/UserContext';
 
 export function SignupSuccess() {
   const { getUser, user } = useUserContext();
@@ -34,7 +34,7 @@ export function SignupSuccess() {
 
   useEffect(() => {
     if (user) {
-      redirect("/", RedirectType.push);
+      redirect('/', RedirectType.push);
     }
   }, [user]);
 

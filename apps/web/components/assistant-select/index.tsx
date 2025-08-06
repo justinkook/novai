@@ -1,5 +1,6 @@
-"use client";
+'use client';
 
+import type { Assistant } from '@langchain/langgraph-sdk';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,19 +8,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { useState } from "react";
-import * as Icons from "lucide-react";
-import React from "react";
-import { TighterText } from "@workspace/ui/components/header";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { CreateEditAssistantDialog } from "./create-edit-assistant-dialog";
-import { getIcon } from "./utils";
-import { AssistantItem } from "./assistant-item";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { cn } from "@workspace/ui/lib/utils";
-import { useAssistantContext } from "@/contexts/AssistantContext";
+} from '@workspace/ui/components/dropdown-menu';
+import { TighterText } from '@workspace/ui/components/header';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { cn } from '@workspace/ui/lib/utils';
+import * as Icons from 'lucide-react';
+import React, { useState } from 'react';
+import { TooltipIconButton } from '@/components/assistant-ui/tooltip-icon-button';
+import { useAssistantContext } from '@/contexts/AssistantContext';
+import { AssistantItem } from './assistant-item';
+import { CreateEditAssistantDialog } from './create-edit-assistant-dialog';
+import { getIcon } from './utils';
 
 interface AssistantSelectProps {
   userId: string | undefined;
@@ -57,7 +56,7 @@ function AssistantSelectComponent(props: AssistantSelectProps) {
     const res = await deleteAssistant(assistantId);
     if (res) {
       toast({
-        title: "Assistant deleted",
+        title: 'Assistant deleted',
         duration: 5000,
       });
     }
@@ -84,8 +83,8 @@ function AssistantSelectComponent(props: AssistantSelectProps) {
           <TooltipIconButton
             tooltip="Change assistant"
             variant="ghost"
-            className={cn("size-7 mt-1", props.className)}
-            style={{ color: metadata?.iconData?.iconColor || "#4b5563" }}
+            className={cn('size-7 mt-1', props.className)}
+            style={{ color: metadata?.iconData?.iconColor || '#4b5563' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

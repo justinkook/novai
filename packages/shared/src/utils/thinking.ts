@@ -1,6 +1,6 @@
-import type { Dispatch, SetStateAction } from "react";
-import { AIMessage, type BaseMessage } from "@langchain/core/messages";
-import { THINKING_MODELS } from "../models.js";
+import type { Dispatch, SetStateAction } from 'react';
+import { AIMessage, type BaseMessage } from '@langchain/core/messages';
+import { THINKING_MODELS } from '../models.js';
 
 type ThinkingAndResponseTokens = {
   thinking: string;
@@ -32,15 +32,15 @@ type ThinkingAndResponseTokens = {
 export function extractThinkingAndResponseTokens(
   text: string
 ): ThinkingAndResponseTokens {
-  const thinkStartTag = "<think>";
-  const thinkEndTag = "</think>";
+  const thinkStartTag = '<think>';
+  const thinkEndTag = '</think>';
 
   const startIndex = text.indexOf(thinkStartTag);
 
   // No thinking tag found
   if (startIndex === -1) {
     return {
-      thinking: "",
+      thinking: '',
       response: text.trim(),
     };
   }
@@ -97,7 +97,7 @@ export function handleRewriteArtifactThinkingModel({
   if (thinking.length > 0) {
     setMessages((prevMessages) => {
       if (!thinkingMessageId) {
-        console.error("Thinking message not found");
+        console.error('Thinking message not found');
         return prevMessages;
       }
 

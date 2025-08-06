@@ -1,11 +1,11 @@
-import { ProgrammingLanguageOptions } from "./types.js";
+import { ProgrammingLanguageOptions } from './types.js';
 
-export const OC_SUMMARIZED_MESSAGE_KEY = "__oc_summarized_message";
-export const OC_HIDE_FROM_UI_KEY = "__oc_hide_from_ui";
+export const OC_SUMMARIZED_MESSAGE_KEY = '__oc_summarized_message';
+export const OC_HIDE_FROM_UI_KEY = '__oc_hide_from_ui';
 export const OC_WEB_SEARCH_RESULTS_MESSAGE_KEY =
-  "__oc_web_search_results_message";
+  '__oc_web_search_results_message';
 
-export const CONTEXT_DOCUMENTS_NAMESPACE = ["context_documents"];
+export const CONTEXT_DOCUMENTS_NAMESPACE = ['context_documents'];
 
 export const DEFAULT_INPUTS = {
   highlightedCode: undefined,
@@ -29,59 +29,59 @@ export const PROGRAMMING_LANGUAGES: Array<{
   label: string;
 }> = [
   {
-    language: "typescript",
-    label: "TypeScript",
+    language: 'typescript',
+    label: 'TypeScript',
   },
   {
-    language: "javascript",
-    label: "JavaScript",
+    language: 'javascript',
+    label: 'JavaScript',
   },
   {
-    language: "cpp",
-    label: "C++",
+    language: 'cpp',
+    label: 'C++',
   },
   {
-    language: "java",
-    label: "Java",
+    language: 'java',
+    label: 'Java',
   },
   {
-    language: "php",
-    label: "PHP",
+    language: 'php',
+    label: 'PHP',
   },
   {
-    language: "python",
-    label: "Python",
+    language: 'python',
+    label: 'Python',
   },
   {
-    language: "html",
-    label: "HTML",
+    language: 'html',
+    label: 'HTML',
   },
   {
-    language: "sql",
-    label: "SQL",
+    language: 'sql',
+    label: 'SQL',
   },
   {
-    language: "json",
-    label: "JSON",
+    language: 'json',
+    label: 'JSON',
   },
   {
-    language: "rust",
-    label: "Rust",
+    language: 'rust',
+    label: 'Rust',
   },
   {
-    language: "xml",
-    label: "XML",
+    language: 'xml',
+    label: 'XML',
   },
   {
-    language: "clojure",
-    label: "Clojure",
+    language: 'clojure',
+    label: 'Clojure',
   },
   {
-    language: "csharp",
-    label: "C#",
+    language: 'csharp',
+    label: 'C#',
   },
   {
-    language: "other",
-    label: "Other",
+    language: 'other',
+    label: 'Other',
   },
 ];

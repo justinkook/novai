@@ -1,6 +1,6 @@
+import type { Session, User } from '@supabase/supabase-js';
+import { type NextRequest, NextResponse } from 'next/server';
 import { LANGGRAPH_API_URL } from '@/lib/constants';
-import { NextRequest, NextResponse } from 'next/server';
-import { Session, User } from '@supabase/supabase-js';
 import { verifyUserAuthenticated } from '../../../lib/supabase/verify_user_server';
 
 function getCorsHeaders() {

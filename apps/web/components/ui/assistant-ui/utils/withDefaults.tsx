@@ -1,19 +1,23 @@
-import { ComponentPropsWithoutRef, ElementType, forwardRef } from "react";
-import { cn } from "@workspace/ui/lib/utils";
-import { ComponentRef } from "react";
+import { cn } from '@workspace/ui/lib/utils';
+import {
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  type ElementType,
+  forwardRef,
+} from 'react';
 
 export const withDefaultProps =
   <TProps extends { className?: string }>({
     className,
     ...defaultProps
   }: Partial<TProps>) =>
-    ({ className: classNameProp, ...props }: TProps) => {
-      return {
-        className: cn(className, classNameProp),
-        ...defaultProps,
-        ...props,
-      } as TProps;
-    };
+  ({ className: classNameProp, ...props }: TProps) => {
+    return {
+      className: cn(className, classNameProp),
+      ...defaultProps,
+      ...props,
+    } as TProps;
+  };
 
 export const withDefaults = <TComponent extends ElementType>(
   Component: TComponent,
@@ -28,8 +32,8 @@ export const withDefaults = <TComponent extends ElementType>(
     }
   );
   WithDefaults.displayName =
-    "withDefaults(" +
-    (typeof Component === "string" ? Component : Component.displayName) +
-    ")";
+    'withDefaults(' +
+    (typeof Component === 'string' ? Component : Component.displayName) +
+    ')';
   return WithDefaults;
 };

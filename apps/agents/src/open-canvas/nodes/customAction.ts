@@ -1,31 +1,31 @@
-import { BaseMessage } from "@langchain/core/messages";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import {
-  getArtifactContent,
-  isArtifactMarkdownContent,
-} from "@workspace/shared/utils/artifacts";
-import {
-  ArtifactCodeV3,
-  ArtifactMarkdownV3,
-  ArtifactV3,
-  CustomQuickAction,
-  Reflections,
-} from "@workspace/shared/types";
-import {
-  ensureStoreInConfig,
-  formatReflections,
-  getModelFromConfig,
-} from "../../utils.js";
+import type { BaseMessage } from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import {
   CUSTOM_QUICK_ACTION_ARTIFACT_CONTENT_PROMPT,
   CUSTOM_QUICK_ACTION_ARTIFACT_PROMPT_PREFIX,
   CUSTOM_QUICK_ACTION_CONVERSATION_CONTEXT,
   REFLECTIONS_QUICK_ACTION_PROMPT,
-} from "@workspace/shared/prompts/quick-actions";
+} from '@workspace/shared/prompts/quick-actions';
+import type {
+  ArtifactCodeV3,
+  ArtifactMarkdownV3,
+  ArtifactV3,
+  CustomQuickAction,
+  Reflections,
+} from '@workspace/shared/types';
 import {
+  getArtifactContent,
+  isArtifactMarkdownContent,
+} from '@workspace/shared/utils/artifacts';
+import {
+  ensureStoreInConfig,
+  formatReflections,
+  getModelFromConfig,
+} from '../../utils.js';
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../state.js";
+} from '../state.js';
 
 const formatMessages = (messages: BaseMessage[]): string =>
   messages
@@ -33,14 +33,14 @@ const formatMessages = (messages: BaseMessage[]): string =>
       (msg) =>
         `<${msg.getType()}>\n${msg.content as string}\n</${msg.getType()}>`
     )
-    .join("\n");
+    .join('\n');
 
 export const customAction = async (
   state: typeof OpenCanvasGraphAnnotation.State,
   config: LangGraphRunnableConfig
 ): Promise<OpenCanvasGraphReturnType> => {
   if (!state.customQuickActionId) {
-    throw new Error("No custom quick action ID found.");
+    throw new Error('No custom quick action ID found.');
   }
 
   const smallModel = await getModelFromConfig(config, {
@@ -51,23 +51,23 @@ export const customAction = async (
   const assistantId = config.configurable?.assistant_id;
   const userId = config.configurable?.supabase_user_id;
   if (!assistantId) {
-    throw new Error("`assistant_id` not found in configurable");
+    throw new Error('`assistant_id` not found in configurable');
   }
   if (!userId) {
-    throw new Error("`user.id` not found in configurable");
+    throw new Error('`user.id` not found in configurable');
   }
-  const customActionsNamespace = ["custom_actions", userId];
-  const actionsKey = "actions";
+  const customActionsNamespace = ['custom_actions', userId];
+  const actionsKey = 'actions';
 
-  const memoryNamespace = ["memories", assistantId];
-  const memoryKey = "reflection";
+  const memoryNamespace = ['memories', assistantId];
+  const memoryKey = 'reflection';
 
   const [customActionsItem, memories] = await Promise.all([
     store.get(customActionsNamespace, actionsKey),
     store.get(memoryNamespace, memoryKey),
   ]);
   if (!customActionsItem?.value) {
-    throw new Error("No custom actions found.");
+    throw new Error('No custom actions found.');
   }
   const customQuickAction = customActionsItem.value[
     state.customQuickActionId
@@ -86,7 +86,7 @@ export const customAction = async (
   if (customQuickAction.includeReflections && memories?.value) {
     const memoriesAsString = formatReflections(memories.value as Reflections);
     const reflectionsPrompt = REFLECTIONS_QUICK_ACTION_PROMPT.replace(
-      "{reflections}",
+      '{reflections}',
       memoriesAsString
     );
     formattedPrompt += `\n\n${reflectionsPrompt}`;
@@ -99,7 +99,7 @@ export const customAction = async (
   if (customQuickAction.includeRecentHistory) {
     const formattedConversationHistory =
       CUSTOM_QUICK_ACTION_CONVERSATION_CONTEXT.replace(
-        "{conversation}",
+        '{conversation}',
         formatMessages(state._messages.slice(-5))
       );
     formattedPrompt += `\n\n${formattedConversationHistory}`;
@@ -108,14 +108,14 @@ export const customAction = async (
   const artifactContent = isArtifactMarkdownContent(currentArtifactContent)
     ? currentArtifactContent.fullMarkdown
     : currentArtifactContent?.code;
-  formattedPrompt += `\n\n${CUSTOM_QUICK_ACTION_ARTIFACT_CONTENT_PROMPT.replace("{artifactContent}", artifactContent || "No artifacts generated yet.")}`;
+  formattedPrompt += `\n\n${CUSTOM_QUICK_ACTION_ARTIFACT_CONTENT_PROMPT.replace('{artifactContent}', artifactContent || 'No artifacts generated yet.')}`;
 
   const newArtifactValues = await smallModel.invoke([
-    { role: "user", content: formattedPrompt },
+    { role: 'user', content: formattedPrompt },
   ]);
 
   if (!currentArtifactContent) {
-    console.error("No current artifact content found.");
+    console.error('No current artifact content found.');
     return {};
   }
 

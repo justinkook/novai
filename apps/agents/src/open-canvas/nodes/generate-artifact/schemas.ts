@@ -1,10 +1,10 @@
-import { PROGRAMMING_LANGUAGES } from "@workspace/shared/constants";
-import { z } from "zod";
+import { PROGRAMMING_LANGUAGES } from '@workspace/shared/constants';
+import { z } from 'zod';
 
 export const ARTIFACT_TOOL_SCHEMA = z.object({
   type: z
-    .enum(["code", "text"])
-    .describe("The content type of the artifact generated."),
+    .enum(['code', 'text'])
+    .describe('The content type of the artifact generated.'),
   language: z
     .enum(
       PROGRAMMING_LANGUAGES.map((lang) => lang.language) as [
@@ -14,7 +14,7 @@ export const ARTIFACT_TOOL_SCHEMA = z.object({
     )
     .optional()
     .describe(
-      "The language/programming language of the artifact generated.\n" +
+      'The language/programming language of the artifact generated.\n' +
         "If generating code, it should be one of the options, or 'other'.\n" +
         "If not generating code, the language should ALWAYS be 'other'."
     ),
@@ -22,12 +22,12 @@ export const ARTIFACT_TOOL_SCHEMA = z.object({
     .boolean()
     .optional()
     .describe(
-      "Whether or not the generated code is valid React code. Only populate this field if generating code."
+      'Whether or not the generated code is valid React code. Only populate this field if generating code.'
     ),
-  artifact: z.string().describe("The content of the artifact to generate."),
+  artifact: z.string().describe('The content of the artifact to generate.'),
   title: z
     .string()
     .describe(
-      "A short title to give to the artifact. Should be less than 5 words."
+      'A short title to give to the artifact. Should be less than 5 words.'
     ),
 });

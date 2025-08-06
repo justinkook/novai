@@ -1,19 +1,18 @@
-"use client";
+'use client';
 
-import * as React from "react";
-
-import { cn } from "@workspace/ui/lib/utils";
-import { Input } from "@workspace/ui/components/input";
-import { Button } from "@workspace/ui/components/button";
-import { Icons } from "@workspace/ui/components/icons";
-import { Label } from "@workspace/ui/components/label";
-import { LoginWithEmailInput } from "./Login";
-import { useState } from "react";
-import { PasswordInput } from "@workspace/ui/components/password-input";
+import { Button } from '@workspace/ui/components/button';
+import { Icons } from '@workspace/ui/components/icons';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { PasswordInput } from '@workspace/ui/components/password-input';
+import { cn } from '@workspace/ui/lib/utils';
+import type * as React from 'react';
+import { useState } from 'react';
+import type { LoginWithEmailInput } from './Login';
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   onLoginWithEmail: (input: LoginWithEmailInput) => Promise<void>;
-  onLoginWithOauth: (provider: "google" | "github") => Promise<void>;
+  onLoginWithOauth: (provider: 'google' | 'github') => Promise<void>;
 }
 
 export function UserAuthForm({
@@ -25,8 +24,8 @@ export function UserAuthForm({
   const [isEmailPasswordLoading, setEmailPasswordIsLoading] = useState(false);
   const [isGoogleLoading, setGoogleIsLoading] = useState(false);
   const [isGithubLoading, setGithubIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPasswordField, setShowPasswordField] = useState(false);
 
   const isLoading =
@@ -41,7 +40,7 @@ export function UserAuthForm({
   }
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={onSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
@@ -69,8 +68,8 @@ export function UserAuthForm({
 
             <div
               className={cn(
-                "overflow-hidden transition-all duration-300 ease-in-out pt-[2px] pb-1 px-1",
-                showPasswordField ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+                'overflow-hidden transition-all duration-300 ease-in-out pt-[2px] pb-1 px-1',
+                showPasswordField ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
               )}
             >
               <Label className="sr-only" htmlFor="password">
@@ -107,7 +106,7 @@ export function UserAuthForm({
       <Button
         onClick={async () => {
           setGoogleIsLoading(true);
-          await onLoginWithOauth("google");
+          await onLoginWithOauth('google');
           setGoogleIsLoading(false);
         }}
         variant="outline"
@@ -118,13 +117,13 @@ export function UserAuthForm({
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.google className="mr-2 h-4 w-4" />
-        )}{" "}
+        )}{' '}
         Google
       </Button>
       <Button
         onClick={async () => {
           setGithubIsLoading(true);
-          await onLoginWithOauth("github");
+          await onLoginWithOauth('github');
           setGithubIsLoading(false);
         }}
         variant="outline"
@@ -135,7 +134,7 @@ export function UserAuthForm({
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.gitHub className="mr-2 h-4 w-4" />
-        )}{" "}
+        )}{' '}
         GitHub
       </Button>
     </div>

@@ -1,26 +1,34 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { ArtifactMarkdownV3 } from "@workspace/shared/types";
-import "@blocknote/core/fonts/inter.css";
+import type { ArtifactMarkdownV3 } from '@workspace/shared/types';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import '@blocknote/core/fonts/inter.css';
 import {
   getDefaultReactSlashMenuItems,
   SuggestionMenuController,
   useCreateBlockNote,
-} from "@blocknote/react";
-import { BlockNoteView } from "@blocknote/shadcn";
-import "@blocknote/shadcn/style.css";
-import { isArtifactMarkdownContent } from "@workspace/shared/utils/artifacts";
-import { CopyText } from "./components/CopyText";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import { useGraphContext } from "@/contexts/GraphContext";
-import React from "react";
-import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { Eye, EyeOff } from "lucide-react";
-import { motion } from "framer-motion";
-import { Textarea } from "@workspace/ui/components/textarea";
-import { cn } from "@workspace/ui/lib/utils";
+} from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/shadcn';
+import '@blocknote/shadcn/style.css';
+import {
+  getArtifactContent,
+  isArtifactMarkdownContent,
+} from '@workspace/shared/utils/artifacts';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { cn } from '@workspace/ui/lib/utils';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import React from 'react';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { TooltipIconButton } from '../ui/assistant-ui/tooltip-icon-button';
+import { CopyText } from './components/CopyText';
 
 const cleanText = (text: string) => {
-  return text.replace(/\\\n/g, "\n");
+  return text.replace(/\\\n/g, '\n');
 };
 
 function ViewRawText({
@@ -38,7 +46,7 @@ function ViewRawText({
       transition={{ duration: 0.2 }}
     >
       <TooltipIconButton
-        tooltip={`View ${isRawView ? "rendered" : "raw"} markdown`}
+        tooltip={`View ${isRawView ? 'rendered' : 'raw'} markdown`}
         variant="outline"
         delayDuration={400}
         onClick={() => setIsRawView((p) => !p)}
@@ -72,7 +80,7 @@ export function TextRendererComponent(props: TextRendererProps) {
     setUpdateRenderedArtifactRequired,
   } = graphData;
 
-  const [rawMarkdown, setRawMarkdown] = useState("");
+  const [rawMarkdown, setRawMarkdown] = useState('');
   const [isRawView, setIsRawView] = useState(false);
   const [manuallyUpdatingArtifact, setManuallyUpdatingArtifact] =
     useState(false);
@@ -83,7 +91,7 @@ export function TextRendererComponent(props: TextRendererProps) {
 
     if (selectedText && selection) {
       if (!artifact) {
-        console.error("Artifact not found");
+        console.error('Artifact not found');
         return;
       }
 
@@ -92,11 +100,11 @@ export function TextRendererComponent(props: TextRendererProps) {
         (c) => c.index === currentBlockIdx
       );
       if (!currentContent) {
-        console.error("Current content not found");
+        console.error('Current content not found');
         return;
       }
       if (!isArtifactMarkdownContent(currentContent)) {
-        console.error("Current content is not markdown");
+        console.error('Current content is not markdown');
         return;
       }
 
@@ -112,7 +120,14 @@ export function TextRendererComponent(props: TextRendererProps) {
         });
       })();
     }
-  }, [editor.getSelectedText, artifact, editor.getSelection, setSelectedBlocks, editor.blocksToMarkdownLossy, editor.document]);
+  }, [
+    editor.getSelectedText,
+    artifact,
+    editor.getSelection,
+    setSelectedBlocks,
+    editor.blocksToMarkdownLossy,
+    editor.document,
+  ]);
 
   useEffect(() => {
     if (!props.isInputVisible) {
@@ -135,7 +150,7 @@ export function TextRendererComponent(props: TextRendererProps) {
     try {
       const currentIndex = artifact.currentIndex;
       const currentContent = artifact.contents.find(
-        (c) => c.index === currentIndex && c.type === "text"
+        (c) => c.index === currentIndex && c.type === 'text'
       ) as ArtifactMarkdownV3 | undefined;
       if (!currentContent) {
         return;
@@ -154,7 +169,16 @@ export function TextRendererComponent(props: TextRendererProps) {
       setManuallyUpdatingArtifact(false);
       setUpdateRenderedArtifactRequired(false);
     }
-  }, [artifact, updateRenderedArtifactRequired, editor.document, editor.replaceBlocks, editor.tryParseMarkdownToBlocks, setUpdateRenderedArtifactRequired, isStreaming, manuallyUpdatingArtifact]);
+  }, [
+    artifact,
+    updateRenderedArtifactRequired,
+    editor.document,
+    editor.replaceBlocks,
+    editor.tryParseMarkdownToBlocks,
+    setUpdateRenderedArtifactRequired,
+    isStreaming,
+    manuallyUpdatingArtifact,
+  ]);
 
   useEffect(() => {
     if (isRawView) {
@@ -194,8 +218,8 @@ export function TextRendererComponent(props: TextRendererProps) {
             {
               index: 1,
               fullMarkdown: fullMarkdown,
-              title: "Untitled",
-              type: "text",
+              title: 'Untitled',
+              type: 'text',
             },
           ],
         };
@@ -227,8 +251,8 @@ export function TextRendererComponent(props: TextRendererProps) {
             {
               index: 1,
               fullMarkdown: newRawMarkdown,
-              title: "Untitled",
-              type: "text",
+              title: 'Untitled',
+              type: 'text',
             },
           ],
         };
@@ -296,17 +320,17 @@ export function TextRendererComponent(props: TextRendererProps) {
             }
             editor={editor}
             className={cn(
-              isStreaming && !firstTokenReceived ? "pulse-text" : "",
-              "custom-blocknote-theme"
+              isStreaming && !firstTokenReceived ? 'pulse-text' : '',
+              'custom-blocknote-theme'
             )}
           >
             <SuggestionMenuController
               getItems={async () =>
                 getDefaultReactSlashMenuItems(editor).filter(
-                  (z) => z.group !== "Media"
+                  (z) => z.group !== 'Media'
                 )
               }
-              triggerCharacter={"/"}
+              triggerCharacter={'/'}
             />
           </BlockNoteView>
         </>

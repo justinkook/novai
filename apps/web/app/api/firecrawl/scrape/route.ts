@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ContextDocument } from '@workspace/shared/types';
 import { FireCrawlLoader } from '@langchain/community/document_loaders/web/firecrawl';
+import type { ContextDocument } from '@workspace/shared/types';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {

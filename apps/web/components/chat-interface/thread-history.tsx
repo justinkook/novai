@@ -1,18 +1,22 @@
-import { isToday, isYesterday, isWithinInterval, subDays } from "date-fns";
-import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { Button } from "@workspace/ui/components/button";
-import { Trash2 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@workspace/ui/components/sheet";
-import { Skeleton } from "@workspace/ui/components/skeleton";
-import { useEffect, useState } from "react";
-import { Thread } from "@langchain/langgraph-sdk";
-import { PiChatsCircleLight } from "react-icons/pi";
-import { TighterText } from "@workspace/ui/components/header";
-import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import React from "react";
-import { useUserContext } from "@/contexts/UserContext";
-import { useThreadContext } from "@/contexts/ThreadProvider";
+import type { Thread } from '@langchain/langgraph-sdk';
+import { Button } from '@workspace/ui/components/button';
+import { TighterText } from '@workspace/ui/components/header';
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from '@workspace/ui/components/sheet';
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { isToday, isWithinInterval, isYesterday, subDays } from 'date-fns';
+import { Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { PiChatsCircleLight } from 'react-icons/pi';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { useThreadContext } from '@/contexts/ThreadProvider';
+import { useUserContext } from '@/contexts/UserContext';
+import { TooltipIconButton } from '../ui/assistant-ui/tooltip-icon-button';
 
 interface ThreadHistoryProps {
   switchSelectedThreadCallback: (thread: Thread) => void;
@@ -70,7 +74,7 @@ const convertThreadActualToThreadProps = (
   label:
     thread.metadata?.thread_title ??
     ((thread.values as Record<string, any>)?.messages?.[0]?.content ||
-      "Untitled"),
+      'Untitled'),
   createdAt: new Date(thread.created_at),
   onClick: () => {
     return switchSelectedThreadCallback(thread);
@@ -152,14 +156,14 @@ const groupThreads = (
 
 const prettifyDateLabel = (group: string): string => {
   switch (group) {
-    case "today":
-      return "Today";
-    case "yesterday":
-      return "Yesterday";
-    case "lastSevenDays":
-      return "Last 7 days";
-    case "older":
-      return "Older";
+    case 'today':
+      return 'Today';
+    case 'yesterday':
+      return 'Yesterday';
+    case 'lastSevenDays':
+      return 'Last 7 days';
+    case 'older':
+      return 'Older';
     default:
       return group;
   }
@@ -206,7 +210,7 @@ export function ThreadHistoryComponent(props: ThreadHistoryProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined" || userThreads.length || !user) {
+    if (typeof window === 'undefined' || userThreads.length || !user) {
       return;
     }
 
@@ -216,10 +220,10 @@ export function ThreadHistoryComponent(props: ThreadHistoryProps) {
   const handleDeleteThread = async (id: string) => {
     if (!user) {
       toast({
-        title: "Failed to delete thread",
-        description: "User not found",
+        title: 'Failed to delete thread',
+        description: 'User not found',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }

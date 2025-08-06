@@ -2,9 +2,9 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@workspace/ui/components/hover-card";
-import { cn } from "@workspace/ui/lib/utils";
-import { CircleHelp } from "lucide-react";
+} from '@workspace/ui/components/hover-card';
+import { cn } from '@workspace/ui/lib/utils';
+import { CircleHelp } from 'lucide-react';
 
 export function InlineContextTooltip({
   cardContentClassName,
@@ -21,7 +21,7 @@ export function InlineContextTooltip({
         </span>
       </HoverCardTrigger>
       <HoverCardContent
-        className={cn(cardContentClassName, "w-[300px] text-wrap")}
+        className={cn(cardContentClassName, 'w-[300px] text-wrap')}
       >
         <p className="text-black font-medium">What&apos;s this?</p>
         {children}

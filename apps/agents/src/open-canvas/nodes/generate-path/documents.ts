@@ -1,17 +1,17 @@
-import { v4 as uuidv4 } from "uuid";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import {
+  type BaseMessage,
+  HumanMessage,
+  RemoveMessage,
+} from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { OC_HIDE_FROM_UI_KEY } from '@workspace/shared/constants';
+import type { ContextDocument } from '@workspace/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 import {
   convertPDFToText,
   createContextDocumentMessages,
   getModelConfig,
-} from "../../../utils.js";
-import { ContextDocument } from "@workspace/shared/types";
-import {
-  BaseMessage,
-  HumanMessage,
-  RemoveMessage,
-} from "@langchain/core/messages";
-import { OC_HIDE_FROM_UI_KEY } from "@workspace/shared/constants";
+} from '../../../utils.js';
 
 /**
  * Checks for context documents in a human message, and if found, converts
@@ -37,7 +37,7 @@ export async function convertContextDocumentToHumanMessage(
     id: uuidv4(),
     content: [
       ...contextMessages.flatMap((m) =>
-        typeof m.content !== "string" ? m.content : []
+        typeof m.content !== 'string' ? m.content : []
       ),
     ],
     additional_kwargs: {
@@ -50,7 +50,7 @@ export async function fixMisFormattedContextDocMessage(
   message: HumanMessage,
   config: LangGraphRunnableConfig
 ) {
-  if (typeof message.content === "string") {
+  if (typeof message.content === 'string') {
     return undefined;
   }
 
@@ -58,24 +58,24 @@ export async function fixMisFormattedContextDocMessage(
   const newMsgId = uuidv4();
   let changesMade = false;
 
-  if (modelProvider === "openai") {
+  if (modelProvider === 'openai') {
     const newContentPromises = message.content.map(async (m) => {
       if (
-        m.type === "document" &&
-        m.source.type === "base64" &&
+        m.type === 'document' &&
+        m.source.type === 'base64' &&
         m.source.data
       ) {
         changesMade = true;
         // Anthropic format
         return {
-          type: "text",
+          type: 'text',
           text: await convertPDFToText(m.source.data),
         };
-      } else if (m.type === "application/pdf") {
+      } else if (m.type === 'application/pdf') {
         changesMade = true;
         // Gemini format
         return {
-          type: "text",
+          type: 'text',
           text: await convertPDFToText(m.data),
         };
       }
@@ -84,19 +84,19 @@ export async function fixMisFormattedContextDocMessage(
     const newContent = await Promise.all(newContentPromises);
     if (changesMade) {
       return [
-        new RemoveMessage({ id: message.id || "" }),
+        new RemoveMessage({ id: message.id || '' }),
         new HumanMessage({ ...message, id: newMsgId, content: newContent }),
       ];
     }
-  } else if (modelProvider === "anthropic") {
+  } else if (modelProvider === 'anthropic') {
     const newContent = message.content.map((m) => {
-      if (m.type === "application/pdf") {
+      if (m.type === 'application/pdf') {
         changesMade = true;
         // Gemini format
         return {
-          type: "document",
+          type: 'document',
           source: {
-            type: "base64",
+            type: 'base64',
             media_type: m.type,
             data: m.data,
           },
@@ -106,17 +106,17 @@ export async function fixMisFormattedContextDocMessage(
     });
     if (changesMade) {
       return [
-        new RemoveMessage({ id: message.id || "" }),
+        new RemoveMessage({ id: message.id || '' }),
         new HumanMessage({ ...message, id: newMsgId, content: newContent }),
       ];
     }
-  } else if (modelProvider === "google-genai") {
+  } else if (modelProvider === 'google-genai') {
     const newContent = message.content.map((m) => {
-      if (m.type === "document") {
+      if (m.type === 'document') {
         changesMade = true;
         // Anthropic format
         return {
-          type: "application/pdf",
+          type: 'application/pdf',
           data: m.source.data,
         };
       }
@@ -124,7 +124,7 @@ export async function fixMisFormattedContextDocMessage(
     });
     if (changesMade) {
       return [
-        new RemoveMessage({ id: message.id || "" }),
+        new RemoveMessage({ id: message.id || '' }),
         new HumanMessage({ ...message, id: newMsgId, content: newContent }),
       ];
     }

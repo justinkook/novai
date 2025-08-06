@@ -1,42 +1,47 @@
-"use client";
+'use client';
 
-import {
-  forwardRef,
-  PropsWithChildren,
-  useEffect,
-  useState,
-  type FC,
-} from "react";
-import { CircleXIcon, FileIcon } from "lucide-react";
-import { useShallow } from "zustand/shallow";
 import {
   AttachmentPrimitive,
   useAttachment,
   useThreadConfig,
-} from "@assistant-ui/react";
+} from '@assistant-ui/react';
 import {
-  TooltipIconButton,
-  TooltipIconButtonProps,
-} from "./tooltip-icon-button";
-import { withDefaults } from "./utils/withDefaults";
-import { AvatarFallback, AvatarImage, AvatarRoot } from "./avatar";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog";
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@workspace/ui/components/dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
+} from '@workspace/ui/components/tooltip';
+import { CircleXIcon, FileIcon } from 'lucide-react';
+import {
+  type FC,
+  forwardRef,
+  type PropsWithChildren,
+  useEffect,
+  useState,
+} from 'react';
+import { useShallow } from 'zustand/shallow';
+import { AvatarFallback, AvatarImage, AvatarRoot } from './avatar';
+import {
+  TooltipIconButton,
+  type TooltipIconButtonProps,
+} from './tooltip-icon-button';
+import { withDefaults } from './utils/withDefaults';
 
 const AttachmentRoot = withDefaults(AttachmentPrimitive.Root, {
-  className: "aui-attachment-root",
+  className: 'aui-attachment-root',
 });
 
-const AttachmentContent = withDefaults("div", {
-  className: "aui-attachment-content",
+const AttachmentContent = withDefaults('div', {
+  className: 'aui-attachment-content',
 });
 
-AttachmentRoot.displayName = "AttachmentRoot";
+AttachmentRoot.displayName = 'AttachmentRoot';
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -61,13 +66,13 @@ const useFileSrc = (file: File | undefined) => {
 const useAttachmentSrc = () => {
   const { file, src } = useAttachment(
     useShallow((a): { file?: File; src?: string } => {
-      if (a.type !== "image") {
+      if (a.type !== 'image') {
         return {};
       }
       if (a.file) {
         return { file: a.file };
       }
-      const src = a.content?.filter((c) => c.type === "image")[0]?.image;
+      const src = a.content?.filter((c) => c.type === 'image')[0]?.image;
       if (!src) {
         return {};
       }
@@ -90,12 +95,12 @@ const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
     <img
       src={src}
       style={{
-        width: "auto",
-        height: "auto",
-        maxWidth: "75dvh",
-        maxHeight: "75dvh",
-        display: isLoaded ? "block" : "none",
-        overflow: "clip",
+        width: 'auto',
+        height: 'auto',
+        maxWidth: '75dvh',
+        maxHeight: '75dvh',
+        display: isLoaded ? 'block' : 'none',
+        overflow: 'clip',
       }}
       onLoad={() => setIsLoaded(true)}
       alt="Preview"
@@ -126,7 +131,7 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
 };
 
 const AttachmentThumb: FC = () => {
-  const isImage = useAttachment((a) => a.type === "image");
+  const isImage = useAttachment((a) => a.type === 'image');
   const src = useAttachmentSrc();
   return (
     <AvatarRoot className="aui-attachment-thumb">
@@ -139,16 +144,16 @@ const AttachmentThumb: FC = () => {
 };
 
 export const AttachmentUI: FC = () => {
-  const canRemove = useAttachment((a) => a.source !== "message");
+  const canRemove = useAttachment((a) => a.source !== 'message');
   const typeLabel = useAttachment((a) => {
     const type = a.type;
     switch (type) {
-      case "image":
-        return "Image";
-      case "document":
-        return "Document";
-      case "file":
-        return "File";
+      case 'image':
+        return 'Image';
+      case 'document':
+        return 'Document';
+      case 'file':
+        return 'File';
       default: {
         const _exhaustiveCheck: never = type;
         throw new Error(`Unknown attachment type: ${_exhaustiveCheck}`);
@@ -182,7 +187,7 @@ export const AttachmentUI: FC = () => {
   );
 };
 
-AttachmentUI.displayName = "Attachment";
+AttachmentUI.displayName = 'Attachment';
 
 interface AttachmentRemoveTypes {
   Element: HTMLButtonElement;
@@ -190,12 +195,12 @@ interface AttachmentRemoveTypes {
 }
 
 const AttachmentRemove = forwardRef<
-  AttachmentRemoveTypes["Element"],
-  AttachmentRemoveTypes["Props"]
+  AttachmentRemoveTypes['Element'],
+  AttachmentRemoveTypes['Props']
 >((props, ref) => {
   const {
     strings: {
-      composer: { removeAttachment: { tooltip = "Remove file" } = {} } = {},
+      composer: { removeAttachment: { tooltip = 'Remove file' } = {} } = {},
     } = {},
   } = useThreadConfig();
 
@@ -214,7 +219,7 @@ const AttachmentRemove = forwardRef<
   );
 });
 
-AttachmentRemove.displayName = "AttachmentRemove";
+AttachmentRemove.displayName = 'AttachmentRemove';
 
 export const Root = AttachmentRoot;
 export const Remove = AttachmentRemove;

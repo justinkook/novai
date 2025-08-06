@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogDescription,
+  DialogHeader,
   DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Button } from "@workspace/ui/components/button";
-import { TighterText } from "@workspace/ui/components/header";
+} from '@workspace/ui/components/dialog';
+import { TighterText } from '@workspace/ui/components/header';
+import { useState } from 'react';
 
 export interface ReflectionsProps {
   handleDeleteReflections: () => Promise<boolean>;

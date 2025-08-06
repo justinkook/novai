@@ -1,45 +1,43 @@
-"use client";
+'use client';
 
-import { useToast } from "@workspace/ui/hooks/use-toast";
+import {
+  type AppendMessage,
+  AssistantRuntimeProvider,
+  CompositeAttachmentAdapter,
+  SimpleTextAttachmentAdapter,
+  useExternalMessageConverter,
+  useExternalStoreRuntime,
+} from '@assistant-ui/react';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { type BaseMessage, HumanMessage } from '@langchain/core/messages';
+import type { Thread as ThreadType } from '@langchain/langgraph-sdk';
+import type {
+  ContextDocument,
+  ProgrammingLanguageOptions,
+} from '@workspace/shared/types';
+import { Toaster } from '@workspace/ui/components/toaster';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import React, { useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Thread } from '@/components/chat-interface';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { useThreadContext } from '@/contexts/ThreadProvider';
+import { useUserContext } from '@/contexts/UserContext';
+import { arrayToFileList, convertDocuments } from '@/lib/attachments';
 import {
   convertLangchainMessages,
   convertToOpenAIFormat,
-} from "@/lib/convert_messages";
-import {
-  ProgrammingLanguageOptions,
-  ContextDocument,
-} from "@workspace/shared/types";
-import {
-  AppendMessage,
-  AssistantRuntimeProvider,
-  useExternalMessageConverter,
-  useExternalStoreRuntime,
-} from "@assistant-ui/react";
-import { BaseMessage, HumanMessage } from "@langchain/core/messages";
-import { Thread as ThreadType } from "@langchain/langgraph-sdk";
-import React, { useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { Toaster } from "@workspace/ui/components/toaster";
-import { Thread } from "@/components/chat-interface";
-import { useGraphContext } from "@/contexts/GraphContext";
-import {
-  CompositeAttachmentAdapter,
-  SimpleTextAttachmentAdapter,
-} from "@assistant-ui/react";
-import { AudioAttachmentAdapter } from "../ui/assistant-ui/attachment-adapters/audio";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { arrayToFileList, convertDocuments } from "@/lib/attachments";
-import { VideoAttachmentAdapter } from "../ui/assistant-ui/attachment-adapters/video";
-import { useUserContext } from "@/contexts/UserContext";
-import { useThreadContext } from "@/contexts/ThreadProvider";
-import { PDFAttachmentAdapter } from "../ui/assistant-ui/attachment-adapters/pdf";
+} from '@/lib/convert_messages';
+import { AudioAttachmentAdapter } from '../ui/assistant-ui/attachment-adapters/audio';
+import { PDFAttachmentAdapter } from '../ui/assistant-ui/attachment-adapters/pdf';
+import { VideoAttachmentAdapter } from '../ui/assistant-ui/attachment-adapters/video';
 
 export interface ContentComposerChatInterfaceProps {
   switchSelectedThreadCallback: (thread: ThreadType) => void;
   setChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
   hasChatStarted: boolean;
   handleQuickStart: (
-    type: "text" | "code",
+    type: 'text' | 'code',
     language?: ProgrammingLanguageOptions
   ) => void;
   chatCollapsed: boolean;
@@ -72,17 +70,17 @@ export function ContentComposerChatInterfaceComponent(
     }
     if (!userData.user) {
       toast({
-        title: "User not found",
-        variant: "destructive",
+        title: 'User not found',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
     }
 
-    if (message.content?.[0]?.type !== "text") {
+    if (message.content?.[0]?.type !== 'text') {
       toast({
-        title: "Only text messages are supported",
-        variant: "destructive",
+        title: 'Only text messages are supported',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
@@ -134,7 +132,7 @@ export function ContentComposerChatInterfaceComponent(
     callback: convertLangchainMessages,
     messages,
     isRunning,
-    joinStrategy: "none",
+    joinStrategy: 'none',
   });
 
   const runtime = useExternalStoreRuntime({

@@ -1,17 +1,17 @@
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { ContextDocument } from "@workspace/shared/types";
+import type { Assistant } from '@langchain/langgraph-sdk';
+import type { ContextDocument } from '@workspace/shared/types';
+import { useToast } from '@workspace/ui/hooks/use-toast';
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useContext,
   useState,
-} from "react";
-import { createClient } from "@/hooks/utils";
-import { getCookie, removeCookie } from "@/lib/cookies";
-import { ASSISTANT_ID_COOKIE } from "@/lib/constants";
+} from 'react';
+import { createClient } from '@/hooks/utils';
+import { ASSISTANT_ID_COOKIE } from '@/lib/constants';
+import { getCookie, removeCookie } from '@/lib/cookies';
 
 type AssistantContentType = {
   assistants: Assistant[];
@@ -123,10 +123,10 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       setIsLoadingAllAssistants(false);
     } catch (e) {
       toast({
-        title: "Failed to get assistants",
-        description: "Please try again later.",
+        title: 'Failed to get assistants',
+        description: 'Please try again later.',
       });
-      console.error("Failed to get assistants", e);
+      console.error('Failed to get assistants', e);
       setIsLoadingAllAssistants(false);
     }
   };
@@ -151,10 +151,10 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (e) {
       toast({
-        title: "Failed to delete assistant",
-        description: "Please try again later.",
+        title: 'Failed to delete assistant',
+        description: 'Please try again later.',
       });
-      console.error("Failed to delete assistant", e);
+      console.error('Failed to delete assistant', e);
       setIsDeletingAssistant(false);
       return false;
     }
@@ -171,7 +171,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       const { tools, systemPrompt, name, documents, ...metadata } =
         newAssistant;
       const createdAssistant = await client.assistants.create({
-        graphId: "agent",
+        graphId: 'agent',
         name,
         metadata: {
           user_id: userId,
@@ -184,7 +184,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
             documents,
           },
         },
-        ifExists: "do_nothing",
+        ifExists: 'do_nothing',
       });
 
       setAssistants((prev) => [...prev, createdAssistant]);
@@ -194,11 +194,11 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       return createdAssistant;
     } catch (e) {
       toast({
-        title: "Failed to create assistant",
-        description: "Please try again later.",
+        title: 'Failed to create assistant',
+        description: 'Please try again later.',
       });
       setIsCreatingAssistant(false);
-      console.error("Failed to create an assistant", e);
+      console.error('Failed to create an assistant', e);
       return undefined;
     }
   };
@@ -215,7 +215,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
         editedAssistant;
       const response = await client.assistants.update(assistantId, {
         name,
-        graphId: "agent",
+        graphId: 'agent',
         metadata: {
           user_id: userId,
           ...metadata,
@@ -240,7 +240,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       setIsEditingAssistant(false);
       return response;
     } catch (e) {
-      console.error("Failed to edit assistant", e);
+      console.error('Failed to edit assistant', e);
       setIsEditingAssistant(false);
       return undefined;
     }
@@ -258,11 +258,11 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       editedAssistant: {
         is_default: true,
         iconData: {
-          iconName: "User",
-          iconColor: "#000000",
+          iconName: 'User',
+          iconColor: '#000000',
         },
-        description: "Your default assistant.",
-        name: "Default assistant",
+        description: 'Your default assistant.',
+        name: 'Default assistant',
         tools: undefined,
         systemPrompt: undefined,
       },
@@ -271,25 +271,25 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     });
 
     if (!updatedAssistant) {
-      const ghIssueTitle = "Failed to set default assistant";
+      const ghIssueTitle = 'Failed to set default assistant';
       const ghIssueBody = `Failed to set the default assistant for user.\n\nDate: '${new Date().toISOString()}'`;
-      const assignee = "bracesproul";
+      const assignee = 'bracesproul';
       const queryParams = new URLSearchParams({
         title: ghIssueTitle,
         body: ghIssueBody,
         assignee,
-        "labels[]": "autogenerated",
+        'labels[]': 'autogenerated',
       });
       const newIssueURL = `https://github.com/langchain-ai/open-canvas/issues/new?${queryParams.toString()}`;
 
       toast({
-        title: "Failed to edit assistant",
+        title: 'Failed to edit assistant',
         description: (
           <p>
-            Please open an issue{" "}
+            Please open an issue{' '}
             <a href={newIssueURL} target="_blank">
               here
-            </a>{" "}
+            </a>{' '}
             (do <i>not</i> edit fields) and try again later.
           </p>
         ),
@@ -322,14 +322,14 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     // No cookie found. First, search for all assistants under the user's ID
     try {
       userAssistants = await client.assistants.search({
-        graphId: "agent",
+        graphId: 'agent',
         metadata: {
           user_id: userId,
         },
         limit: 100,
       });
     } catch (e) {
-      console.error("Failed to get default assistant", e);
+      console.error('Failed to get default assistant', e);
     }
 
     if (!userAssistants.length) {
@@ -337,11 +337,11 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       await createCustomAssistant({
         newAssistant: {
           iconData: {
-            iconName: "User",
-            iconColor: "#000000",
+            iconName: 'User',
+            iconColor: '#000000',
           },
-          name: "Default assistant",
-          description: "Your default assistant.",
+          name: 'Default assistant',
+          description: 'Your default assistant.',
           is_default: true,
         },
         userId,
@@ -368,18 +368,17 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
           iconData: {
             iconName:
               (firstAssistant?.metadata?.iconName as string | undefined) ||
-              "User",
+              'User',
             iconColor:
               (firstAssistant?.metadata?.iconColor as string | undefined) ||
-              "#000000",
+              '#000000',
           },
           description:
             (firstAssistant?.metadata?.description as string | undefined) ||
-            "Your default assistant.",
-          name:
-            (firstAssistant?.name?.toLowerCase() === "untitled"
-              ? "Default assistant"
-              : firstAssistant?.name) as string,
+            'Your default assistant.',
+          name: (firstAssistant?.name?.toLowerCase() === 'untitled'
+            ? 'Default assistant'
+            : firstAssistant?.name) as string,
           tools:
             (firstAssistant?.config?.configurable?.tools as
               | AssistantTool[]
@@ -427,7 +426,7 @@ export function useAssistantContext() {
   const context = useContext(AssistantContext);
   if (context === undefined) {
     throw new Error(
-      "useAssistantContext must be used within a AssistantProvider"
+      'useAssistantContext must be used within a AssistantProvider'
     );
   }
   return context;

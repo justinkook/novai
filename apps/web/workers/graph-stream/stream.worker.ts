@@ -1,10 +1,10 @@
-import { createClient } from "@/hooks/utils";
-import { StreamConfig } from "./streamWorker.types";
+import { createClient } from '@/hooks/utils';
+import type { StreamConfig } from './streamWorker.types';
 
 // Since workers can't directly access the client SDK, you'll need to recreate/import necessary parts
 const ctx: Worker = self as any;
 
-ctx.addEventListener("message", async (event: MessageEvent<StreamConfig>) => {
+ctx.addEventListener('message', async (event: MessageEvent<StreamConfig>) => {
   try {
     const { threadId, assistantId, input, modelName, modelConfigs } =
       event.data;
@@ -13,7 +13,7 @@ ctx.addEventListener("message", async (event: MessageEvent<StreamConfig>) => {
 
     const stream = client.runs.stream(threadId, assistantId, {
       input: input as Record<string, unknown>,
-      streamMode: "events",
+      streamMode: 'events',
       config: {
         configurable: {
           customModelName: modelName,
@@ -25,15 +25,15 @@ ctx.addEventListener("message", async (event: MessageEvent<StreamConfig>) => {
     for await (const chunk of stream) {
       // Serialize the chunk and post it back to the main thread
       ctx.postMessage({
-        type: "chunk",
+        type: 'chunk',
         data: JSON.stringify(chunk),
       });
     }
 
-    ctx.postMessage({ type: "done" });
+    ctx.postMessage({ type: 'done' });
   } catch (error: any) {
     ctx.postMessage({
-      type: "error",
+      type: 'error',
       error: error.message,
     });
   }

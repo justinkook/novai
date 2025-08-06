@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { createSupabaseClient } from '@/lib/supabase/client';
 
 export default function Page() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function Page() {
       if (error) {
         setErrorOccurred(true);
       } else {
-        router.push("/auth/login");
+        router.push('/auth/login');
       }
     }
     signOut();

@@ -1,12 +1,12 @@
-import {
+import type { Item } from '@langchain/langgraph-sdk';
+import { CONTEXT_DOCUMENTS_NAMESPACE } from '@workspace/shared/constants';
+import type {
+  ContextDocument,
   CustomQuickAction,
   Reflections,
-  ContextDocument,
-} from "@workspace/shared/types";
-import { useState } from "react";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { Item } from "@langchain/langgraph-sdk";
-import { CONTEXT_DOCUMENTS_NAMESPACE } from "@workspace/shared/constants";
+} from '@workspace/shared/types';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { useState } from 'react';
 
 export function useStore() {
   const { toast } = useToast();
@@ -18,14 +18,14 @@ export function useStore() {
 
   const getReflections = async (assistantId: string): Promise<void> => {
     setIsLoadingReflections(true);
-    const res = await fetch("/api/store/get", {
-      method: "POST",
+    const res = await fetch('/api/store/get', {
+      method: 'POST',
       body: JSON.stringify({
-        namespace: ["memories", assistantId],
-        key: "reflection",
+        namespace: ['memories', assistantId],
+        key: 'reflection',
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -46,10 +46,10 @@ export function useStore() {
     let content = item.value.content ?? [];
     try {
       styleRules =
-        typeof styleRules === "string" ? JSON.parse(styleRules) : styleRules;
-      content = typeof content === "string" ? JSON.parse(content) : content;
+        typeof styleRules === 'string' ? JSON.parse(styleRules) : styleRules;
+      content = typeof content === 'string' ? JSON.parse(content) : content;
     } catch (e) {
-      console.error("Failed to parse reflections", e);
+      console.error('Failed to parse reflections', e);
       styleRules = [];
       content = [];
     }
@@ -65,14 +65,14 @@ export function useStore() {
   };
 
   const deleteReflections = async (assistantId: string): Promise<boolean> => {
-    const res = await fetch("/api/store/delete", {
-      method: "POST",
+    const res = await fetch('/api/store/delete', {
+      method: 'POST',
       body: JSON.stringify({
-        namespace: ["memories", assistantId],
-        key: "reflection",
+        namespace: ['memories', assistantId],
+        key: 'reflection',
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -85,8 +85,8 @@ export function useStore() {
       setReflections(undefined);
     } else {
       toast({
-        title: "Failed to delete reflections",
-        description: "Please try again later.",
+        title: 'Failed to delete reflections',
+        description: 'Please try again later.',
       });
     }
     return success;
@@ -97,14 +97,14 @@ export function useStore() {
   ): Promise<CustomQuickAction[] | undefined> => {
     setIsLoadingQuickActions(true);
     try {
-      const res = await fetch("/api/store/get", {
-        method: "POST",
+      const res = await fetch('/api/store/get', {
+        method: 'POST',
         body: JSON.stringify({
-          namespace: ["custom_actions", userId],
-          key: "actions",
+          namespace: ['custom_actions', userId],
+          key: 'actions',
         }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
@@ -137,15 +137,15 @@ export function useStore() {
       {}
     );
 
-    const res = await fetch("/api/store/put", {
-      method: "POST",
+    const res = await fetch('/api/store/put', {
+      method: 'POST',
       body: JSON.stringify({
-        namespace: ["custom_actions", userId],
-        key: "actions",
+        namespace: ['custom_actions', userId],
+        key: 'actions',
         value: valuesWithoutDeleted,
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -171,15 +171,15 @@ export function useStore() {
     );
 
     newValue[newAction.id] = newAction;
-    const res = await fetch("/api/store/put", {
-      method: "POST",
+    const res = await fetch('/api/store/put', {
+      method: 'POST',
       body: JSON.stringify({
-        namespace: ["custom_actions", userId],
-        key: "actions",
+        namespace: ['custom_actions', userId],
+        key: 'actions',
         value: newValue,
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -205,15 +205,15 @@ export function useStore() {
     );
 
     newValue[editedAction.id] = editedAction;
-    const res = await fetch("/api/store/put", {
-      method: "POST",
+    const res = await fetch('/api/store/put', {
+      method: 'POST',
       body: JSON.stringify({
-        namespace: ["custom_actions", userId],
-        key: "actions",
+        namespace: ['custom_actions', userId],
+        key: 'actions',
         value: newValue,
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -233,8 +233,8 @@ export function useStore() {
     documents: ContextDocument[];
   }): Promise<void> => {
     try {
-      const res = await fetch("/api/store/put", {
-        method: "POST",
+      const res = await fetch('/api/store/put', {
+        method: 'POST',
         body: JSON.stringify({
           namespace: CONTEXT_DOCUMENTS_NAMESPACE,
           key: assistantId,
@@ -243,37 +243,37 @@ export function useStore() {
           },
         }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
       if (!res.ok) {
         throw new Error(
-          "Failed to put context documents" + res.statusText + res.status
+          'Failed to put context documents' + res.statusText + res.status
         );
       }
     } catch (e) {
-      console.error("Failed to put context documents.\n", e);
+      console.error('Failed to put context documents.\n', e);
     }
   };
 
   const getContextDocuments = async (
     assistantId: string
   ): Promise<ContextDocument[] | undefined> => {
-    const res = await fetch("/api/store/get", {
-      method: "POST",
+    const res = await fetch('/api/store/get', {
+      method: 'POST',
       body: JSON.stringify({
         namespace: CONTEXT_DOCUMENTS_NAMESPACE,
         key: assistantId,
       }),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     if (!res.ok) {
       console.error(
-        "Failed to get context documents",
+        'Failed to get context documents',
         res.statusText,
         res.status
       );

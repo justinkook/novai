@@ -1,13 +1,12 @@
+import type { GraphInput, LanguageOptions } from '@workspace/shared/types';
+import { TooltipIconButton } from '@/components/assistant-ui/tooltip-icon-button';
 import {
-  UsaFlag,
   ChinaFlag,
+  FrenchFlag,
   IndiaFlag,
   SpanishFlag,
-  FrenchFlag,
-} from "@/components/icons/flags";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { GraphInput } from "@workspace/shared/types";
-import { LanguageOptions } from "@workspace/shared/types";
+  UsaFlag,
+} from '@/components/icons/flags';
 
 export interface TranslateOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -30,7 +29,7 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="English"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("english")}
+        onClick={async () => await handleSubmit('english')}
       >
         <UsaFlag />
       </TooltipIconButton>
@@ -38,7 +37,7 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Mandarin"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("mandarin")}
+        onClick={async () => await handleSubmit('mandarin')}
       >
         <ChinaFlag />
       </TooltipIconButton>
@@ -46,7 +45,7 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Hindi"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("hindi")}
+        onClick={async () => await handleSubmit('hindi')}
       >
         <IndiaFlag />
       </TooltipIconButton>
@@ -54,7 +53,7 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="Spanish"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("spanish")}
+        onClick={async () => await handleSubmit('spanish')}
       >
         <SpanishFlag />
       </TooltipIconButton>
@@ -62,7 +61,7 @@ export function TranslateOptions(props: TranslateOptionsProps) {
         tooltip="French"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("french")}
+        onClick={async () => await handleSubmit('french')}
       >
         <FrenchFlag />
       </TooltipIconButton>

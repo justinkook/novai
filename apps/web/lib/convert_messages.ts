@@ -1,8 +1,12 @@
-import {
-  useExternalMessageConverter,
+import type {
   ToolCallContentPart,
+  useExternalMessageConverter,
 } from '@assistant-ui/react';
-import { AIMessage, BaseMessage, ToolMessage } from '@langchain/core/messages';
+import type {
+  AIMessage,
+  BaseMessage,
+  ToolMessage,
+} from '@langchain/core/messages';
 
 type Message = useExternalMessageConverter.Message;
 

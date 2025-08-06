@@ -1,10 +1,10 @@
-import { StreamWorkerMessage, StreamConfig } from "./streamWorker.types";
+import type { StreamConfig, StreamWorkerMessage } from './streamWorker.types';
 
 export class StreamWorkerService {
   private worker: Worker;
 
   constructor() {
-    this.worker = new Worker(new URL("./stream.worker.ts", import.meta.url));
+    this.worker = new Worker(new URL('./stream.worker.ts', import.meta.url));
   }
 
   async *streamData(config: StreamConfig): AsyncGenerator<any, void, unknown> {
@@ -19,15 +19,15 @@ export class StreamWorkerService {
 
       const { type, data, error } = event.data;
 
-      if (type === "error") {
+      if (type === 'error') {
         throw new Error(error);
       }
 
-      if (type === "chunk" && data) {
+      if (type === 'chunk' && data) {
         yield JSON.parse(data);
       }
 
-      if (type === "done") {
+      if (type === 'done') {
         break;
       }
     }

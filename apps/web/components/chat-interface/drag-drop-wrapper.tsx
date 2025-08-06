@@ -1,6 +1,7 @@
-import React, { DragEvent } from "react";
-import { useComposer, useComposerRuntime } from "@assistant-ui/react";
-import { useToast } from "@workspace/ui/hooks/use-toast";
+import { useComposer, useComposerRuntime } from '@assistant-ui/react';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import type React from 'react';
+import type { DragEvent } from 'react';
 
 interface DragAndDropWrapperProps {
   children: React.ReactNode;
@@ -36,26 +37,26 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
         const attachmentAccept = composerRuntime.getAttachmentAccept();
         const addAttachmentPromises = files.map(async (file) => {
           if (
-            attachmentAccept === "*" ||
-            attachmentAccept.split(",").some((t) => t.trim() === file.type)
+            attachmentAccept === '*' ||
+            attachmentAccept.split(',').some((t) => t.trim() === file.type)
           ) {
             await composerRuntime.addAttachment(file);
           } else {
             toast({
-              title: "Incompatible file type",
+              title: 'Incompatible file type',
               description: (
                 <div className="flex flex-col gap-1 text-pretty">
                   <p>This file {file.name} is not supported.</p>
                   <p>
                     Received type <span className="font-mono">{file.type}</span>
-                    . Must be one of:{" "}
+                    . Must be one of:{' '}
                   </p>
                   <p className="font-mono text-wrap">
-                    {attachmentAccept.split(",").join(", ")}
+                    {attachmentAccept.split(',').join(', ')}
                   </p>
                 </div>
               ),
-              variant: "destructive",
+              variant: 'destructive',
               duration: 5000,
             });
           }
@@ -65,18 +66,18 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
       } catch (e) {
         console.error(e);
         toast({
-          title: "Error",
+          title: 'Error',
           description:
-            "Failed to add attachment. This is likely due to an incompatible file type.",
-          variant: "destructive",
+            'Failed to add attachment. This is likely due to an incompatible file type.',
+          variant: 'destructive',
           duration: 5000,
         });
       }
     } else {
       toast({
-        title: "Drag and drop disabled",
+        title: 'Drag and drop disabled',
         description:
-          "Drag and drop is disabled in this mode. Please try again later.",
+          'Drag and drop is disabled in this mode. Please try again later.',
         duration: 5000,
       });
     }
@@ -90,9 +91,9 @@ export function DragAndDropWrapper({ children }: DragAndDropWrapperProps) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
+        position: 'relative',
+        width: '100%',
+        height: '100%',
       }}
     >
       {children}

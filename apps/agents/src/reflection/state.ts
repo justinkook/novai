@@ -1,5 +1,5 @@
-import { ArtifactV3 } from "@workspace/shared/types";
-import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
+import { Annotation, MessagesAnnotation } from '@langchain/langgraph';
+import type { ArtifactV3 } from '@workspace/shared/types';
 
 export const ReflectionGraphAnnotation = Annotation.Root({
   /**

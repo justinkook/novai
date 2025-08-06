@@ -1,25 +1,25 @@
-import { convertToOpenAIFormat } from "@/lib/convert_messages";
-import { cn } from "@workspace/ui/lib/utils";
-import {
+import { HumanMessage } from '@langchain/core/messages';
+import type { EditorView } from '@uiw/react-codemirror';
+import type {
   ArtifactCodeV3,
   ArtifactMarkdownV3,
   ProgrammingLanguageOptions,
-} from "@workspace/shared/types";
-import type { EditorView } from "@uiw/react-codemirror";
-import { HumanMessage } from "@langchain/core/messages";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { ActionsToolbar, CodeToolBar } from "./actions_toolbar";
-import { CodeRenderer } from "./CodeRenderer";
-import { TextRenderer } from "./TextRenderer";
-import { CustomQuickActions } from "./actions_toolbar/custom";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import { ArtifactLoading } from "./ArtifactLoading";
-import { AskOpenCanvas } from "./components/AskOpenCanvas";
-import { useGraphContext } from "@/contexts/GraphContext";
-import { ArtifactHeader } from "./header";
-import { useUserContext } from "@/contexts/UserContext";
-import { useAssistantContext } from "@/contexts/AssistantContext";
+} from '@workspace/shared/types';
+import { getArtifactContent } from '@workspace/shared/utils/artifacts';
+import { cn } from '@workspace/ui/lib/utils';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { useAssistantContext } from '@/contexts/AssistantContext';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { useUserContext } from '@/contexts/UserContext';
+import { convertToOpenAIFormat } from '@/lib/convert_messages';
+import { ArtifactLoading } from './ArtifactLoading';
+import { ActionsToolbar, CodeToolBar } from './actions_toolbar';
+import { CustomQuickActions } from './actions_toolbar/custom';
+import { CodeRenderer } from './CodeRenderer';
+import { AskOpenCanvas } from './components/AskOpenCanvas';
+import { ArtifactHeader } from './header';
+import { TextRenderer } from './TextRenderer';
 
 export interface ArtifactRendererProps {
   isEditing: boolean;
@@ -61,7 +61,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
   }>();
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [isSelectionActive, setIsSelectionActive] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [isHoveringOverArtifact, setIsHoveringOverArtifact] = useState(false);
   const [isValidSelectionOrigin, setIsValidSelectionOrigin] = useState(false);
 
@@ -71,7 +71,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
     setSelectionIndexes(undefined);
     setIsSelectionActive(false);
     setIsValidSelectionOrigin(false);
-    setInputValue("");
+    setInputValue('');
   }, []);
 
   const handleMouseUp = useCallback(() => {
@@ -166,12 +166,12 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
   };
 
   useEffect(() => {
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mousedown", handleDocumentMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousedown', handleDocumentMouseDown);
 
     return () => {
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("mousedown", handleDocumentMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousedown', handleDocumentMouseDown);
     };
   }, [handleMouseUp, handleDocumentMouseDown]);
 
@@ -182,7 +182,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         const highlightLayer = highlightLayerRef.current;
 
         // Clear existing highlights
-        highlightLayer.innerHTML = "";
+        highlightLayer.innerHTML = '';
 
         if (isSelectionActive && selectionBox) {
           const selection = window.getSelection();
@@ -199,20 +199,20 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
               let currentArtifactContent:
                 | ArtifactCodeV3
                 | ArtifactMarkdownV3
-                | undefined = undefined;
+                | undefined;
               try {
                 currentArtifactContent = artifact
                   ? getArtifactContent(artifact)
                   : undefined;
               } catch (_) {
                 console.error(
-                  "[ArtifactRenderer.tsx L229]\n\nERROR NO ARTIFACT CONTENT FOUND\n\n",
+                  '[ArtifactRenderer.tsx L229]\n\nERROR NO ARTIFACT CONTENT FOUND\n\n',
                   artifact
                 );
                 // no-op
               }
 
-              if (currentArtifactContent?.type === "code") {
+              if (currentArtifactContent?.type === 'code') {
                 if (editorRef.current) {
                   const from = editorRef.current.posAtDOM(
                     range.startContainer,
@@ -230,9 +230,9 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
 
               for (let i = 0; i < rects.length; i++) {
                 const rect = rects[i];
-                const highlightEl = document.createElement("div");
+                const highlightEl = document.createElement('div');
                 highlightEl.className =
-                  "absolute bg-[#3597934d] pointer-events-none";
+                  'absolute bg-[#3597934d] pointer-events-none';
 
                 // Adjust the positioning and size
                 const verticalPadding = 3;
@@ -248,7 +248,7 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         }
       }
     } catch (e) {
-      console.error("Failed to get artifact selection", e);
+      console.error('Failed to get artifact selection', e);
     }
   }, [isSelectionActive, selectionBox, artifact]);
 
@@ -273,19 +273,19 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         !isInputActive
       ) {
         // Check if the key is a character key or backspace/delete
-        if (e.key.length === 1 || e.key === "Backspace" || e.key === "Delete") {
+        if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
           handleCleanupState();
         }
       }
 
       // Handle escape key for input box
-      if ((isInputVisible || isSelectionActive) && e.key === "Escape") {
+      if ((isInputVisible || isSelectionActive) && e.key === 'Escape') {
         handleCleanupState();
       }
     };
 
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
   }, [isInputVisible, selectionBox, isSelectionActive, handleCleanupState]);
 
   const currentArtifactContent = artifact
@@ -326,14 +326,14 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
       <div
         ref={contentRef}
         className={cn(
-          "flex justify-center h-full",
-          currentArtifactContent.type === "code" ? "pt-[10px]" : ""
+          'flex justify-center h-full',
+          currentArtifactContent.type === 'code' ? 'pt-[10px]' : ''
         )}
       >
         <div
           className={cn(
-            "relative min-h-full",
-            currentArtifactContent.type === "code" ? "min-w-full" : "min-w-full"
+            'relative min-h-full',
+            currentArtifactContent.type === 'code' ? 'min-w-full' : 'min-w-full'
           )}
         >
           <button
@@ -343,14 +343,14 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
             onMouseEnter={() => setIsHoveringOverArtifact(true)}
             onMouseLeave={() => setIsHoveringOverArtifact(false)}
           >
-            {currentArtifactContent.type === "text" ? (
+            {currentArtifactContent.type === 'text' ? (
               <TextRenderer
                 isInputVisible={isInputVisible}
                 isEditing={props.isEditing}
                 isHovering={isHoveringOverArtifact}
               />
             ) : null}
-            {currentArtifactContent.type === "code" ? (
+            {currentArtifactContent.type === 'code' ? (
               <CodeRenderer
                 editorRef={editorRef}
                 isHovering={isHoveringOverArtifact}
@@ -384,13 +384,13 @@ function ArtifactRendererComponent(props: ArtifactRendererProps) {
         user={user}
         isTextSelected={isSelectionActive || selectedBlocks !== undefined}
       />
-      {currentArtifactContent.type === "text" ? (
+      {currentArtifactContent.type === 'text' ? (
         <ActionsToolbar
           streamMessage={streamMessage}
           isTextSelected={isSelectionActive || selectedBlocks !== undefined}
         />
       ) : null}
-      {currentArtifactContent.type === "code" ? (
+      {currentArtifactContent.type === 'code' ? (
         <CodeToolBar
           streamMessage={streamMessage}
           isTextSelected={isSelectionActive || selectedBlocks !== undefined}

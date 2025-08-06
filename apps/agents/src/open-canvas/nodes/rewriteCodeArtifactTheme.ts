@@ -1,26 +1,26 @@
-import { v4 as uuidv4 } from "uuid";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { AIMessage } from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import type { ArtifactCodeV3, ArtifactV3 } from '@workspace/shared/types';
+import {
+  getArtifactContent,
+  isArtifactCodeContent,
+} from '@workspace/shared/utils/artifacts';
 import {
   extractThinkingAndResponseTokens,
   isThinkingModel,
-} from "@workspace/shared/utils/thinking";
-import {
-  isArtifactCodeContent,
-  getArtifactContent,
-} from "@workspace/shared/utils/artifacts";
-import { ArtifactCodeV3, ArtifactV3 } from "@workspace/shared/types";
-import { getModelConfig, getModelFromConfig } from "../../utils.js";
+} from '@workspace/shared/utils/thinking';
+import { v4 as uuidv4 } from 'uuid';
+import { getModelConfig, getModelFromConfig } from '../../utils.js';
 import {
   ADD_COMMENTS_TO_CODE_ARTIFACT_PROMPT,
   ADD_LOGS_TO_CODE_ARTIFACT_PROMPT,
   FIX_BUGS_CODE_ARTIFACT_PROMPT,
   PORT_LANGUAGE_CODE_ARTIFACT_PROMPT,
-} from "../prompts.js";
-import {
+} from '../prompts.js';
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../state.js";
-import { AIMessage } from "@langchain/core/messages";
+} from '../state.js';
 
 export const rewriteCodeArtifactTheme = async (
   state: typeof OpenCanvasGraphAnnotation.State,
@@ -33,45 +33,45 @@ export const rewriteCodeArtifactTheme = async (
     ? getArtifactContent(state.artifact)
     : undefined;
   if (!currentArtifactContent) {
-    throw new Error("No artifact found");
+    throw new Error('No artifact found');
   }
   if (!isArtifactCodeContent(currentArtifactContent)) {
-    throw new Error("Current artifact content is not code");
+    throw new Error('Current artifact content is not code');
   }
 
-  let formattedPrompt = "";
+  let formattedPrompt = '';
   if (state.addComments) {
     formattedPrompt = ADD_COMMENTS_TO_CODE_ARTIFACT_PROMPT;
   } else if (state.portLanguage) {
-    let newLanguage = "";
+    let newLanguage = '';
     switch (state.portLanguage) {
-      case "typescript":
-        newLanguage = "TypeScript";
+      case 'typescript':
+        newLanguage = 'TypeScript';
         break;
-      case "javascript":
-        newLanguage = "JavaScript";
+      case 'javascript':
+        newLanguage = 'JavaScript';
         break;
-      case "cpp":
-        newLanguage = "C++";
+      case 'cpp':
+        newLanguage = 'C++';
         break;
-      case "java":
-        newLanguage = "Java";
+      case 'java':
+        newLanguage = 'Java';
         break;
-      case "php":
-        newLanguage = "PHP";
+      case 'php':
+        newLanguage = 'PHP';
         break;
-      case "python":
-        newLanguage = "Python";
+      case 'python':
+        newLanguage = 'Python';
         break;
-      case "html":
-        newLanguage = "HTML";
+      case 'html':
+        newLanguage = 'HTML';
         break;
-      case "sql":
-        newLanguage = "SQL";
+      case 'sql':
+        newLanguage = 'SQL';
         break;
     }
     formattedPrompt = PORT_LANGUAGE_CODE_ARTIFACT_PROMPT.replace(
-      "{newLanguage}",
+      '{newLanguage}',
       newLanguage
     );
   } else if (state.addLogs) {
@@ -79,17 +79,17 @@ export const rewriteCodeArtifactTheme = async (
   } else if (state.fixBugs) {
     formattedPrompt = FIX_BUGS_CODE_ARTIFACT_PROMPT;
   } else {
-    throw new Error("No theme selected");
+    throw new Error('No theme selected');
   }
 
   // Insert the code into the artifact placeholder in the prompt
   formattedPrompt = formattedPrompt.replace(
-    "{artifactContent}",
+    '{artifactContent}',
     currentArtifactContent.code
   );
 
   const newArtifactValues = await smallModel.invoke([
-    { role: "user", content: formattedPrompt },
+    { role: 'user', content: formattedPrompt },
   ]);
 
   let thinkingMessage: AIMessage | undefined;
@@ -107,7 +107,7 @@ export const rewriteCodeArtifactTheme = async (
 
   const newArtifactContent: ArtifactCodeV3 = {
     index: state.artifact.contents.length + 1,
-    type: "code",
+    type: 'code',
     title: currentArtifactContent.title,
     // Ensure the new artifact's language is updated, if necessary
     language: state.portLanguage || currentArtifactContent.language,

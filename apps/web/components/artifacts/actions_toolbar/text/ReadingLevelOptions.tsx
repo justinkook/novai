@@ -1,13 +1,15 @@
+import type {
+  GraphInput,
+  ReadingLevelOptions as ReadingLevelOptionsType,
+} from '@workspace/shared/types';
 import {
   Baby,
   GraduationCap,
   PersonStanding,
   School,
   Swords,
-} from "lucide-react";
-import { ReadingLevelOptions as ReadingLevelOptionsType } from "@workspace/shared/types";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { GraphInput } from "@workspace/shared/types";
+} from 'lucide-react';
+import { TooltipIconButton } from '@/components/assistant-ui/tooltip-icon-button';
 
 export interface ReadingLevelOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -30,7 +32,7 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="PhD"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("phd")}
+        onClick={async () => await handleSubmit('phd')}
       >
         <GraduationCap />
       </TooltipIconButton>
@@ -38,7 +40,7 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="College"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("college")}
+        onClick={async () => await handleSubmit('college')}
       >
         <School />
       </TooltipIconButton>
@@ -46,7 +48,7 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Teenager"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("teenager")}
+        onClick={async () => await handleSubmit('teenager')}
       >
         <PersonStanding />
       </TooltipIconButton>
@@ -54,7 +56,7 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Child"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("child")}
+        onClick={async () => await handleSubmit('child')}
       >
         <Baby />
       </TooltipIconButton>
@@ -62,7 +64,7 @@ export function ReadingLevelOptions(props: ReadingLevelOptionsProps) {
         tooltip="Pirate"
         variant="ghost"
         className="transition-colors w-[36px] h-[36px]"
-        onClick={async () => await handleSubmit("pirate")}
+        onClick={async () => await handleSubmit('pirate')}
       >
         <Swords />
       </TooltipIconButton>

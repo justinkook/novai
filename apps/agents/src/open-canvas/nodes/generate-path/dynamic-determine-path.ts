@@ -1,21 +1,21 @@
+import type { BaseMessage } from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { getArtifactContent } from '@workspace/shared/utils/artifacts';
+import { traceable } from 'langsmith/traceable';
+import z from 'zod';
 import {
-  ROUTE_QUERY_PROMPT,
-  ROUTE_QUERY_OPTIONS_HAS_ARTIFACTS,
-  ROUTE_QUERY_OPTIONS_NO_ARTIFACTS,
-  CURRENT_ARTIFACT_PROMPT,
-  NO_ARTIFACT_PROMPT,
-} from "../../prompts.js";
-import { OpenCanvasGraphAnnotation } from "../../state.js";
-import {
+  createContextDocumentMessages,
   formatArtifactContentWithTemplate,
   getModelFromConfig,
-  createContextDocumentMessages,
-} from "../../../utils.js";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import z from "zod";
-import { BaseMessage } from "@langchain/core/messages";
-import { traceable } from "langsmith/traceable";
+} from '../../../utils.js';
+import {
+  CURRENT_ARTIFACT_PROMPT,
+  NO_ARTIFACT_PROMPT,
+  ROUTE_QUERY_OPTIONS_HAS_ARTIFACTS,
+  ROUTE_QUERY_OPTIONS_NO_ARTIFACTS,
+  ROUTE_QUERY_PROMPT,
+} from '../../prompts.js';
+import type { OpenCanvasGraphAnnotation } from '../../state.js';
 
 interface DynamicDeterminePathParams {
   state: typeof OpenCanvasGraphAnnotation.State;
@@ -37,20 +37,20 @@ async function dynamicDeterminePathFunc({
 
   // Call model and decide if we need to respond to a users query, or generate a new artifact
   const formattedPrompt = ROUTE_QUERY_PROMPT.replace(
-    "{artifactOptions}",
+    '{artifactOptions}',
     currentArtifactContent
       ? ROUTE_QUERY_OPTIONS_HAS_ARTIFACTS
       : ROUTE_QUERY_OPTIONS_NO_ARTIFACTS
   )
     .replace(
-      "{recentMessages}",
+      '{recentMessages}',
       state._messages
         .slice(-3)
         .map((message) => `${message.getType()}: ${message.content}`)
-        .join("\n\n")
+        .join('\n\n')
     )
     .replace(
-      "{currentArtifactPrompt}",
+      '{currentArtifactPrompt}',
       currentArtifactContent
         ? formatArtifactContentWithTemplate(
             CURRENT_ARTIFACT_PROMPT,
@@ -60,8 +60,8 @@ async function dynamicDeterminePathFunc({
     );
 
   const artifactRoute = currentArtifactContent
-    ? "rewriteArtifact"
-    : "generateArtifact";
+    ? 'rewriteArtifact'
+    : 'generateArtifact';
 
   const model = await getModelFromConfig(config, {
     temperature: 0,
@@ -70,20 +70,20 @@ async function dynamicDeterminePathFunc({
 
   const schema = z.object({
     route: z
-      .enum(["replyToGeneralInput", artifactRoute])
+      .enum(['replyToGeneralInput', artifactRoute])
       .describe("The route to take based on the user's query."),
   });
 
   const modelWithTool = model.bindTools(
     [
       {
-        name: "route_query",
+        name: 'route_query',
         description: "The route to take based on the user's query.",
         schema,
       },
     ],
     {
-      tool_choice: "route_query",
+      tool_choice: 'route_query',
     }
   );
 
@@ -92,7 +92,7 @@ async function dynamicDeterminePathFunc({
     ...contextDocumentMessages,
     ...(newMessages.length ? newMessages : []),
     {
-      role: "user",
+      role: 'user',
       content: formattedPrompt,
     },
   ]);
@@ -101,5 +101,5 @@ async function dynamicDeterminePathFunc({
 }
 
 export const dynamicDeterminePath = traceable(dynamicDeterminePathFunc, {
-  name: "dynamic_determine_path",
+  name: 'dynamic_determine_path',
 });

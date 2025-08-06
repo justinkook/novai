@@ -1,10 +1,13 @@
-import { ReflectionsDialog } from "../../reflections-dialog/ReflectionsDialog";
-import { ArtifactTitle } from "./artifact-title";
-import { NavigateArtifactHistory } from "./navigate-artifact-history";
-import { ArtifactCodeV3, ArtifactMarkdownV3 } from "@workspace/shared/types";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { PanelRightClose } from "lucide-react";
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
+import type { Assistant } from '@langchain/langgraph-sdk';
+import type {
+  ArtifactCodeV3,
+  ArtifactMarkdownV3,
+} from '@workspace/shared/types';
+import { PanelRightClose } from 'lucide-react';
+import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
+import { ReflectionsDialog } from '../../reflections-dialog/ReflectionsDialog';
+import { ArtifactTitle } from './artifact-title';
+import { NavigateArtifactHistory } from './navigate-artifact-history';
 
 interface ArtifactHeaderProps {
   isBackwardsDisabled: boolean;

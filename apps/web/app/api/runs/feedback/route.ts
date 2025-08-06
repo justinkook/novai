@@ -1,5 +1,5 @@
-import { Client, Feedback } from "langsmith";
-import { NextRequest, NextResponse } from "next/server";
+import { Client, type Feedback } from 'langsmith';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
     if (!runId || !feedbackKey) {
       return NextResponse.json(
-        { error: "`runId` and `feedbackKey` are required." },
+        { error: '`runId` and `feedbackKey` are required.' },
         { status: 400 }
       );
     }
@@ -27,10 +27,10 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Failed to process feedback request:", error);
+    console.error('Failed to process feedback request:', error);
 
     return NextResponse.json(
-      { error: "Failed to submit feedback." },
+      { error: 'Failed to submit feedback.' },
       { status: 500 }
     );
   }
@@ -39,17 +39,17 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const runId = searchParams.get("runId");
-    const feedbackKey = searchParams.get("feedbackKey");
+    const runId = searchParams.get('runId');
+    const feedbackKey = searchParams.get('feedbackKey');
 
     if (!runId || !feedbackKey) {
       return new NextResponse(
         JSON.stringify({
-          error: "`runId` and `feedbackKey` are required.",
+          error: '`runId` and `feedbackKey` are required.',
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -75,13 +75,13 @@ export async function GET(req: NextRequest) {
       }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   } catch (error) {
-    console.error("Failed to fetch feedback:", error);
+    console.error('Failed to fetch feedback:', error);
     return NextResponse.json(
-      { error: "Failed to fetch feedback." },
+      { error: 'Failed to fetch feedback.' },
       { status: 500 }
     );
   }

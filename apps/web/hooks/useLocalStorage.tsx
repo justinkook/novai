@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 type SetValue<T> = T | ((val: T) => T);
 
@@ -9,7 +9,7 @@ function useLocalStorage<T>(
   // Get from local storage then
   // parse stored json or return initialValue
   const readValue = useCallback((): T => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return initialValue;
     }
 
@@ -38,7 +38,7 @@ function useLocalStorage<T>(
       setStoredValue(valueToStore);
 
       // Save to local storage
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {

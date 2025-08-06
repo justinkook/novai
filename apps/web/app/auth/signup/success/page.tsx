@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { UserProvider } from "@/contexts/UserContext";
-import { SignupSuccess } from "@/components/auth/signup/success";
+import { SignupSuccess } from '@/components/auth/signup/success';
+import { UserProvider } from '@/contexts/UserContext';
 
 export default function Page() {
   return (

@@ -1,15 +1,15 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import type { Assistant } from '@langchain/langgraph-sdk';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import styles from "./edit-delete-dropdown.module.css";
+} from '@workspace/ui/components/dropdown-menu';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react';
+import { type Dispatch, type SetStateAction, useState } from 'react';
+import { TooltipIconButton } from '../ui/assistant-ui/tooltip-icon-button';
+import styles from './edit-delete-dropdown.module.css';
 
 interface EditDeleteDropdownProps {
   setEditModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -35,7 +35,7 @@ export function EditDeleteDropdown({
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
-  const tooltipText = allowDelete ? "Edit/Delete" : "Edit";
+  const tooltipText = allowDelete ? 'Edit/Delete' : 'Edit';
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -68,14 +68,14 @@ export function EditDeleteDropdown({
               const res = await deleteAssistant(selectedAssistant.assistant_id);
               if (res) {
                 toast({
-                  title: "Assistant deleted",
+                  title: 'Assistant deleted',
                   duration: 5000,
                 });
               } else {
                 toast({
-                  title: "Error",
-                  description: "Failed to delete the assistant.",
-                  variant: "destructive",
+                  title: 'Error',
+                  description: 'Failed to delete the assistant.',
+                  variant: 'destructive',
                   duration: 5000,
                 });
               }

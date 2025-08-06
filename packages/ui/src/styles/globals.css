@@ -123,9 +123,7 @@
 }
 
 .artifact-content {
-  line-height: calc(
-    1.625em + 2px
-  ); /* Adjust the base value (1.625em) if needed */
+  line-height: calc(1.625em + 2px); /* Adjust the base value (1.625em) if needed */
 }
 
 .inline-code {

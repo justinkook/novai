@@ -1,22 +1,21 @@
+import { GearIcon, ResetIcon } from '@radix-ui/react-icons';
+import {
+  type ALL_MODEL_NAMES,
+  TEMPERATURE_EXCLUDED_MODELS,
+} from '@workspace/shared/models';
+import type {
+  CustomModelConfig,
+  ModelConfigurationParams,
+} from '@workspace/shared/types';
+import { Button } from '@workspace/ui/components/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@workspace/ui/components/popover";
-import {
-  CustomModelConfig,
-  ModelConfigurationParams,
-} from "@workspace/shared/types";
-
-import { Button } from "@workspace/ui/components/button";
-import { Slider } from "@workspace/ui/components/slider";
-import {
-  ALL_MODEL_NAMES,
-  TEMPERATURE_EXCLUDED_MODELS,
-} from "@workspace/shared/models";
-import { cn } from "@workspace/ui/lib/utils";
-import { GearIcon, ResetIcon } from "@radix-ui/react-icons";
-import { useCallback } from "react";
+} from '@workspace/ui/components/popover';
+import { Slider } from '@workspace/ui/components/slider';
+import { cn } from '@workspace/ui/lib/utils';
+import { useCallback } from 'react';
 
 interface ModelConfigPanelProps {
   model: ModelConfigurationParams;
@@ -93,7 +92,7 @@ export function ModelConfigPanel({
       <PopoverContent
         side="right"
         align="start"
-        className={cn("w-80 p-6 rounded-xl shadow-lg", className)}
+        className={cn('w-80 p-6 rounded-xl shadow-lg', className)}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="grid gap-4">
@@ -148,15 +147,15 @@ const ModelSettingSlider = ({
   <div className="space-y-2">
     <h4
       className={cn(
-        "font-semibold leading-none text-base",
-        disabled && "opacity-50"
+        'font-semibold leading-none text-base',
+        disabled && 'opacity-50'
       )}
     >
       {title}
-      {disabled && " (disabled)"}
+      {disabled && ' (disabled)'}
     </h4>
     <p
-      className={cn("text-sm text-muted-foreground", disabled && "opacity-50")}
+      className={cn('text-sm text-muted-foreground', disabled && 'opacity-50')}
     >
       {description}
     </p>
@@ -168,7 +167,7 @@ const ModelSettingSlider = ({
       onValueChange={onChange}
       disabled={disabled}
     />
-    <div className={cn("text-right text-sm", disabled && "opacity-50")}>
+    <div className={cn('text-right text-sm', disabled && 'opacity-50')}>
       {disabled ? range.min : value}
     </div>
   </div>

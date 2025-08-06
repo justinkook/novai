@@ -1,4 +1,4 @@
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from '@workspace/ui/lib/utils';
 
 export const MagicPencilSVG = ({ className }: { className?: string }) => (
   <svg
@@ -7,7 +7,7 @@ export const MagicPencilSVG = ({ className }: { className?: string }) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={cn("text-token-primary m-auto icon-lg", className)}
+    className={cn('text-token-primary m-auto icon-lg', className)}
     role="img"
     aria-label="Magic Pencil"
   >
@@ -31,6 +31,6 @@ export const MagicPencilSVG = ({ className }: { className?: string }) => (
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-    ></path>{" "}
+    ></path>{' '}
   </svg>
 );

@@ -1,6 +1,6 @@
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import { Reflections } from "@workspace/shared/types";
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import type { Reflections } from '@workspace/shared/types';
+import { getArtifactContent } from '@workspace/shared/utils/artifacts';
 import {
   createContextDocumentMessages,
   ensureStoreInConfig,
@@ -8,12 +8,12 @@ import {
   formatReflections,
   getModelFromConfig,
   isUsingO1MiniModel,
-} from "../../utils.js";
-import { CURRENT_ARTIFACT_PROMPT, NO_ARTIFACT_PROMPT } from "../prompts.js";
-import {
+} from '../../utils.js';
+import { CURRENT_ARTIFACT_PROMPT, NO_ARTIFACT_PROMPT } from '../prompts.js';
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
-} from "../state.js";
+} from '../state.js';
 
 /**
  * Generate responses to questions. Does not generate artifacts.
@@ -42,19 +42,19 @@ You also have the following reflections on style guidelines and general memories
   const store = ensureStoreInConfig(config);
   const assistantId = config.configurable?.assistant_id;
   if (!assistantId) {
-    throw new Error("`assistant_id` not found in configurable");
+    throw new Error('`assistant_id` not found in configurable');
   }
-  const memoryNamespace = ["memories", assistantId];
-  const memoryKey = "reflection";
+  const memoryNamespace = ['memories', assistantId];
+  const memoryKey = 'reflection';
   const memories = await store.get(memoryNamespace, memoryKey);
   const memoriesAsString = memories?.value
     ? formatReflections(memories.value as Reflections)
-    : "No reflections found.";
+    : 'No reflections found.';
 
   const formattedPrompt = prompt
-    .replace("{reflections}", memoriesAsString)
+    .replace('{reflections}', memoriesAsString)
     .replace(
-      "{currentArtifactPrompt}",
+      '{currentArtifactPrompt}',
       currentArtifactContent
         ? formatArtifactContentWithTemplate(
             CURRENT_ARTIFACT_PROMPT,
@@ -66,7 +66,7 @@ You also have the following reflections on style guidelines and general memories
   const contextDocumentMessages = await createContextDocumentMessages(config);
   const isO1MiniModel = isUsingO1MiniModel(config);
   const response = await smallModel.invoke([
-    { role: isO1MiniModel ? "user" : "system", content: formattedPrompt },
+    { role: isO1MiniModel ? 'user' : 'system', content: formattedPrompt },
     ...contextDocumentMessages,
     ...state._messages,
   ]);

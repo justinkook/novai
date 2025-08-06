@@ -1,6 +1,6 @@
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { Client } from "@langchain/langgraph-sdk";
-import { OpenCanvasGraphAnnotation } from "../state.js";
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { Client } from '@langchain/langgraph-sdk';
+import type { OpenCanvasGraphAnnotation } from '../state.js';
 
 export const generateTitleNode = async (
   state: typeof OpenCanvasGraphAnnotation.State,
@@ -31,14 +31,14 @@ export const generateTitleNode = async (
     const newThread = await langGraphClient.threads.create();
 
     // Create a new title generation run in the background
-    await langGraphClient.runs.create(newThread.thread_id, "thread_title", {
+    await langGraphClient.runs.create(newThread.thread_id, 'thread_title', {
       input: titleInput,
       config: titleConfig,
-      multitaskStrategy: "enqueue",
+      multitaskStrategy: 'enqueue',
       afterSeconds: 0,
     });
   } catch (e) {
-    console.error("Failed to call generate title graph\n\n", e);
+    console.error('Failed to call generate title graph\n\n', e);
   }
 
   return {};

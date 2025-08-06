@@ -1,32 +1,32 @@
-import { v4 as uuidv4 } from 'uuid';
-import { isArtifactCodeContent } from '@workspace/shared/utils/artifacts';
-import {
-  CustomModelConfig,
-  ArtifactCodeV3,
-  ArtifactMarkdownV3,
-  Reflections,
-  ContextDocument,
-  SearchResult,
-} from '@workspace/shared/types';
-import { BaseStore, LangGraphRunnableConfig } from '@langchain/langgraph';
-import { initChatModel } from 'langchain/chat_models/universal';
-import pdfParse from 'pdf-parse';
 import {
   AIMessage,
-  BaseMessage,
-  MessageContent,
-  MessageContentComplex,
-  MessageFieldWithRole,
+  type BaseMessage,
+  type MessageContent,
+  type MessageContentComplex,
+  type MessageFieldWithRole,
 } from '@langchain/core/messages';
+import type { BaseStore, LangGraphRunnableConfig } from '@langchain/langgraph';
+import { createClient, type Session, type User } from '@supabase/supabase-js';
 import {
   CONTEXT_DOCUMENTS_NAMESPACE,
   OC_WEB_SEARCH_RESULTS_MESSAGE_KEY,
 } from '@workspace/shared/constants';
 import {
-  TEMPERATURE_EXCLUDED_MODELS,
   LANGCHAIN_USER_ONLY_MODELS,
+  TEMPERATURE_EXCLUDED_MODELS,
 } from '@workspace/shared/models';
-import { createClient, Session, User } from '@supabase/supabase-js';
+import type {
+  ArtifactCodeV3,
+  ArtifactMarkdownV3,
+  ContextDocument,
+  CustomModelConfig,
+  Reflections,
+  SearchResult,
+} from '@workspace/shared/types';
+import { isArtifactCodeContent } from '@workspace/shared/utils/artifacts';
+import { initChatModel } from 'langchain/chat_models/universal';
+import pdfParse from 'pdf-parse';
+import { v4 as uuidv4 } from 'uuid';
 
 export const formatReflections = (
   reflections: Reflections,

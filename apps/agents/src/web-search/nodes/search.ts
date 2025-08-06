@@ -1,7 +1,7 @@
-import { SearchResult } from '@workspace/shared/types';
-import { WebSearchState } from '../state.js';
-import ExaClient from 'exa-js';
 import { ExaRetriever } from '@langchain/exa';
+import type { SearchResult } from '@workspace/shared/types';
+import ExaClient from 'exa-js';
+import type { WebSearchState } from '../state.js';
 
 export async function search(
   state: WebSearchState

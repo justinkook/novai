@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { cn } from "@workspace/ui/lib/utils";
-import NextImage from "next/image";
-import Link from "next/link";
-import { buttonVariants } from "@workspace/ui/components/button";
-import { UserAuthForm } from "./user-auth-form-signup";
-import { signup } from "./actions";
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { useSearchParams, useRouter } from "next/navigation";
+import { buttonVariants } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
+import NextImage from 'next/image';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { createSupabaseClient } from '@/lib/supabase/client';
+import { signup } from './actions';
+import { UserAuthForm } from './user-auth-form-signup';
 
 export interface SignupWithEmailInput {
   email: string;
@@ -19,12 +19,12 @@ export function Signup() {
   const router = useRouter();
 
   useEffect(() => {
-    const error = searchParams.get("error");
-    if (error === "true") {
+    const error = searchParams.get('error');
+    if (error === 'true') {
       setIsError(true);
       // Remove the error parameter from the URL
       const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.delete("error");
+      newSearchParams.delete('error');
       router.replace(
         `${window.location.pathname}?${newSearchParams.toString()}`,
         { scroll: false }
@@ -40,12 +40,12 @@ export function Signup() {
   };
 
   const onSignupWithOauth = async (
-    provider: "google" | "github"
+    provider: 'google' | 'github'
   ): Promise<void> => {
     setIsError(false);
     const client = createSupabaseClient();
     const currentOrigin =
-      typeof window !== "undefined" ? window.location.origin : "";
+      typeof window !== 'undefined' ? window.location.origin : '';
     await client.auth.signInWithOAuth({
       provider,
       options: {
@@ -59,8 +59,8 @@ export function Signup() {
       <Link
         href="/auth/login"
         className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "absolute md:flex hidden right-4 top-4 md:right-8 md:top-8"
+          buttonVariants({ variant: 'ghost' }),
+          'absolute md:flex hidden right-4 top-4 md:right-8 md:top-8'
         )}
       >
         Login
@@ -87,8 +87,8 @@ export function Signup() {
             <Link
               href="/auth/login"
               className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "md:hidden flex"
+                buttonVariants({ variant: 'ghost' }),
+                'md:hidden flex'
               )}
             >
               Login

@@ -1,32 +1,31 @@
-"use client";
+'use client';
 
+import {
+  ActionBarPrimitive,
+  getExternalStoreMessage,
+  MessagePrimitive,
+  type MessageState,
+  useMessage,
+} from '@assistant-ui/react';
+import type { HumanMessage } from '@langchain/core/messages';
+import { OC_HIDE_FROM_UI_KEY } from '@workspace/shared/constants';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@workspace/ui/components/accordion";
-import {
-  ActionBarPrimitive,
-  getExternalStoreMessage,
-  MessagePrimitive,
-  MessageState,
-  useMessage,
-} from "@assistant-ui/react";
-import React, { Dispatch, SetStateAction, type FC } from "react";
-
-import { MarkdownText } from "@/components/ui/assistant-ui/markdown-text";
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
-import { FeedbackButton } from "./feedback";
-import { TighterText } from "@workspace/ui/components/header";
-import { useFeedback } from "@/hooks/useFeedback";
-import { ContextDocumentsUI } from "../tool-hooks/AttachmentsToolUI";
-import { HumanMessage } from "@langchain/core/messages";
-import { OC_HIDE_FROM_UI_KEY } from "@workspace/shared/constants";
-import { Button } from "@workspace/ui/components/button";
-import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/lib/constants";
-import { Globe } from "lucide-react";
-import { useQueryState } from "nuqs";
+} from '@workspace/ui/components/accordion';
+import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
+import { Button } from '@workspace/ui/components/button';
+import { TighterText } from '@workspace/ui/components/header';
+import { Globe } from 'lucide-react';
+import { useQueryState } from 'nuqs';
+import React, { type Dispatch, type FC, type SetStateAction } from 'react';
+import { MarkdownText } from '@/components/ui/assistant-ui/markdown-text';
+import { useFeedback } from '@/hooks/useFeedback';
+import { WEB_SEARCH_RESULTS_QUERY_PARAM } from '@/lib/constants';
+import { ContextDocumentsUI } from '../tool-hooks/AttachmentsToolUI';
+import { FeedbackButton } from './feedback';
 
 interface AssistantMessageProps {
   runId: string | undefined;
@@ -40,17 +39,17 @@ const ThinkingAssistantMessageComponent = ({
   message: MessageState;
 }): React.ReactElement => {
   const { id, content } = message;
-  let contentText = "";
-  if (typeof content === "string") {
+  let contentText = '';
+  if (typeof content === 'string') {
     contentText = content;
   } else {
     const firstItem = content?.[0];
-    if (firstItem?.type === "text") {
+    if (firstItem?.type === 'text') {
       contentText = firstItem.text;
     }
   }
 
-  if (contentText === "") {
+  if (contentText === '') {
     return <></>;
   }
 
@@ -107,8 +106,8 @@ export const AssistantMessage: FC<AssistantMessageProps> = ({
 }) => {
   const message = useMessage();
   const { isLast } = message;
-  const isThinkingMessage = message.id.startsWith("thinking-");
-  const isWebSearchMessage = message.id.startsWith("web-search-results-");
+  const isThinkingMessage = message.id.startsWith('thinking-');
+  const isWebSearchMessage = message.id.startsWith('web-search-results-');
 
   if (isThinkingMessage) {
     return <ThinkingAssistantMessage message={message} />;

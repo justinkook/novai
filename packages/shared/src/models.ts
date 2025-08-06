@@ -1,12 +1,12 @@
-import { CustomModelConfig, ModelConfigurationParams } from "./types.js";
+import { CustomModelConfig, ModelConfigurationParams } from './types.js';
 
 const AZURE_MODELS: ModelConfigurationParams[] = [
   {
-    name: "azure/gpt-4o-mini",
-    label: "GPT-4o mini (Azure)",
+    name: 'azure/gpt-4o-mini',
+    label: 'GPT-4o mini (Azure)',
     isNew: false,
     config: {
-      provider: "azure_openai",
+      provider: 'azure_openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -25,10 +25,10 @@ const AZURE_MODELS: ModelConfigurationParams[] = [
 
 const OPENAI_MODELS: ModelConfigurationParams[] = [
   {
-    name: "gpt-4.1",
-    label: "GPT 4.1",
+    name: 'gpt-4.1',
+    label: 'GPT 4.1',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -45,10 +45,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "gpt-4.1-mini",
-    label: "GPT 4.1 mini",
+    name: 'gpt-4.1-mini',
+    label: 'GPT 4.1 mini',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -65,10 +65,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "o4-mini",
-    label: "o4 mini",
+    name: 'o4-mini',
+    label: 'o4 mini',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -85,10 +85,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "gpt-4o",
-    label: "GPT 4o",
+    name: 'gpt-4o',
+    label: 'GPT 4o',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -105,10 +105,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "gpt-4o-mini",
-    label: "GPT 4o mini",
+    name: 'gpt-4o-mini',
+    label: 'GPT 4o mini',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -125,10 +125,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "gpt-4.5-preview",
-    label: "GPT 4.5",
+    name: 'gpt-4.5-preview',
+    label: 'GPT 4.5',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -145,10 +145,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "o3-mini",
-    label: "o3 mini",
+    name: 'o3-mini',
+    label: 'o3 mini',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -165,10 +165,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "o1-mini",
-    label: "o1 mini",
+    name: 'o1-mini',
+    label: 'o1 mini',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -185,10 +185,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "o1",
-    label: "o1",
+    name: 'o1',
+    label: 'o1',
     config: {
-      provider: "openai",
+      provider: 'openai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -211,10 +211,10 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
  */
 const OLLAMA_MODELS = [
   {
-    name: "ollama-llama3.3",
-    label: "Llama 3.3 70B (local)",
+    name: 'ollama-llama3.3',
+    label: 'Llama 3.3 70B (local)',
     config: {
-      provider: "ollama",
+      provider: 'ollama',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -234,10 +234,10 @@ const OLLAMA_MODELS = [
 
 const ANTHROPIC_MODELS = [
   {
-    name: "claude-sonnet-4-0",
-    label: "Claude Sonnet 4",
+    name: 'claude-sonnet-4-0',
+    label: 'Claude Sonnet 4',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -254,10 +254,10 @@ const ANTHROPIC_MODELS = [
     isNew: true,
   },
   {
-    name: "claude-opus-4-0",
-    label: "Claude Opus 4",
+    name: 'claude-opus-4-0',
+    label: 'Claude Opus 4',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -274,10 +274,10 @@ const ANTHROPIC_MODELS = [
     isNew: true,
   },
   {
-    name: "claude-3-7-sonnet-latest",
-    label: "Claude 3.7 Sonnet",
+    name: 'claude-3-7-sonnet-latest',
+    label: 'Claude 3.7 Sonnet',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -294,10 +294,10 @@ const ANTHROPIC_MODELS = [
     isNew: false,
   },
   {
-    name: "claude-3-5-sonnet-latest",
-    label: "Claude 3.5 Sonnet",
+    name: 'claude-3-5-sonnet-latest',
+    label: 'Claude 3.5 Sonnet',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -314,10 +314,10 @@ const ANTHROPIC_MODELS = [
     isNew: false,
   },
   {
-    name: "claude-3-5-haiku-20241022",
-    label: "Claude 3.5 Haiku",
+    name: 'claude-3-5-haiku-20241022',
+    label: 'Claude 3.5 Haiku',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -334,10 +334,10 @@ const ANTHROPIC_MODELS = [
     isNew: false,
   },
   {
-    name: "claude-3-haiku-20240307",
-    label: "Claude 3 Haiku (old)",
+    name: 'claude-3-haiku-20240307',
+    label: 'Claude 3 Haiku (old)',
     config: {
-      provider: "anthropic",
+      provider: 'anthropic',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -357,10 +357,10 @@ const ANTHROPIC_MODELS = [
 
 const FIREWORKS_MODELS: ModelConfigurationParams[] = [
   {
-    name: "accounts/fireworks/models/llama-v3p3-70b-instruct",
-    label: "Llama 3.3 70B",
+    name: 'accounts/fireworks/models/llama-v3p3-70b-instruct',
+    label: 'Llama 3.3 70B',
     config: {
-      provider: "fireworks",
+      provider: 'fireworks',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -377,10 +377,10 @@ const FIREWORKS_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "accounts/fireworks/models/llama-v3p1-70b-instruct",
-    label: "Llama 70B (old)",
+    name: 'accounts/fireworks/models/llama-v3p1-70b-instruct',
+    label: 'Llama 70B (old)',
     config: {
-      provider: "fireworks",
+      provider: 'fireworks',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -397,10 +397,10 @@ const FIREWORKS_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "accounts/fireworks/models/deepseek-v3",
-    label: "DeepSeek V3",
+    name: 'accounts/fireworks/models/deepseek-v3',
+    label: 'DeepSeek V3',
     config: {
-      provider: "fireworks",
+      provider: 'fireworks',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -417,10 +417,10 @@ const FIREWORKS_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "accounts/fireworks/models/deepseek-r1",
-    label: "DeepSeek R1",
+    name: 'accounts/fireworks/models/deepseek-r1',
+    label: 'DeepSeek R1',
     config: {
-      provider: "fireworks",
+      provider: 'fireworks',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -440,10 +440,10 @@ const FIREWORKS_MODELS: ModelConfigurationParams[] = [
 
 const GROQ_MODELS: ModelConfigurationParams[] = [
   {
-    name: "groq/deepseek-r1-distill-llama-70b",
-    label: "DeepSeek R1 Llama 70b Distill",
+    name: 'groq/deepseek-r1-distill-llama-70b',
+    label: 'DeepSeek R1 Llama 70b Distill',
     config: {
-      provider: "groq",
+      provider: 'groq',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -463,10 +463,10 @@ const GROQ_MODELS: ModelConfigurationParams[] = [
 
 const GEMINI_MODELS: ModelConfigurationParams[] = [
   {
-    name: "gemini-2.5-flash-preview-05-20",
-    label: "Gemini 2.5 Flash (Preview)",
+    name: 'gemini-2.5-flash-preview-05-20',
+    label: 'Gemini 2.5 Flash (Preview)',
     config: {
-      provider: "google-genai",
+      provider: 'google-genai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -483,10 +483,10 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "gemini-2.5-pro-preview-05-06",
-    label: "Gemini 2.5 Pro (Preview)",
+    name: 'gemini-2.5-pro-preview-05-06',
+    label: 'Gemini 2.5 Pro (Preview)',
     config: {
-      provider: "google-genai",
+      provider: 'google-genai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -503,10 +503,10 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
     isNew: true,
   },
   {
-    name: "gemini-1.5-flash",
-    label: "Gemini 1.5 Flash",
+    name: 'gemini-1.5-flash',
+    label: 'Gemini 1.5 Flash',
     config: {
-      provider: "google-genai",
+      provider: 'google-genai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -523,10 +523,10 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "gemini-2.0-flash",
-    label: "Gemini 2.0 Flash",
+    name: 'gemini-2.0-flash',
+    label: 'Gemini 2.0 Flash',
     config: {
-      provider: "google-genai",
+      provider: 'google-genai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -543,10 +543,10 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
     isNew: false,
   },
   {
-    name: "gemini-2.0-flash-thinking-exp-01-21",
-    label: "Gemini 2.0 Flash Thinking",
+    name: 'gemini-2.0-flash-thinking-exp-01-21',
+    label: 'Gemini 2.0 Flash Thinking',
     config: {
-      provider: "google-genai",
+      provider: 'google-genai',
       temperatureRange: {
         min: 0,
         max: 1,
@@ -565,44 +565,44 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
 ];
 
 export const LANGCHAIN_USER_ONLY_MODELS = [
-  "o1",
-  "gpt-4o",
-  "gpt-4.5-preview",
-  "claude-3-5-sonnet-latest",
-  "claude-3-7-sonnet-latest",
-  "gemini-2.0-flash-thinking-exp-01-21",
-  "gemini-2.5-pro-preview-05-06",
-  "claude-sonnet-4-0",
-  "claude-opus-4-0",
-  "gpt-4.1",
+  'o1',
+  'gpt-4o',
+  'gpt-4.5-preview',
+  'claude-3-5-sonnet-latest',
+  'claude-3-7-sonnet-latest',
+  'gemini-2.0-flash-thinking-exp-01-21',
+  'gemini-2.5-pro-preview-05-06',
+  'claude-sonnet-4-0',
+  'claude-opus-4-0',
+  'gpt-4.1',
 ];
 
 // Models which do NOT support the temperature parameter.
 export const TEMPERATURE_EXCLUDED_MODELS = [
-  "o1-mini",
-  "o3-mini",
-  "o1",
-  "o4-mini",
+  'o1-mini',
+  'o3-mini',
+  'o1',
+  'o4-mini',
 ];
 
 // Models which do NOT stream back tool calls.
 export const NON_STREAMING_TOOL_CALLING_MODELS = [
-  "gemini-2.0-flash-exp",
-  "gemini-1.5-flash",
-  "gemini-2.5-pro-preview-05-06",
-  "gemini-2.5-flash-preview-05-20",
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-flash',
+  'gemini-2.5-pro-preview-05-06',
+  'gemini-2.5-flash-preview-05-20',
 ];
 
 // Models which do NOT stream back text.
 export const NON_STREAMING_TEXT_MODELS = [
-  "o1",
-  "gemini-2.0-flash-thinking-exp-01-21",
+  'o1',
+  'gemini-2.0-flash-thinking-exp-01-21',
 ];
 
 // Models which preform CoT before generating a final response.
 export const THINKING_MODELS = [
-  "accounts/fireworks/models/deepseek-r1",
-  "groq/deepseek-r1-distill-llama-70b",
+  'accounts/fireworks/models/deepseek-r1',
+  'groq/deepseek-r1-distill-llama-70b',
 ];
 
 export const ALL_MODELS: ModelConfigurationParams[] = [
@@ -615,13 +615,13 @@ export const ALL_MODELS: ModelConfigurationParams[] = [
   ...GROQ_MODELS,
 ];
 
-type OPENAI_MODEL_NAMES = (typeof OPENAI_MODELS)[number]["name"];
-type ANTHROPIC_MODEL_NAMES = (typeof ANTHROPIC_MODELS)[number]["name"];
-type FIREWORKS_MODEL_NAMES = (typeof FIREWORKS_MODELS)[number]["name"];
-type GEMINI_MODEL_NAMES = (typeof GEMINI_MODELS)[number]["name"];
-type AZURE_MODEL_NAMES = (typeof AZURE_MODELS)[number]["name"];
-type OLLAMA_MODEL_NAMES = (typeof OLLAMA_MODELS)[number]["name"];
-type GROQ_MODEL_NAMES = (typeof GROQ_MODELS)[number]["name"];
+type OPENAI_MODEL_NAMES = (typeof OPENAI_MODELS)[number]['name'];
+type ANTHROPIC_MODEL_NAMES = (typeof ANTHROPIC_MODELS)[number]['name'];
+type FIREWORKS_MODEL_NAMES = (typeof FIREWORKS_MODELS)[number]['name'];
+type GEMINI_MODEL_NAMES = (typeof GEMINI_MODELS)[number]['name'];
+type AZURE_MODEL_NAMES = (typeof AZURE_MODELS)[number]['name'];
+type OLLAMA_MODEL_NAMES = (typeof OLLAMA_MODELS)[number]['name'];
+type GROQ_MODEL_NAMES = (typeof GROQ_MODELS)[number]['name'];
 export type ALL_MODEL_NAMES =
   | OPENAI_MODEL_NAMES
   | ANTHROPIC_MODEL_NAMES

@@ -1,15 +1,11 @@
-import { v4 as uuidv4 } from "uuid";
+import { AIMessage } from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import { isArtifactMarkdownContent } from '@workspace/shared/utils/artifacts';
 import {
-  OpenCanvasGraphAnnotation,
-  OpenCanvasGraphReturnType,
-} from "../../state.js";
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { optionallyUpdateArtifactMeta } from "./update-meta.js";
-import {
-  buildPrompt,
-  createNewArtifactContent,
-  validateState,
-} from "./utils.js";
+  extractThinkingAndResponseTokens,
+  isThinkingModel,
+} from '@workspace/shared/utils/thinking';
+import { v4 as uuidv4 } from 'uuid';
 import {
   createContextDocumentMessages,
   getFormattedReflections,
@@ -17,13 +13,17 @@ import {
   getModelFromConfig,
   isUsingO1MiniModel,
   optionallyGetSystemPromptFromConfig,
-} from "../../../utils.js";
-import { isArtifactMarkdownContent } from "@workspace/shared/utils/artifacts";
-import { AIMessage } from "@langchain/core/messages";
+} from '../../../utils.js';
+import type {
+  OpenCanvasGraphAnnotation,
+  OpenCanvasGraphReturnType,
+} from '../../state.js';
+import { optionallyUpdateArtifactMeta } from './update-meta.js';
 import {
-  extractThinkingAndResponseTokens,
-  isThinkingModel,
-} from "@workspace/shared/utils/thinking";
+  buildPrompt,
+  createNewArtifactContent,
+  validateState,
+} from './utils.js';
 
 export const rewriteArtifact = async (
   state: typeof OpenCanvasGraphAnnotation.State,
@@ -31,7 +31,7 @@ export const rewriteArtifact = async (
 ): Promise<OpenCanvasGraphReturnType> => {
   const { modelName } = getModelConfig(config);
   const smallModelWithConfig = (await getModelFromConfig(config)).withConfig({
-    runName: "rewrite_artifact_model_call",
+    runName: 'rewrite_artifact_model_call',
   });
   const memoriesAsString = await getFormattedReflections(config);
   const { currentArtifactContent, recentHumanMessage } = validateState(state);
@@ -62,7 +62,7 @@ export const rewriteArtifact = async (
   const contextDocumentMessages = await createContextDocumentMessages(config);
   const isO1MiniModel = isUsingO1MiniModel(config);
   const newArtifactResponse = await smallModelWithConfig.invoke([
-    { role: isO1MiniModel ? "user" : "system", content: fullSystemPrompt },
+    { role: isO1MiniModel ? 'user' : 'system', content: fullSystemPrompt },
     ...contextDocumentMessages,
     recentHumanMessage,
   ]);

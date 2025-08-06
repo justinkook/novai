@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
+import { CircleCheck, CircleX, LoaderCircle } from 'lucide-react';
 
 interface ArtifactTitleProps {
   title: string;

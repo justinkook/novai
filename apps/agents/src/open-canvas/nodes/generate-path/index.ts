@@ -1,16 +1,16 @@
+import type { BaseMessage, HumanMessage } from '@langchain/core/messages';
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { extractUrls } from '@workspace/shared/utils/urls';
-import { LangGraphRunnableConfig } from '@langchain/langgraph';
-import {
+import { getStringFromContent } from '.././../../utils.js';
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from '../../state.js';
-import { BaseMessage, HumanMessage } from '@langchain/core/messages';
-import { dynamicDeterminePath } from './dynamic-determine-path.js';
 import {
   convertContextDocumentToHumanMessage,
   fixMisFormattedContextDocMessage,
 } from './documents.js';
-import { getStringFromContent } from '.././../../utils.js';
+import { dynamicDeterminePath } from './dynamic-determine-path.js';
 import { includeURLContents } from './include-url-contents.js';
 
 function extractURLsFromLastMessage(messages: BaseMessage[]): string[] {
@@ -121,7 +121,7 @@ export async function generatePath(
   // Check if any URLs are in the latest message. If true, determine if the contents should be included
   // inline in the prompt, and if so, scrape the contents and update the prompt.
   const messageUrls = extractURLsFromLastMessage(state._messages);
-  let updatedMessageWithContents: HumanMessage | undefined = undefined;
+  let updatedMessageWithContents: HumanMessage | undefined;
   if (messageUrls.length) {
     updatedMessageWithContents = await includeURLContents(
       state._messages[state._messages.length - 1] as HumanMessage,

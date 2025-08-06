@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { CirclePlus, Globe } from "lucide-react";
-import { useState } from "react";
-import { ComposerAddAttachment } from "../assistant-ui/attachment";
-import { AssistantSelect } from "../assistant-select";
-import { TooltipIconButton } from "../assistant-ui/tooltip-icon-button";
-import { cn } from "@workspace/ui/lib/utils";
-import { useGraphContext } from "@/contexts/GraphContext";
-import { useAssistantContext } from "@/contexts/AssistantContext";
+import { cn } from '@workspace/ui/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CirclePlus, Globe } from 'lucide-react';
+import { useState } from 'react';
+import { useAssistantContext } from '@/contexts/AssistantContext';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { AssistantSelect } from '../assistant-select';
+import { ComposerAddAttachment } from '../assistant-ui/attachment';
+import { TooltipIconButton } from '../assistant-ui/tooltip-icon-button';
 
 interface ComposerActionsPopOutProps {
   userId: string | undefined;
@@ -29,22 +29,22 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
     collapsed: {
       width:
         searchEnabled && !isDefaultSelected
-          ? "120px"
+          ? '120px'
           : searchEnabled
-            ? "80px"
+            ? '80px'
             : !isDefaultSelected
-              ? "80px"
-              : "40px",
+              ? '80px'
+              : '40px',
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 500,
         damping: 30,
       },
     },
     expanded: {
-      width: "160px",
+      width: '160px',
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 500,
         damping: 30,
       },
@@ -85,14 +85,14 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
       <motion.div
         className="rounded-full flex items-center h-8 justify-start px-2 py-5 bg-blue-50 overflow-hidden"
         variants={containerVariants}
-        animate={isExpanded ? "expanded" : "collapsed"}
+        animate={isExpanded ? 'expanded' : 'collapsed'}
         initial="collapsed"
       >
         <div className="flex items-center gap-2">
           <CirclePlus
             className={cn(
-              "size-6 flex-shrink-0",
-              isExpanded && "opacity-60 transition-all ease-in-out"
+              'size-6 flex-shrink-0',
+              isExpanded && 'opacity-60 transition-all ease-in-out'
             )}
           />
           {searchEnabled && (

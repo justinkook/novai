@@ -1,5 +1,5 @@
-import { cn } from "@workspace/ui/lib/utils";
-import { Skeleton } from "@workspace/ui/components/skeleton";
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { cn } from '@workspace/ui/lib/utils';
 
 export function ArtifactLoading() {
   return (
@@ -22,9 +22,9 @@ export function ArtifactLoading() {
             // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton mapping
             key={i}
             className={cn(
-              "h-5",
-              ["w-1/4", "w-1/3", "w-2/5", "w-1/2", "w-3/5", "w-2/3", "w-3/4"][
-              Math.floor(Math.random() * 7)
+              'h-5',
+              ['w-1/4', 'w-1/3', 'w-2/5', 'w-1/2', 'w-3/5', 'w-2/3', 'w-3/4'][
+                Math.floor(Math.random() * 7)
               ]
             )}
           />

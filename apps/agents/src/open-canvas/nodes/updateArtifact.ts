@@ -1,13 +1,13 @@
-import { LangGraphRunnableConfig } from '@langchain/langgraph';
-import {
-  getArtifactContent,
-  isArtifactCodeContent,
-} from '@workspace/shared/utils/artifacts';
-import {
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import type {
   ArtifactCodeV3,
   ArtifactV3,
   Reflections,
 } from '@workspace/shared/types';
+import {
+  getArtifactContent,
+  isArtifactCodeContent,
+} from '@workspace/shared/utils/artifacts';
 import {
   createContextDocumentMessages,
   ensureStoreInConfig,
@@ -17,7 +17,7 @@ import {
   isUsingO1MiniModel,
 } from '../../utils.js';
 import { UPDATE_HIGHLIGHTED_ARTIFACT_PROMPT } from '../prompts.js';
-import {
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from '../state.js';

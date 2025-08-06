@@ -3,20 +3,20 @@ import {
   CUSTOM_QUICK_ACTION_ARTIFACT_PROMPT_PREFIX,
   CUSTOM_QUICK_ACTION_CONVERSATION_CONTEXT,
   REFLECTIONS_QUICK_ACTION_PROMPT,
-} from "@workspace/shared/prompts/quick-actions";
+} from '@workspace/shared/prompts/quick-actions';
+import type { CustomQuickAction } from '@workspace/shared/types';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import { cn } from "@workspace/ui/lib/utils";
-import { CustomQuickAction } from "@workspace/shared/types";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+} from '@workspace/ui/components/tooltip';
+import { cn } from '@workspace/ui/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 
 interface FullPromptProps {
-  customQuickAction: Omit<CustomQuickAction, "id">;
+  customQuickAction: Omit<CustomQuickAction, 'id'>;
   setIncludeReflections: Dispatch<SetStateAction<boolean>>;
   setIncludePrefix: Dispatch<SetStateAction<boolean>>;
   setIncludeRecentHistory: Dispatch<SetStateAction<boolean>>;
@@ -67,12 +67,12 @@ const HighlightToDeleteText = (props: HighlightToDeleteTextProps) => {
                 transition={{
                   opacity: { duration: 0.2 },
                   scale: { duration: 0.2 },
-                  layout: { duration: 0.3, ease: "easeInOut" },
+                  layout: { duration: 0.3, ease: 'easeInOut' },
                 }}
                 className={cn(
-                  "inline-block cursor-pointer transition-colors duration-300 ease-in-out hover:bg-red-100",
-                  isDeleting ? "opacity-0 scale-95" : "opacity-100 scale-100",
-                  isHighlighted ? "bg-green-100" : ""
+                  'inline-block cursor-pointer transition-colors duration-300 ease-in-out hover:bg-red-100',
+                  isDeleting ? 'opacity-0 scale-95' : 'opacity-100 scale-100',
+                  isHighlighted ? 'bg-green-100' : ''
                 )}
                 onClick={handleClick}
               >

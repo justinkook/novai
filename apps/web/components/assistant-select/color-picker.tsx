@@ -1,7 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
-import React from "react";
-import { HexColorPicker } from "react-colorful";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { type Dispatch, type SetStateAction } from 'react';
+import { HexColorPicker } from 'react-colorful';
 
 interface ColorPickerProps {
   iconColor: string;
@@ -72,8 +71,8 @@ export function ColorPicker(props: ColorPickerProps) {
                   return;
                 }
 
-                if (!e.startsWith("#")) {
-                  setIconColor("#" + e);
+                if (!e.startsWith('#')) {
+                  setIconColor('#' + e);
                 } else {
                   setIconColor(e);
                 }

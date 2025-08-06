@@ -2,8 +2,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import '@workspace/ui/styles/globals.css';
 
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Providers } from '@/contexts/providers';
 
 const fontSans = Geist({
@@ -16,11 +16,19 @@ const fontMono = Geist_Mono({
   variable: '--font-mono',
 });
 
-
 export const metadata: Metadata = {
   title: 'NovAI - AI-Powered RPG Engine',
-  description: 'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
-  keywords: ['RPG', 'AI', 'gaming', 'tabletop', 'D&D', 'roleplay', 'artificial intelligence'],
+  description:
+    'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
+  keywords: [
+    'RPG',
+    'AI',
+    'gaming',
+    'tabletop',
+    'D&D',
+    'roleplay',
+    'artificial intelligence',
+  ],
   authors: [{ name: 'NovAI Team' }],
   creator: 'NovAI',
   publisher: 'NovAI',
@@ -29,13 +37,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://novai.com'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || 'https://novai.com'
+  ),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: 'NovAI - AI-Powered RPG Engine',
-    description: 'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
+    description:
+      'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
     url: '/',
     siteName: 'NovAI',
     images: [
@@ -52,7 +63,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'NovAI - AI-Powered RPG Engine',
-    description: 'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
+    description:
+      'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
     images: ['/og-image.png'],
   },
   robots: {

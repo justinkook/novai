@@ -1,21 +1,21 @@
-import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatAnthropic } from '@langchain/anthropic';
 import {
   type LangGraphRunnableConfig,
-  StateGraph,
   START,
-} from "@langchain/langgraph";
-import {
-  ReflectionGraphAnnotation,
-  ReflectionGraphReturnType,
-} from "./state.js";
-import { Reflections } from "@workspace/shared/types";
-import { REFLECT_SYSTEM_PROMPT, REFLECT_USER_PROMPT } from "./prompts.js";
-import { z } from "zod";
-import { ensureStoreInConfig, formatReflections } from "../utils.js";
+  StateGraph,
+} from '@langchain/langgraph';
+import type { Reflections } from '@workspace/shared/types';
 import {
   getArtifactContent,
   isArtifactMarkdownContent,
-} from "@workspace/shared/utils/artifacts";
+} from '@workspace/shared/utils/artifacts';
+import { z } from 'zod';
+import { ensureStoreInConfig, formatReflections } from '../utils.js';
+import { REFLECT_SYSTEM_PROMPT, REFLECT_USER_PROMPT } from './prompts.js';
+import {
+  ReflectionGraphAnnotation,
+  type ReflectionGraphReturnType,
+} from './state.js';
 
 export const reflect = async (
   state: typeof ReflectionGraphAnnotation.State,
@@ -24,34 +24,34 @@ export const reflect = async (
   const store = ensureStoreInConfig(config);
   const assistantId = config.configurable?.open_canvas_assistant_id;
   if (!assistantId) {
-    throw new Error("`open_canvas_assistant_id` not found in configurable");
+    throw new Error('`open_canvas_assistant_id` not found in configurable');
   }
-  const memoryNamespace = ["memories", assistantId];
-  const memoryKey = "reflection";
+  const memoryNamespace = ['memories', assistantId];
+  const memoryKey = 'reflection';
   const memories = await store.get(memoryNamespace, memoryKey);
 
   const memoriesAsString = memories?.value
     ? formatReflections(memories.value as Reflections)
-    : "No reflections found.";
+    : 'No reflections found.';
 
   const generateReflectionTool = {
-    name: "generate_reflections",
-    description: "Generate reflections based on the context provided.",
+    name: 'generate_reflections',
+    description: 'Generate reflections based on the context provided.',
     schema: z.object({
       styleRules: z
         .array(z.string())
-        .describe("The complete new list of style rules and guidelines."),
+        .describe('The complete new list of style rules and guidelines.'),
       content: z
         .array(z.string())
-        .describe("The complete new list of memories/facts about the user."),
+        .describe('The complete new list of memories/facts about the user.'),
     }),
   };
 
   const model = new ChatAnthropic({
-    model: "claude-3-5-sonnet-20240620",
+    model: 'claude-3-5-sonnet-20240620',
     temperature: 0,
   }).bindTools([generateReflectionTool], {
-    tool_choice: "generate_reflections",
+    tool_choice: 'generate_reflections',
   });
 
   const currentArtifactContent = state.artifact
@@ -65,31 +65,31 @@ export const reflect = async (
     : undefined;
 
   const formattedSystemPrompt = REFLECT_SYSTEM_PROMPT.replace(
-    "{artifact}",
-    artifactContent ?? "No artifact found."
-  ).replace("{reflections}", memoriesAsString);
+    '{artifact}',
+    artifactContent ?? 'No artifact found.'
+  ).replace('{reflections}', memoriesAsString);
 
   const formattedUserPrompt = REFLECT_USER_PROMPT.replace(
-    "{conversation}",
+    '{conversation}',
     state.messages
       .map((msg) => `<${msg.getType()}>\n${msg.content}\n</${msg.getType()}>`)
-      .join("\n\n")
+      .join('\n\n')
   );
 
   const result = await model.invoke([
     {
-      role: "system",
+      role: 'system',
       content: formattedSystemPrompt,
     },
     {
-      role: "user",
+      role: 'user',
       content: formattedUserPrompt,
     },
   ]);
   const reflectionToolCall = result.tool_calls?.[0];
   if (!reflectionToolCall) {
-    console.error("FAILED TO GENERATE TOOL CALL", result);
-    throw new Error("Reflection tool call failed.");
+    console.error('FAILED TO GENERATE TOOL CALL', result);
+    throw new Error('Reflection tool call failed.');
   }
 
   const newMemories = {
@@ -103,7 +103,7 @@ export const reflect = async (
 };
 
 const builder = new StateGraph(ReflectionGraphAnnotation)
-  .addNode("reflect", reflect)
-  .addEdge(START, "reflect");
+  .addNode('reflect', reflect)
+  .addEdge(START, 'reflect');
 
-export const graph = builder.compile().withConfig({ runName: "reflection" });
+export const graph = builder.compile().withConfig({ runName: 'reflection' });

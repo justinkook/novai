@@ -1,11 +1,5 @@
-import {
-  CirclePlus,
-  WandSparkles,
-  Trash2,
-  LoaderCircle,
-  Pencil,
-} from "lucide-react";
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
+import type { User } from '@supabase/supabase-js';
+import type { CustomQuickAction, GraphInput } from '@workspace/shared/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,16 +7,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { CustomQuickAction } from "@workspace/shared/types";
-import { NewCustomQuickActionDialog } from "./NewCustomQuickActionDialog";
-import { useCallback, useEffect, useState } from "react";
-import { useStore } from "@/hooks/useStore";
-import { cn } from "@workspace/ui/lib/utils";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { TighterText } from "@workspace/ui/components/header";
-import { GraphInput } from "@workspace/shared/types";
-import { User } from "@supabase/supabase-js";
+} from '@workspace/ui/components/dropdown-menu';
+import { TighterText } from '@workspace/ui/components/header';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { cn } from '@workspace/ui/lib/utils';
+import {
+  CirclePlus,
+  LoaderCircle,
+  Pencil,
+  Trash2,
+  WandSparkles,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
+import { useStore } from '@/hooks/useStore';
+import { NewCustomQuickActionDialog } from './NewCustomQuickActionDialog';
 
 export interface CustomQuickActionsProps {
   isTextSelected: boolean;
@@ -65,7 +64,7 @@ const DropdownMenuItemWithDelete = ({
         tooltip="Edit action"
         variant="ghost"
         onClick={onEdit}
-        className={cn("ml-1", isHovering ? "visible" : "invisible")}
+        className={cn('ml-1', isHovering ? 'visible' : 'invisible')}
       >
         <Pencil className="text-[#575757] hover:text-black transition-colors ease-in" />
       </TooltipIconButton>
@@ -74,7 +73,7 @@ const DropdownMenuItemWithDelete = ({
         tooltip="Delete action"
         variant="ghost"
         onClick={onDelete}
-        className={cn(isHovering ? "visible" : "invisible")}
+        className={cn(isHovering ? 'visible' : 'invisible')}
       >
         <Trash2 className="text-[#575757] hover:text-red-500 transition-colors ease-in" />
       </TooltipIconButton>
@@ -103,10 +102,13 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
     setIsEditingId(id);
   };
 
-  const getAndSetCustomQuickActions = useCallback(async (userId: string) => {
-    const actions = await getCustomQuickActions(userId);
-    setCustomQuickActions(actions);
-  }, [getCustomQuickActions]);
+  const getAndSetCustomQuickActions = useCallback(
+    async (userId: string) => {
+      const actions = await getCustomQuickActions(userId);
+      setCustomQuickActions(actions);
+    },
+    [getCustomQuickActions]
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined' || !assistantId || !user) {
@@ -135,9 +137,9 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
   const handleDelete = async (id: string) => {
     if (!user) {
       toast({
-        title: "Failed to delete",
-        description: "User not found",
-        variant: "destructive",
+        title: 'Failed to delete',
+        description: 'User not found',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
@@ -150,7 +152,7 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
       );
       if (deletionSuccess) {
         toast({
-          title: "Custom quick action deleted successfully",
+          title: 'Custom quick action deleted successfully',
         });
         setCustomQuickActions((actions) => {
           if (!actions) {
@@ -160,14 +162,14 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
         });
       } else {
         toast({
-          title: "Failed to delete custom quick action",
-          variant: "destructive",
+          title: 'Failed to delete custom quick action',
+          variant: 'destructive',
         });
       }
     } catch (_) {
       toast({
-        title: "Failed to delete custom quick action",
-        variant: "destructive",
+        title: 'Failed to delete custom quick action',
+        variant: 'destructive',
       });
     }
   };
@@ -186,24 +188,24 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
         <TooltipIconButton
           tooltip={
             props.isTextSelected
-              ? "Quick actions disabled while text is selected"
-              : "Custom quick actions"
+              ? 'Quick actions disabled while text is selected'
+              : 'Custom quick actions'
           }
           variant="outline"
           className={cn(
-            "transition-colors w-[48px] h-[48px] p-0 rounded-xl",
+            'transition-colors w-[48px] h-[48px] p-0 rounded-xl',
             props.isTextSelected
-              ? "cursor-default opacity-50 text-gray-400 hover:bg-background"
-              : "cursor-pointer"
+              ? 'cursor-default opacity-50 text-gray-400 hover:bg-background'
+              : 'cursor-pointer'
           )}
           delayDuration={400}
         >
           <WandSparkles
             className={cn(
-              "w-[26px] h-[26px]",
+              'w-[26px] h-[26px]',
               props.isTextSelected
-                ? "text-gray-400"
-                : "hover:text-gray-900 transition-colors"
+                ? 'text-gray-400'
+                : 'hover:text-gray-900 transition-colors'
             )}
           />
         </TooltipIconButton>

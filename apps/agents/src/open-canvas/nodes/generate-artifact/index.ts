@@ -1,3 +1,6 @@
+import type { LangGraphRunnableConfig } from '@langchain/langgraph';
+import type { ArtifactV3 } from '@workspace/shared/types';
+import type { z } from 'zod';
 import {
   createContextDocumentMessages,
   getFormattedReflections,
@@ -6,15 +9,12 @@ import {
   isUsingO1MiniModel,
   optionallyGetSystemPromptFromConfig,
 } from '../../../utils.js';
-import { ArtifactV3 } from '@workspace/shared/types';
-import { LangGraphRunnableConfig } from '@langchain/langgraph';
-import {
+import type {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,
 } from '../../state.js';
 import { ARTIFACT_TOOL_SCHEMA } from './schemas.js';
 import { createArtifactContent, formatNewArtifactPrompt } from './utils.js';
-import { z } from 'zod';
 
 /**
  * Generate a new artifact based on the user's query.

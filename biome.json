@@ -62,5 +62,10 @@
     "formatter": {
       "enabled": true
     }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true
+    }
   }
 }

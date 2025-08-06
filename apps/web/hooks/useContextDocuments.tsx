@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { arrayToFileList, convertDocuments, load } from "@/lib/attachments";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { ContextDocument } from "@workspace/shared/types";
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import type { ContextDocument } from '@workspace/shared/types';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { useEffect, useRef, useState } from 'react';
+import { arrayToFileList, convertDocuments, load } from '@/lib/attachments';
 
 export function useContextDocuments(userId: string) {
   const { toast } = useToast();
@@ -19,7 +19,7 @@ export function useContextDocuments(userId: string) {
     if (!documents?.length) {
       return;
     }
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return;
     }
     if (ffmpegRef.current.loaded) {
@@ -34,19 +34,19 @@ export function useContextDocuments(userId: string) {
     urls: string[]
   ): Promise<ContextDocument[]> => {
     try {
-      const results = await fetch("/api/firecrawl/scrape", {
-        method: "POST",
+      const results = await fetch('/api/firecrawl/scrape', {
+        method: 'POST',
         body: JSON.stringify({ urls }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
       if (!results.ok) {
         toast({
-          title: "Failed to scrape content",
-          description: "Please try again later.",
-          variant: "destructive",
+          title: 'Failed to scrape content',
+          description: 'Please try again later.',
+          variant: 'destructive',
           duration: 5000,
         });
         return [];
@@ -55,11 +55,11 @@ export function useContextDocuments(userId: string) {
       const { documents } = await results.json();
       return documents;
     } catch (e) {
-      console.error("Failed to convert URLs to documents:", e);
+      console.error('Failed to convert URLs to documents:', e);
       toast({
-        title: "Failed to convert URLs to documents",
-        description: "Please try again later.",
-        variant: "destructive",
+        title: 'Failed to convert URLs to documents',
+        description: 'Please try again later.',
+        variant: 'destructive',
         duration: 5000,
       });
       return [];
@@ -69,9 +69,9 @@ export function useContextDocuments(userId: string) {
   const processDocuments = async () => {
     if (!userId) {
       toast({
-        title: "User not found",
-        description: "Please try again later.",
-        variant: "destructive",
+        title: 'User not found',
+        description: 'Please try again later.',
+        variant: 'destructive',
         duration: 5000,
       });
       return [];
@@ -101,12 +101,12 @@ export function useContextDocuments(userId: string) {
     const [fileDocuments, urlDocuments] = await Promise.all([
       unprocessedFileList?.length
         ? convertDocuments({
-          ffmpeg: ffmpegRef.current,
-          messageRef,
-          documents: unprocessedFileList,
-          userId: userId,
-          toast,
-        })
+            ffmpeg: ffmpegRef.current,
+            messageRef,
+            documents: unprocessedFileList,
+            userId: userId,
+            toast,
+          })
         : [],
       unprocessedUrls.length ? convertUrlsToDocuments(unprocessedUrls) : [],
     ]);

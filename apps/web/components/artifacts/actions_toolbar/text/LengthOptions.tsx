@@ -1,14 +1,16 @@
-import { cn } from "@workspace/ui/lib/utils";
-import { useState } from "react";
-import { ArtifactLengthOptions } from "@workspace/shared/types";
+import type {
+  ArtifactLengthOptions,
+  GraphInput,
+} from '@workspace/shared/types';
+import { Slider } from '@workspace/ui/components/slider';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import { Slider } from "@workspace/ui/components/slider";
-import { GraphInput } from "@workspace/shared/types";
+} from '@workspace/ui/components/tooltip';
+import { cn } from '@workspace/ui/lib/utils';
+import { useState } from 'react';
 
 export interface LengthOptionsProps {
   streamMessage: (params: GraphInput) => Promise<void>;
@@ -16,11 +18,11 @@ export interface LengthOptionsProps {
 }
 
 const lengthOptions = [
-  { value: 1, label: "Shortest" },
-  { value: 2, label: "Shorter" },
-  { value: 3, label: "Current length" },
-  { value: 4, label: "Long" },
-  { value: 5, label: "Longest" },
+  { value: 1, label: 'Shortest' },
+  { value: 2, label: 'Shorter' },
+  { value: 3, label: 'Current length' },
+  { value: 4, label: 'Long' },
+  { value: 5, label: 'Longest' },
 ];
 
 export function LengthOptions(props: LengthOptionsProps) {
@@ -54,25 +56,25 @@ export function LengthOptions(props: LengthOptionsProps) {
                 setOpen(false);
                 switch (v[0]) {
                   case 1:
-                    await handleSubmit("shortest");
+                    await handleSubmit('shortest');
                     break;
                   case 2:
-                    await handleSubmit("short");
+                    await handleSubmit('short');
                     break;
                   case 3:
                     // Same length, do nothing.
                     break;
                   case 4:
-                    await handleSubmit("long");
+                    await handleSubmit('long');
                     break;
                   case 5:
-                    await handleSubmit("longest");
+                    await handleSubmit('longest');
                     break;
                 }
               }}
               orientation="vertical"
               color="black"
-              className={cn("h-[180px] w-[26px]")}
+              className={cn('h-[180px] w-[26px]')}
             />
           </TooltipTrigger>
           <TooltipContent side="right">

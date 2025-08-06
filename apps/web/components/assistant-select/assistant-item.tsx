@@ -1,9 +1,9 @@
-import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
-import { Dispatch, MouseEventHandler, SetStateAction } from "react";
-import { Assistant } from "@langchain/langgraph-sdk";
-import { cn } from "@workspace/ui/lib/utils";
-import { getIcon } from "./utils";
-import { EditDeleteDropdown } from "./edit-delete-dropdown";
+import type { Assistant } from '@langchain/langgraph-sdk';
+import { DropdownMenuItem } from '@workspace/ui/components/dropdown-menu';
+import { cn } from '@workspace/ui/lib/utils';
+import type { Dispatch, MouseEventHandler, SetStateAction } from 'react';
+import { EditDeleteDropdown } from './edit-delete-dropdown';
+import { getIcon } from './utils';
 
 interface AssistantItemProps {
   assistant: Assistant;
@@ -38,19 +38,19 @@ export function AssistantItem({
         onClick={onClick}
         disabled={allDisabled}
         className={cn(
-          "flex items-center justify-start gap-2 w-full",
-          isSelected && "bg-gray-50"
+          'flex items-center justify-start gap-2 w-full',
+          isSelected && 'bg-gray-50'
         )}
       >
         <span
-          style={{ color: metadata?.iconData?.iconColor || "#4b5563" }}
+          style={{ color: metadata?.iconData?.iconColor || '#4b5563' }}
           className="flex items-center justify-start w-4 h-4"
         >
           {getIcon(metadata?.iconData?.iconName as string | undefined)}
         </span>
         {assistant.name}
         {isDefault && (
-          <span className="text-xs text-gray-500 ml-auto">{"(default)"}</span>
+          <span className="text-xs text-gray-500 ml-auto">{'(default)'}</span>
         )}
         {isSelected && <span className="ml-auto">•</span>}
       </DropdownMenuItem>

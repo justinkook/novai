@@ -1,6 +1,6 @@
-import { WebSearchState } from '../state.js';
-import { getModelFromConfig } from '../../utils.js';
 import z from 'zod';
+import { getModelFromConfig } from '../../utils.js';
+import type { WebSearchState } from '../state.js';
 
 const CLASSIFIER_PROMPT = `You're a helpful AI assistant tasked with classifying the user's latest message.
 The user has enabled web search for their conversation, however not all messages should be searched.

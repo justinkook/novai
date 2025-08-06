@@ -1,16 +1,22 @@
+import type { Thread } from '@langchain/langgraph-sdk';
 import {
-  ALL_MODEL_NAMES,
+  type ALL_MODEL_NAMES,
   ALL_MODELS,
   DEFAULT_MODEL_CONFIG,
   DEFAULT_MODEL_NAME,
-} from "@workspace/shared/models";
-import { CustomModelConfig } from "@workspace/shared/types";
-import { Thread } from "@langchain/langgraph-sdk";
-import { createClient } from "../hooks/utils";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
-import { useUserContext } from "./UserContext";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { useQueryState } from "nuqs";
+} from '@workspace/shared/models';
+import type { CustomModelConfig } from '@workspace/shared/types';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { useQueryState } from 'nuqs';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import { createClient } from '../hooks/utils';
+import { useUserContext } from './UserContext';
 
 type ThreadContentType = {
   threadId: string | null;
@@ -37,7 +43,7 @@ const ThreadContext = createContext<ThreadContentType | undefined>(undefined);
 export function ThreadProvider({ children }: { children: ReactNode }) {
   const { user } = useUserContext();
   const { toast } = useToast();
-  const [threadId, setThreadId] = useQueryState("threadId");
+  const [threadId, setThreadId] = useQueryState('threadId');
   const [userThreads, setUserThreads] = useState<Thread[]>([]);
   const [isUserThreadsLoading, setIsUserThreadsLoading] = useState(false);
   const [modelName, setModelName] =
@@ -64,15 +70,15 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
         maxTokens: {
           ...(model.config.maxTokens || DEFAULT_MODEL_CONFIG.maxTokens),
         },
-        ...(model.config.provider === "azure_openai" && {
+        ...(model.config.provider === 'azure_openai' && {
           azureConfig: {
-            azureOpenAIApiKey: process.env._AZURE_OPENAI_API_KEY || "",
+            azureOpenAIApiKey: process.env._AZURE_OPENAI_API_KEY || '',
             azureOpenAIApiInstanceName:
-              process.env._AZURE_OPENAI_API_INSTANCE_NAME || "",
+              process.env._AZURE_OPENAI_API_INSTANCE_NAME || '',
             azureOpenAIApiDeploymentName:
-              process.env._AZURE_OPENAI_API_DEPLOYMENT_NAME || "",
+              process.env._AZURE_OPENAI_API_DEPLOYMENT_NAME || '',
             azureOpenAIApiVersion:
-              process.env._AZURE_OPENAI_API_VERSION || "2024-08-01-preview",
+              process.env._AZURE_OPENAI_API_VERSION || '2024-08-01-preview',
             azureOpenAIBasePath: process.env._AZURE_OPENAI_API_BASE_PATH,
           },
         }),
@@ -84,7 +90,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const modelConfig = useMemo(() => {
     // Try exact match first, then try without "azure/" or "groq/" prefixes
     return (
-      modelConfigs[modelName] || modelConfigs[modelName.replace("azure/", "")]
+      modelConfigs[modelName] || modelConfigs[modelName.replace('azure/', '')]
     );
   }, [modelName, modelConfigs]);
 
@@ -108,24 +114,24 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
           maxTokens: {
             ...(config.maxTokens || DEFAULT_MODEL_CONFIG.maxTokens),
           },
-          ...(config.provider === "azure_openai" && {
+          ...(config.provider === 'azure_openai' && {
             azureConfig: {
               ...config.azureConfig,
               azureOpenAIApiKey:
                 config.azureConfig?.azureOpenAIApiKey ||
                 process.env._AZURE_OPENAI_API_KEY ||
-                "",
+                '',
               azureOpenAIApiInstanceName:
                 config.azureConfig?.azureOpenAIApiInstanceName ||
                 process.env._AZURE_OPENAI_API_INSTANCE_NAME ||
-                "",
+                '',
               azureOpenAIApiDeploymentName:
                 config.azureConfig?.azureOpenAIApiDeploymentName ||
                 process.env._AZURE_OPENAI_API_DEPLOYMENT_NAME ||
-                "",
+                '',
               azureOpenAIApiVersion:
                 config.azureConfig?.azureOpenAIApiVersion ||
-                "2024-08-01-preview",
+                '2024-08-01-preview',
               azureOpenAIBasePath:
                 config.azureConfig?.azureOpenAIBasePath ||
                 process.env._AZURE_OPENAI_API_BASE_PATH,
@@ -139,10 +145,10 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const createThread = async (): Promise<Thread | undefined> => {
     if (!user) {
       toast({
-        title: "Failed to create thread",
-        description: "User not found",
+        title: 'Failed to create thread',
+        description: 'User not found',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -157,7 +163,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
           modelConfig: {
             ...modelConfig,
             // Ensure Azure config is included if needed
-            ...(modelConfig?.provider === "azure_openai" && {
+            ...(modelConfig?.provider === 'azure_openai' && {
               azureConfig: modelConfig?.azureConfig,
             }),
           },
@@ -170,13 +176,13 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
       getUserThreads().catch(console.error);
       return thread;
     } catch (e) {
-      console.error("Failed to create thread", e);
+      console.error('Failed to create thread', e);
       toast({
-        title: "Failed to create thread",
+        title: 'Failed to create thread',
         description:
-          "An error occurred while trying to create a new thread. Please try again.",
+          'An error occurred while trying to create a new thread. Please try again.',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setCreateThreadLoading(false);
@@ -186,10 +192,10 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const getUserThreads = async () => {
     if (!user) {
       toast({
-        title: "Failed to create thread",
-        description: "User not found",
+        title: 'Failed to create thread',
+        description: 'User not found',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -245,12 +251,12 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
       const client = createClient();
       return client.threads.get(id);
     } catch (e) {
-      console.error("Failed to get thread by ID.", id, e);
+      console.error('Failed to get thread by ID.', id, e);
       toast({
-        title: "Failed to get thread",
-        description: "An error occurred while trying to get a thread.",
+        title: 'Failed to get thread',
+        description: 'An error occurred while trying to get a thread.',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
 
@@ -284,7 +290,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 export function useThreadContext() {
   const context = useContext(ThreadContext);
   if (context === undefined) {
-    throw new Error("useThreadContext must be used within a ThreadProvider");
+    throw new Error('useThreadContext must be used within a ThreadProvider');
   }
   return context;
 }

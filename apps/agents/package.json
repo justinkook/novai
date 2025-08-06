@@ -16,10 +16,7 @@
     "format:check": "biome format .",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
     "type-check": "tsc --noEmit",
-    "organize-imports": "biome check --write --apply-unsafe .",
     "postinstall": "pnpm turbo build"
   },
   "dependencies": {

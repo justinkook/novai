@@ -10,7 +10,7 @@ export function extractUrls(text: string): string[] {
   // First replace all markdown links with spaces to avoid double-matching
   const processedText = text.replace(markdownLinkRegex, (match, _, url) => {
     urls.add(url);
-    return " ".repeat(match.length); // Replace with spaces to preserve string length
+    return ' '.repeat(match.length); // Replace with spaces to preserve string length
   });
 
   // Then look for any remaining plain URLs in the text

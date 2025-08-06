@@ -1,48 +1,47 @@
-"use client";
+'use client';
 
-import { ComposerPrimitive, ThreadPrimitive } from "@assistant-ui/react";
-import { type FC, useState, useEffect } from "react";
-
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
-import { SendHorizontalIcon } from "lucide-react";
-import { DragAndDropWrapper } from "./drag-drop-wrapper";
-import { ComposerAttachments } from "../assistant-ui/attachment";
-import { ComposerActionsPopOut } from "./composer-actions-popout";
+import { ComposerPrimitive, ThreadPrimitive } from '@assistant-ui/react';
+import { SendHorizontalIcon } from 'lucide-react';
+import { type FC, useEffect, useState } from 'react';
+import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
+import { ComposerAttachments } from '../assistant-ui/attachment';
+import { ComposerActionsPopOut } from './composer-actions-popout';
+import { DragAndDropWrapper } from './drag-drop-wrapper';
 
 const GENERIC_PLACEHOLDERS = [
   "Share your big idea and let's write something amazing",
-  "Type your vision for the next great piece of content",
-  "Your masterpiece begins with this prompt",
-  "What would you like us to write about today?",
+  'Type your vision for the next great piece of content',
+  'Your masterpiece begins with this prompt',
+  'What would you like us to write about today?',
   "Drop your content idea here and let's create",
-  "Your next great piece starts with this prompt",
-  "Share your story idea and watch it unfold",
+  'Your next great piece starts with this prompt',
+  'Share your story idea and watch it unfold',
   "Let's write something incredible - start here",
-  "Your writing journey begins with this prompt",
-  "Turn your idea into content magic - start here",
+  'Your writing journey begins with this prompt',
+  'Turn your idea into content magic - start here',
 ];
 
 const SEARCH_PLACEHOLDERS = [
   "Share your topic - I'll add live data",
   "Write about anything - I'll find sources",
-  "Your idea + fresh research = great content",
-  "Start here with real-time facts",
-  "Topic here for data-rich content",
-  "Create with current insights",
-  "Write now with live sources",
-  "Your story + fresh data",
-  "Ideas welcome - research ready",
-  "Start fresh with live facts",
+  'Your idea + fresh research = great content',
+  'Start here with real-time facts',
+  'Topic here for data-rich content',
+  'Create with current insights',
+  'Write now with live sources',
+  'Your story + fresh data',
+  'Ideas welcome - research ready',
+  'Start fresh with live facts',
 ];
 
 const getRandomPlaceholder = (searchEnabled: boolean) => {
   return searchEnabled
     ? SEARCH_PLACEHOLDERS[
-    Math.floor(Math.random() * SEARCH_PLACEHOLDERS.length)
-    ]
+        Math.floor(Math.random() * SEARCH_PLACEHOLDERS.length)
+      ]
     : GENERIC_PLACEHOLDERS[
-    Math.floor(Math.random() * GENERIC_PLACEHOLDERS.length)
-    ];
+        Math.floor(Math.random() * GENERIC_PLACEHOLDERS.length)
+      ];
 };
 
 const CircleStopIcon = () => {
@@ -68,10 +67,10 @@ interface ComposerProps {
 }
 
 export const Composer: FC<ComposerProps> = (props: ComposerProps) => {
-  const [placeholder, setPlaceholder] = useState("");
+  const [placeholder, setPlaceholder] = useState('');
 
   useEffect(() => {
-    setPlaceholder(getRandomPlaceholder(props.searchEnabled) || "");
+    setPlaceholder(getRandomPlaceholder(props.searchEnabled) || '');
   }, [props.searchEnabled]);
 
   return (

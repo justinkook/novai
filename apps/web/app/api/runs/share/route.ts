@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Client } from "langsmith";
+import { Client } from 'langsmith';
+import { type NextRequest, NextResponse } from 'next/server';
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000; // 5 seconds
@@ -21,7 +21,7 @@ async function shareRunWithRetry(
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
     }
   }
-  throw new Error("Max retries reached"); // This line should never be reached due to the throw in the loop
+  throw new Error('Max retries reached'); // This line should never be reached due to the throw in the loop
 }
 
 export async function POST(req: NextRequest) {
@@ -30,11 +30,11 @@ export async function POST(req: NextRequest) {
   if (!runId) {
     return new NextResponse(
       JSON.stringify({
-        error: "`runId` is required to share run.",
+        error: '`runId` is required to share run.',
       }),
       {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse(JSON.stringify({ sharedRunURL }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error(
@@ -56,10 +56,10 @@ export async function POST(req: NextRequest) {
       error
     );
     return new NextResponse(
-      JSON.stringify({ error: "Failed to share run after multiple attempts." }),
+      JSON.stringify({ error: 'Failed to share run after multiple attempts.' }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }

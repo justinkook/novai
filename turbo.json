@@ -11,12 +11,6 @@
       "cache": false,
       "persistent": true
     },
-    "check": {
-      "dependsOn": ["^check"]
-    },
-    "check:fix": {
-      "cache": false
-    },
     "type-check": {
       "dependsOn": ["^type-check"]
     },
@@ -32,9 +26,6 @@
       "cache": false
     },
     "format:check": {
-      "cache": false
-    },
-    "organize-imports": {
       "cache": false
     }
   }

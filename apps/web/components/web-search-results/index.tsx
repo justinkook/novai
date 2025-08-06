@@ -1,22 +1,22 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { WEB_SEARCH_RESULTS_QUERY_PARAM } from "@/lib/constants";
-import { useGraphContext } from "@/contexts/GraphContext";
-import type { SearchResult } from "@workspace/shared/types";
-import { TighterText } from "@workspace/ui/components/header";
+import type { SearchResult } from '@workspace/shared/types';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
-import { cn } from "@workspace/ui/lib/utils";
-import { TooltipIconButton } from "../assistant-ui/tooltip-icon-button";
-import { X } from "lucide-react";
-import { format } from "date-fns";
-import { LoadingSearchResultCards } from "./loading-cards";
-import { useQueryState } from "nuqs";
+} from '@workspace/ui/components/card';
+import { TighterText } from '@workspace/ui/components/header';
+import { cn } from '@workspace/ui/lib/utils';
+import { format } from 'date-fns';
+import { AnimatePresence, motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useQueryState } from 'nuqs';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { WEB_SEARCH_RESULTS_QUERY_PARAM } from '@/lib/constants';
+import { TooltipIconButton } from '../assistant-ui/tooltip-icon-button';
+import { LoadingSearchResultCards } from './loading-cards';
 
 function SearchResultCard({ result }: { result: SearchResult }) {
   const [expanded, setExpanded] = useState(false);
@@ -31,16 +31,16 @@ function SearchResultCard({ result }: { result: SearchResult }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {result.metadata?.title || "Untitled"}
+              {result.metadata?.title || 'Untitled'}
             </a>
           ) : (
-            <>{result.metadata?.title || "Untitled"}</>
+            <>{result.metadata?.title || 'Untitled'}</>
           )}
         </CardTitle>
         <CardDescription>
-          {result.metadata?.author || "Unknown author"}
+          {result.metadata?.author || 'Unknown author'}
           {result.metadata?.publishedDate &&
-            ` - ${format(new Date(result.metadata?.publishedDate), "Pp")}`}
+            ` - ${format(new Date(result.metadata?.publishedDate), 'Pp')}`}
         </CardDescription>
       </CardHeader>
       <CardContent
@@ -49,14 +49,14 @@ function SearchResultCard({ result }: { result: SearchResult }) {
       >
         <AnimatePresence initial={false}>
           <motion.p
-            key={expanded ? "expanded" : "collapsed"}
+            key={expanded ? 'expanded' : 'collapsed'}
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             className={cn(
-              "text-pretty text-sm",
-              !expanded ? "line-clamp-3" : ""
+              'text-pretty text-sm',
+              !expanded ? 'line-clamp-3' : ''
             )}
           >
             {result.pageContent}
@@ -73,7 +73,7 @@ interface WebSearchResultsProps {
 }
 
 export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
-  const [status, setStatus] = useState<"searching" | "done">("searching");
+  const [status, setStatus] = useState<'searching' | 'done'>('searching');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const {
     graphData: { messages },
@@ -93,7 +93,7 @@ export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
     }
     const webResultsMessage =
       messages.find((message) => message.id === webSearchResultsId) ||
-      messages.find((message) => message.id?.startsWith("web-search-results-"));
+      messages.find((message) => message.id?.startsWith('web-search-results-'));
     if (!webResultsMessage) {
       return;
     } else if (
@@ -105,7 +105,7 @@ export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
     const searchResults = webResultsMessage.additional_kwargs
       ?.webSearchResults as SearchResult[] | undefined;
     const status = (webResultsMessage.additional_kwargs?.webSearchStatus ||
-      "searching") as "searching" | "done";
+      'searching') as 'searching' | 'done';
 
     setOpen(true);
     setSearchResults(searchResults || []);
@@ -123,11 +123,11 @@ export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
       {open && (
         <motion.div
           className="flex flex-col gap-6 w-full max-w-md p-5 border-l-[1px] border-gray-200 shadow-inner-left h-screen overflow-hidden"
-          initial={{ x: "100%", opacity: 0 }}
+          initial={{ x: '100%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: "100%", opacity: 0 }}
+          exit={{ x: '100%', opacity: 0 }}
           transition={{
-            type: "spring",
+            type: 'spring',
             stiffness: 300,
             damping: 30,
           }}
@@ -151,17 +151,17 @@ export function WebSearchResults({ open, setOpen }: WebSearchResultsProps) {
             transition={{ delay: 0.2 }}
           >
             {searchResults?.length > 0 &&
-              status === "done" &&
+              status === 'done' &&
               searchResults.map((result, index) => (
                 <SearchResultCard
                   key={`${index}-${result.id}`}
                   result={result}
                 />
               ))}
-            {!searchResults?.length && status === "done" && (
+            {!searchResults?.length && status === 'done' && (
               <p>No results found</p>
             )}
-            {status === "searching" && <LoadingSearchResultCards />}
+            {status === 'searching' && <LoadingSearchResultCards />}
           </motion.div>
         </motion.div>
       )}

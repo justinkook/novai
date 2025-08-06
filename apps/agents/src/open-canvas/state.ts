@@ -1,20 +1,20 @@
-import { BaseMessage, BaseMessageLike } from '@langchain/core/messages';
-import {
-  ArtifactLengthOptions,
-  LanguageOptions,
-  ProgrammingLanguageOptions,
-  ReadingLevelOptions,
-  CodeHighlight,
-  ArtifactV3,
-  TextHighlight,
-  SearchResult,
-} from '@workspace/shared/types';
+import type { BaseMessage, BaseMessageLike } from '@langchain/core/messages';
 import {
   Annotation,
   MessagesAnnotation,
   messagesStateReducer,
 } from '@langchain/langgraph';
 import { OC_SUMMARIZED_MESSAGE_KEY } from '@workspace/shared/constants';
+import type {
+  ArtifactLengthOptions,
+  ArtifactV3,
+  CodeHighlight,
+  LanguageOptions,
+  ProgrammingLanguageOptions,
+  ReadingLevelOptions,
+  SearchResult,
+  TextHighlight,
+} from '@workspace/shared/types';
 
 export type Messages =
   | Array<BaseMessage | BaseMessageLike>

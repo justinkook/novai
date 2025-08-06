@@ -2,19 +2,19 @@ import {
   type LangGraphRunnableConfig,
   START,
   StateGraph,
-} from "@langchain/langgraph";
-import { Client } from "@langchain/langgraph-sdk";
-import { ChatOpenAI } from "@langchain/openai";
-import { z } from "zod";
+} from '@langchain/langgraph';
+import { Client } from '@langchain/langgraph-sdk';
+import { ChatOpenAI } from '@langchain/openai';
 import {
   getArtifactContent,
   isArtifactMarkdownContent,
-} from "@workspace/shared/utils/artifacts";
-import { TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT } from "./prompts.js";
+} from '@workspace/shared/utils/artifacts';
+import { z } from 'zod';
+import { TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT } from './prompts.js';
 import {
   TitleGenerationAnnotation,
-  TitleGenerationReturnType,
-} from "./state.js";
+  type TitleGenerationReturnType,
+} from './state.js';
 
 export const generateTitle = async (
   state: typeof TitleGenerationAnnotation.State,
@@ -23,22 +23,22 @@ export const generateTitle = async (
   const threadId = config.configurable?.open_canvas_thread_id;
 
   if (!threadId) {
-    throw new Error("open_canvas_thread_id not found in configurable");
+    throw new Error('open_canvas_thread_id not found in configurable');
   }
 
   const generateTitleTool = {
-    name: "generate_title",
-    description: "Generate a concise title for the conversation.",
+    name: 'generate_title',
+    description: 'Generate a concise title for the conversation.',
     schema: z.object({
-      title: z.string().describe("The generated title for the conversation."),
+      title: z.string().describe('The generated title for the conversation.'),
     }),
   };
 
   const model = new ChatOpenAI({
-    model: "gpt-4o-mini",
+    model: 'gpt-4o-mini',
     temperature: 0,
   }).bindTools([generateTitleTool], {
-    tool_choice: "generate_title",
+    tool_choice: 'generate_title',
   });
 
   const currentArtifactContent = state.artifact
@@ -53,30 +53,30 @@ export const generateTitle = async (
 
   const artifactContext = artifactContent
     ? `An artifact was generated during this conversation:\n\n${artifactContent}`
-    : "No artifact was generated during this conversation.";
+    : 'No artifact was generated during this conversation.';
 
   const formattedUserPrompt = TITLE_USER_PROMPT.replace(
-    "{conversation}",
+    '{conversation}',
     state.messages
       .map((msg) => `<${msg.getType()}>\n${msg.content}\n</${msg.getType()}>`)
-      .join("\n\n")
-  ).replace("{artifact_context}", artifactContext);
+      .join('\n\n')
+  ).replace('{artifact_context}', artifactContext);
 
   const result = await model.invoke([
     {
-      role: "system",
+      role: 'system',
       content: TITLE_SYSTEM_PROMPT,
     },
     {
-      role: "user",
+      role: 'user',
       content: formattedUserPrompt,
     },
   ]);
 
   const titleToolCall = result.tool_calls?.[0];
   if (!titleToolCall) {
-    console.error("FAILED TO GENERATE TOOL CALL", result);
-    throw new Error("Title generation tool call failed.");
+    console.error('FAILED TO GENERATE TOOL CALL', result);
+    throw new Error('Title generation tool call failed.');
   }
 
   const langGraphClient = new Client({
@@ -94,7 +94,7 @@ export const generateTitle = async (
 };
 
 const builder = new StateGraph(TitleGenerationAnnotation)
-  .addNode("title", generateTitle)
-  .addEdge(START, "title");
+  .addNode('title', generateTitle)
+  .addEdge(START, 'title');
 
-export const graph = builder.compile().withConfig({ runName: "thread_title" });
+export const graph = builder.compile().withConfig({ runName: 'thread_title' });

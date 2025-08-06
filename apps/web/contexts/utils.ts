@@ -1,5 +1,10 @@
-import { cleanContent } from '@/lib/normalize_string';
 import {
+  AIMessage,
+  type BaseMessage,
+  type BaseMessageChunk,
+} from '@langchain/core/messages';
+import { parsePartialJson } from '@langchain/core/output_parsers';
+import type {
   Artifact,
   ArtifactCodeV3,
   ArtifactMarkdownV3,
@@ -8,12 +13,7 @@ import {
   ProgrammingLanguageOptions,
   RewriteArtifactMetaToolResponse,
 } from '@workspace/shared/types';
-import {
-  AIMessage,
-  BaseMessage,
-  BaseMessageChunk,
-} from '@langchain/core/messages';
-import { parsePartialJson } from '@langchain/core/output_parsers';
+import { cleanContent } from '@/lib/normalize_string';
 
 export function removeCodeBlockFormatting(text: string): string {
   if (!text) {
@@ -359,7 +359,7 @@ export const convertToArtifactV3 = (oldArtifact: Artifact): ArtifactV3 => {
 };
 
 export function handleGenerateArtifactToolCallChunk(toolCallChunkArgs: string) {
-  let newArtifactText: ArtifactToolResponse | undefined = undefined;
+  let newArtifactText: ArtifactToolResponse | undefined;
 
   // Attempt to parse the tool call chunk.
   try {

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
-import { LoginWithEmailInput } from './Login';
+import type { LoginWithEmailInput } from './Login';
 
 export async function login(input: LoginWithEmailInput) {
   const supabase = await createClient();

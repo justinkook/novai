@@ -1,29 +1,33 @@
-"use client";
+'use client';
 
-import { PropsWithChildren, useEffect, useState, type FC } from "react";
-import { CircleXIcon, FileIcon, PaperclipIcon } from "lucide-react";
 import {
   AttachmentPrimitive,
   ComposerPrimitive,
   MessagePrimitive,
   useAttachment,
-} from "@assistant-ui/react";
-import { useShallow } from "zustand/shallow";
+} from '@assistant-ui/react';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@workspace/ui/components/dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@workspace/ui/components/avatar";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { cn } from "@workspace/ui/lib/utils";
+} from '@workspace/ui/components/tooltip';
+import { cn } from '@workspace/ui/lib/utils';
+import { CircleXIcon, FileIcon, PaperclipIcon } from 'lucide-react';
+import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/shallow';
+import { TooltipIconButton } from '@/components/assistant-ui/tooltip-icon-button';
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -48,13 +52,13 @@ const useFileSrc = (file: File | undefined) => {
 const useAttachmentSrc = () => {
   const { file, src } = useAttachment(
     useShallow((a): { file?: File; src?: string } => {
-      if (a.type !== "image") {
+      if (a.type !== 'image') {
         return {};
       }
       if (a.file) {
         return { file: a.file };
       }
-      const src = a.content?.filter((c) => c.type === "image")[0]?.image;
+      const src = a.content?.filter((c) => c.type === 'image')[0]?.image;
       if (!src) {
         return {};
       }
@@ -77,12 +81,12 @@ const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
     <img
       src={src}
       style={{
-        width: "auto",
-        height: "auto",
-        maxWidth: "75dvh",
-        maxHeight: "75dvh",
-        display: isLoaded ? "block" : "none",
-        overflow: "clip",
+        width: 'auto',
+        height: 'auto',
+        maxWidth: '75dvh',
+        maxHeight: '75dvh',
+        display: isLoaded ? 'block' : 'none',
+        overflow: 'clip',
       }}
       onLoad={() => setIsLoaded(true)}
       alt="Preview"
@@ -116,7 +120,7 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
 };
 
 const AttachmentThumb: FC = () => {
-  const isImage = useAttachment((a) => a.type === "image");
+  const isImage = useAttachment((a) => a.type === 'image');
   const src = useAttachmentSrc();
   return (
     <Avatar className="bg-muted flex size-10 items-center justify-center rounded border text-sm">
@@ -129,16 +133,16 @@ const AttachmentThumb: FC = () => {
 };
 
 const AttachmentUI: FC = () => {
-  const canRemove = useAttachment((a) => a.source !== "message");
+  const canRemove = useAttachment((a) => a.source !== 'message');
   const typeLabel = useAttachment((a) => {
     const type = a.type;
     switch (type) {
-      case "image":
-        return "Image";
-      case "document":
-        return "Document";
-      case "file":
-        return "File";
+      case 'image':
+        return 'Image';
+      case 'document':
+        return 'Document';
+      case 'file':
+        return 'File';
       default: {
         const _exhaustiveCheck: never = type;
         throw new Error(`Unknown attachment type: ${_exhaustiveCheck}`);
@@ -210,7 +214,7 @@ export const ComposerAddAttachment: FC<{ className?: string }> = ({
   return (
     <ComposerPrimitive.AddAttachment asChild>
       <TooltipIconButton
-        className={cn("size-7", className)}
+        className={cn('size-7', className)}
         tooltip="Add Attachment"
         variant="ghost"
       >

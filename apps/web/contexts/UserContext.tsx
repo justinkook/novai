@@ -1,13 +1,13 @@
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
+import type { User } from '@supabase/supabase-js';
 import {
   createContext,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useState,
-} from "react";
+} from 'react';
+import { createSupabaseClient } from '@/lib/supabase/client';
 
 type UserContentType = {
   getUser: () => Promise<User | undefined>;
@@ -38,7 +38,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    if (user || typeof window === "undefined") {
+    if (user || typeof window === 'undefined') {
       return;
     }
 
@@ -59,7 +59,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 export function useUserContext() {
   const context = useContext(UserContext);
   if (context === undefined) {
-    throw new Error("useUserContext must be used within a UserProvider");
+    throw new Error('useUserContext must be used within a UserProvider');
   }
   return context;
 }

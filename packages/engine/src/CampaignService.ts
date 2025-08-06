@@ -153,10 +153,7 @@ export class CampaignService {
   constructor(campaignsPath?: string) {
     // Default to campaigns directory relative to project root
     this.campaignsPath =
-      campaignsPath ||
-      (isBrowser
-        ? '/campaigns'
-        : '/campaigns'); // Simplified for now - will be overridden in Node.js
+      campaignsPath || (isBrowser ? '/campaigns' : '/campaigns'); // Simplified for now - will be overridden in Node.js
   }
 
   async loadCampaign(campaignId: string): Promise<Campaign> {

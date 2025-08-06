@@ -1,6 +1,6 @@
-import type { ContextDocument } from "@workspace/shared/types";
-import { HumanMessage } from "@langchain/core/messages";
-import { UploadedFiles } from "../assistant-select/context-documents/uploaded-file";
+import type { HumanMessage } from '@langchain/core/messages';
+import type { ContextDocument } from '@workspace/shared/types';
+import { UploadedFiles } from '../assistant-select/context-documents/uploaded-file';
 
 export const ContextDocumentsUI = ({
   message,

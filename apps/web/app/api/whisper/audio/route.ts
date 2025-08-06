@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
 import { createClient } from '@supabase/supabase-js';
+import Groq from 'groq-sdk';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,19 +1,19 @@
-import {
-  getArtifactContent,
-  isArtifactCodeContent,
-} from "@workspace/shared/utils/artifacts";
-import {
+import type {
   ArtifactCodeV3,
   ArtifactMarkdownV3,
   ProgrammingLanguageOptions,
-} from "@workspace/shared/types";
+} from '@workspace/shared/types';
+import {
+  getArtifactContent,
+  isArtifactCodeContent,
+} from '@workspace/shared/utils/artifacts';
+import type { z } from 'zod';
 import {
   OPTIONALLY_UPDATE_META_PROMPT,
   UPDATE_ENTIRE_ARTIFACT_PROMPT,
-} from "../../prompts.js";
-import { OpenCanvasGraphAnnotation } from "../../state.js";
-import { z } from "zod";
-import { OPTIONALLY_UPDATE_ARTIFACT_META_SCHEMA } from "./schemas.js";
+} from '../../prompts.js';
+import type { OpenCanvasGraphAnnotation } from '../../state.js';
+import type { OPTIONALLY_UPDATE_ARTIFACT_META_SCHEMA } from './schemas.js';
 
 export const validateState = (
   state: typeof OpenCanvasGraphAnnotation.State
@@ -22,14 +22,14 @@ export const validateState = (
     ? getArtifactContent(state.artifact)
     : undefined;
   if (!currentArtifactContent) {
-    throw new Error("No artifact found");
+    throw new Error('No artifact found');
   }
 
   const recentHumanMessage = state._messages.findLast(
-    (message) => message.getType() === "human"
+    (message) => message.getType() === 'human'
   );
   if (!recentHumanMessage) {
-    throw new Error("No recent human message found");
+    throw new Error('No recent human message found');
   }
 
   return { currentArtifactContent, recentHumanMessage };
@@ -39,14 +39,14 @@ const buildMetaPrompt = (
   artifactMetaToolCall: z.infer<typeof OPTIONALLY_UPDATE_ARTIFACT_META_SCHEMA>
 ) => {
   const titleSection =
-    artifactMetaToolCall?.title && artifactMetaToolCall?.type !== "code"
+    artifactMetaToolCall?.title && artifactMetaToolCall?.type !== 'code'
       ? `And its title is (do NOT include this in your response):\n${artifactMetaToolCall.title}`
-      : "";
+      : '';
 
   return OPTIONALLY_UPDATE_META_PROMPT.replace(
-    "{artifactType}",
+    '{artifactType}',
     artifactMetaToolCall?.type
-  ).replace("{artifactTitle}", titleSection);
+  ).replace('{artifactTitle}', titleSection);
 };
 
 interface BuildPromptArgs {
@@ -62,14 +62,14 @@ export const buildPrompt = ({
   isNewType,
   artifactMetaToolCall,
 }: BuildPromptArgs) => {
-  const metaPrompt = isNewType ? buildMetaPrompt(artifactMetaToolCall) : "";
+  const metaPrompt = isNewType ? buildMetaPrompt(artifactMetaToolCall) : '';
 
   return UPDATE_ENTIRE_ARTIFACT_PROMPT.replace(
-    "{artifactContent}",
+    '{artifactContent}',
     artifactContent
   )
-    .replace("{reflections}", memoriesAsString)
-    .replace("{updateMetaPrompt}", metaPrompt);
+    .replace('{reflections}', memoriesAsString)
+    .replace('{updateMetaPrompt}', metaPrompt);
 };
 
 interface CreateNewArtifactContentArgs {
@@ -87,7 +87,7 @@ const getLanguage = (
   artifactMetaToolCall?.language ||
   (isArtifactCodeContent(currentArtifactContent)
     ? currentArtifactContent.language
-    : "other");
+    : 'other');
 
 export const createNewArtifactContent = ({
   artifactType,
@@ -101,10 +101,10 @@ export const createNewArtifactContent = ({
     title: artifactMetaToolCall?.title || currentArtifactContent.title,
   };
 
-  if (artifactType === "code") {
+  if (artifactType === 'code') {
     return {
       ...baseContent,
-      type: "code",
+      type: 'code',
       language: getLanguage(
         artifactMetaToolCall,
         currentArtifactContent
@@ -115,7 +115,7 @@ export const createNewArtifactContent = ({
 
   return {
     ...baseContent,
-    type: "text",
+    type: 'text',
     fullMarkdown: newContent,
   };
 };

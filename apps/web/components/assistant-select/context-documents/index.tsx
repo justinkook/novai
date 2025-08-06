@@ -1,12 +1,12 @@
-import { TighterText } from "@workspace/ui/components/header";
-import { InlineContextTooltip } from "@workspace/ui/components/inline-context-tooltip";
-import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
-import { ALLOWED_AUDIO_TYPES, ALLOWED_VIDEO_TYPES } from "@/lib/constants";
-import { LoaderCircle, Plus, X } from "lucide-react";
-import { UploadedFiles } from "./uploaded-file";
-import { Button } from "@workspace/ui/components/button";
-import { useState } from "react";
+import { Button } from '@workspace/ui/components/button';
+import { TighterText } from '@workspace/ui/components/header';
+import { InlineContextTooltip } from '@workspace/ui/components/inline-context-tooltip';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { LoaderCircle, Plus, X } from 'lucide-react';
+import { useState } from 'react';
+import { ALLOWED_AUDIO_TYPES, ALLOWED_VIDEO_TYPES } from '@/lib/constants';
+import { UploadedFiles } from './uploaded-file';
 
 const ContextDocumentsWhatsThis = (): React.ReactNode => (
   <span className="flex flex-col gap-1 text-sm text-gray-600">
@@ -107,14 +107,14 @@ export function ContextDocuments(props: ContextDocumentsProps) {
   };
 
   const handleUrlAdd = () => {
-    setUrls([...urls, ""]);
+    setUrls([...urls, '']);
   };
 
   return (
     <div className="flex flex-col items-start justify-start gap-4 w-full">
       <Label htmlFor="context-documents">
         <TighterText className="flex items-center">
-          Context Documents{" "}
+          Context Documents{' '}
           <span className="text-gray-600 text-sm ml-1">
             (Max 20 files - Documents: 10MB each, Audio: 25MB each, Video: 1GB
             each)
@@ -142,8 +142,8 @@ export function ContextDocuments(props: ContextDocumentsProps) {
           const totalFileCount = existingFiles.length + newFiles.length;
 
           if (totalFileCount > 20) {
-            alert("You can only upload up to 20 files in total");
-            e.target.value = "";
+            alert('You can only upload up to 20 files in total');
+            e.target.value = '';
             return;
           }
 
@@ -154,21 +154,26 @@ export function ContextDocuments(props: ContextDocumentsProps) {
 
           for (let i = 0; i < newFiles.length; i += 1) {
             const file = newFiles[i];
-            const isAudio = ALLOWED_AUDIO_TYPES.has(file?.type || "");
-            const isVideo = ALLOWED_VIDEO_TYPES.has(file?.type || "");
+            const isAudio = ALLOWED_AUDIO_TYPES.has(file?.type || '');
+            const isVideo = ALLOWED_VIDEO_TYPES.has(file?.type || '');
 
             // Check size limits based on file type
             if (isAudio && file?.size && file.size > twentyFiveMbBytes) {
               alert(`Audio file "${file?.name}" exceeds the 25MB size limit`);
-              e.target.value = "";
+              e.target.value = '';
               return;
             } else if (isVideo && file?.size && file.size > oneGbBytes) {
               alert(`Video file "${file?.name}" exceeds the 1GB size limit`);
-              e.target.value = "";
+              e.target.value = '';
               return;
-            } else if (!isAudio && !isVideo && file?.size && file.size > tenMbBytes) {
+            } else if (
+              !isAudio &&
+              !isVideo &&
+              file?.size &&
+              file.size > tenMbBytes
+            ) {
               alert(`Document "${file?.name}" exceeds the 10MB size limit`);
-              e.target.value = "";
+              e.target.value = '';
               return;
             }
           }
@@ -181,12 +186,12 @@ export function ContextDocuments(props: ContextDocumentsProps) {
           mergedFiles.forEach((file) => dataTransfer.items.add(file));
 
           setDocuments(dataTransfer.files);
-          e.target.value = ""; // Reset input to allow selecting the same file again
+          e.target.value = ''; // Reset input to allow selecting the same file again
         }}
       />
       {loadingDocuments && (
         <span className="text-gray-600 text-sm flex gap-2">
-          Loading context documents{" "}
+          Loading context documents{' '}
           <LoaderCircle className="animate-spin w-4 h-4" />
         </span>
       )}

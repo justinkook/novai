@@ -1,24 +1,24 @@
-import { ArtifactCodeV3 } from "@workspace/shared/types";
-import React, { MutableRefObject, useEffect } from "react";
-import CodeMirror, { EditorView } from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { cpp } from "@codemirror/lang-cpp";
-import { java } from "@codemirror/lang-java";
-import { php } from "@codemirror/lang-php";
-import { python } from "@codemirror/lang-python";
-import { html } from "@codemirror/lang-html";
-import { sql } from "@codemirror/lang-sql";
-import { json } from "@codemirror/lang-json";
-import { rust } from "@codemirror/lang-rust";
-import { xml } from "@codemirror/lang-xml";
-import { clojure } from "@nextjournal/lang-clojure";
-import { csharp } from "@replit/codemirror-lang-csharp";
-import styles from "./CodeRenderer.module.css";
-import { cleanContent } from "@/lib/normalize_string";
-import { cn } from "@workspace/ui/lib/utils";
-import { CopyText } from "./components/CopyText";
-import { getArtifactContent } from "@workspace/shared/utils/artifacts";
-import { useGraphContext } from "@/contexts/GraphContext";
+import { cpp } from '@codemirror/lang-cpp';
+import { html } from '@codemirror/lang-html';
+import { java } from '@codemirror/lang-java';
+import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
+import { php } from '@codemirror/lang-php';
+import { python } from '@codemirror/lang-python';
+import { rust } from '@codemirror/lang-rust';
+import { sql } from '@codemirror/lang-sql';
+import { xml } from '@codemirror/lang-xml';
+import { clojure } from '@nextjournal/lang-clojure';
+import { csharp } from '@replit/codemirror-lang-csharp';
+import CodeMirror, { type EditorView } from '@uiw/react-codemirror';
+import type { ArtifactCodeV3 } from '@workspace/shared/types';
+import { getArtifactContent } from '@workspace/shared/utils/artifacts';
+import { cn } from '@workspace/ui/lib/utils';
+import React, { type MutableRefObject, useEffect } from 'react';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { cleanContent } from '@/lib/normalize_string';
+import styles from './CodeRenderer.module.css';
+import { CopyText } from './components/CopyText';
 
 export interface CodeRendererProps {
   editorRef: MutableRefObject<EditorView | null>;
@@ -27,31 +27,31 @@ export interface CodeRendererProps {
 
 const getLanguageExtension = (language: string) => {
   switch (language) {
-    case "javascript":
+    case 'javascript':
       return javascript({ jsx: true, typescript: false });
-    case "typescript":
+    case 'typescript':
       return javascript({ jsx: true, typescript: true });
-    case "cpp":
+    case 'cpp':
       return cpp();
-    case "java":
+    case 'java':
       return java();
-    case "php":
+    case 'php':
       return php();
-    case "python":
+    case 'python':
       return python();
-    case "html":
+    case 'html':
       return html();
-    case "sql":
+    case 'sql':
       return sql();
-    case "json":
+    case 'json':
       return json();
-    case "rust":
+    case 'rust':
       return rust();
-    case "xml":
+    case 'xml':
       return xml();
-    case "clojure":
+    case 'clojure':
       return clojure();
-    case "csharp":
+    case 'csharp':
       return csharp();
     default:
       return [];
@@ -113,9 +113,9 @@ export function CodeRendererComponent(props: Readonly<CodeRendererProps>) {
       <CodeMirror
         editable={isEditable}
         className={cn(
-          "w-full min-h-full",
+          'w-full min-h-full',
           styles.codeMirrorCustom,
-          isStreaming && !firstTokenReceived ? "pulse-code" : ""
+          isStreaming && !firstTokenReceived ? 'pulse-code' : ''
         )}
         value={cleanContent(artifactContent.code)}
         height="800px"

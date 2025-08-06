@@ -4,8 +4,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card";
-import { Skeleton } from "@workspace/ui/components/skeleton";
+} from '@workspace/ui/components/card';
+import { Skeleton } from '@workspace/ui/components/skeleton';
 
 export function LoadingSearchResultCards() {
   return (

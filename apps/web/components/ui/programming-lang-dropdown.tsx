@@ -1,14 +1,14 @@
-import type { ProgrammingLanguageOptions } from "@workspace/shared/types";
+import type { ProgrammingLanguageOptions } from '@workspace/shared/types';
+import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Code } from "lucide-react";
-import { Button } from "@workspace/ui/components/button";
-import { TooltipIconButton } from "./assistant-ui/tooltip-icon-button";
+} from '@workspace/ui/components/dropdown-menu';
+import { Code } from 'lucide-react';
+import { TooltipIconButton } from './assistant-ui/tooltip-icon-button';
 
 interface ProgrammingLanguageListProps {
   handleSubmit: (portLanguage: ProgrammingLanguageOptions) => Promise<void>;
@@ -24,7 +24,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("php")}
+        onClick={async () => await props.handleSubmit('php')}
       >
         <p>PHP</p>
       </TooltipIconButton>
@@ -33,7 +33,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit px-1 py-1"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("typescript")}
+        onClick={async () => await props.handleSubmit('typescript')}
       >
         <p>TypeScript</p>
       </TooltipIconButton>
@@ -42,7 +42,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("javascript")}
+        onClick={async () => await props.handleSubmit('javascript')}
       >
         <p>JavaScript</p>
       </TooltipIconButton>
@@ -51,7 +51,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("cpp")}
+        onClick={async () => await props.handleSubmit('cpp')}
       >
         <p>C++</p>
       </TooltipIconButton>
@@ -60,7 +60,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("java")}
+        onClick={async () => await props.handleSubmit('java')}
       >
         <p>Java</p>
       </TooltipIconButton>
@@ -69,7 +69,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("python")}
+        onClick={async () => await props.handleSubmit('python')}
       >
         <p>Python</p>
       </TooltipIconButton>
@@ -78,7 +78,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("html")}
+        onClick={async () => await props.handleSubmit('html')}
       >
         <p>HTML</p>
       </TooltipIconButton>
@@ -87,7 +87,7 @@ export function ProgrammingLanguageList(
         variant="ghost"
         className="transition-colors w-full h-fit"
         delayDuration={400}
-        onClick={async () => await props.handleSubmit("sql")}
+        onClick={async () => await props.handleSubmit('sql')}
       >
         <p>SQL</p>
       </TooltipIconButton>
@@ -96,14 +96,14 @@ export function ProgrammingLanguageList(
 }
 
 const LANGUAGES: Array<{ label: string; key: ProgrammingLanguageOptions }> = [
-  { label: "PHP", key: "php" },
-  { label: "TypeScript", key: "typescript" },
-  { label: "JavaScript", key: "javascript" },
-  { label: "C++", key: "cpp" },
-  { label: "Java", key: "java" },
-  { label: "Python", key: "python" },
-  { label: "HTML", key: "html" },
-  { label: "SQL", key: "sql" },
+  { label: 'PHP', key: 'php' },
+  { label: 'TypeScript', key: 'typescript' },
+  { label: 'JavaScript', key: 'javascript' },
+  { label: 'C++', key: 'cpp' },
+  { label: 'Java', key: 'java' },
+  { label: 'Python', key: 'python' },
+  { label: 'HTML', key: 'html' },
+  { label: 'SQL', key: 'sql' },
 ];
 
 export const ProgrammingLanguagesDropdown = ({

@@ -1,22 +1,22 @@
-import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import type { ProgrammingLanguageOptions } from "@workspace/shared/types";
-import { ThreadPrimitive } from "@assistant-ui/react";
-import { Thread as ThreadType } from "@langchain/langgraph-sdk";
-import { ArrowDownIcon, PanelRightOpen, SquarePen } from "lucide-react";
-import { Dispatch, FC, SetStateAction } from "react";
-import { ReflectionsDialog } from "../reflections-dialog/ReflectionsDialog";
-import { useLangSmithLinkToolUI } from "../tool-hooks/LangSmithLinkToolUI";
-import { TooltipIconButton } from "../ui/assistant-ui/tooltip-icon-button";
-import { TighterText } from "@workspace/ui/components/header";
-import { Composer } from "./composer";
-import { AssistantMessage, UserMessage } from "./messages";
-import ModelSelector from "./model-selector";
-import { ThreadHistory } from "./thread-history";
-import { ThreadWelcome } from "./welcome";
-import { useUserContext } from "@/contexts/UserContext";
-import { useThreadContext } from "@/contexts/ThreadProvider";
-import { useAssistantContext } from "@/contexts/AssistantContext";
+import { ThreadPrimitive } from '@assistant-ui/react';
+import type { Thread as ThreadType } from '@langchain/langgraph-sdk';
+import type { ProgrammingLanguageOptions } from '@workspace/shared/types';
+import { TighterText } from '@workspace/ui/components/header';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { ArrowDownIcon, PanelRightOpen, SquarePen } from 'lucide-react';
+import type { Dispatch, FC, SetStateAction } from 'react';
+import { useAssistantContext } from '@/contexts/AssistantContext';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { useThreadContext } from '@/contexts/ThreadProvider';
+import { useUserContext } from '@/contexts/UserContext';
+import { ReflectionsDialog } from '../reflections-dialog/ReflectionsDialog';
+import { useLangSmithLinkToolUI } from '../tool-hooks/LangSmithLinkToolUI';
+import { TooltipIconButton } from '../ui/assistant-ui/tooltip-icon-button';
+import { Composer } from './composer';
+import { AssistantMessage, UserMessage } from './messages';
+import ModelSelector from './model-selector';
+import { ThreadHistory } from './thread-history';
+import { ThreadWelcome } from './welcome';
 
 const ThreadScrollToBottom: FC = () => {
   return (
@@ -36,7 +36,7 @@ export interface ThreadProps {
   userId: string | undefined;
   hasChatStarted: boolean;
   handleQuickStart: (
-    type: "text" | "code",
+    type: 'text' | 'code',
     language?: ProgrammingLanguageOptions
   ) => void;
   setChatStarted: Dispatch<SetStateAction<boolean>>;
@@ -73,10 +73,10 @@ export const Thread: FC<ThreadProps> = (props: ThreadProps) => {
   const handleNewSession = async () => {
     if (!user) {
       toast({
-        title: "User not found",
-        description: "Failed to create thread without user",
+        title: 'User not found',
+        description: 'Failed to create thread without user',
         duration: 5000,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }

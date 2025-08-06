@@ -1,32 +1,32 @@
-import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
-import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import type { User } from '@supabase/supabase-js';
+import type { CustomQuickAction } from '@workspace/shared/types';
+import { Button } from '@workspace/ui/components/button';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog";
-import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
-import { Textarea } from "@workspace/ui/components/textarea";
-import { Eye, EyeOff } from "lucide-react";
+} from '@workspace/ui/components/dialog';
+import { TighterText } from '@workspace/ui/components/header';
+import { InlineContextTooltip } from '@workspace/ui/components/inline-context-tooltip';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { Eye, EyeOff } from 'lucide-react';
 import {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
   useEffect,
   useState,
-} from "react";
-import { FullPrompt } from "./FullPrompt";
-import { InlineContextTooltip } from "@workspace/ui/components/inline-context-tooltip";
-import { useStore } from "@/hooks/useStore";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { v4 as uuidv4 } from "uuid";
-import { CustomQuickAction } from "@workspace/shared/types";
-import { TighterText } from "@workspace/ui/components/header";
-import { User } from "@supabase/supabase-js";
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
+import { useStore } from '@/hooks/useStore';
+import { FullPrompt } from './FullPrompt';
 
 const CUSTOM_INSTRUCTIONS_TOOLTIP_TEXT = `This field contains the custom instructions you set, which will then be used to instruct the LLM on how to re-generate the selected artifact.`;
 const FULL_PROMPT_TOOLTIP_TEXT = `This is the full prompt that will be set to the LLM when you invoke this quick action, including your custom instructions and other default context.`;
@@ -48,7 +48,7 @@ interface ViewOrHidePromptIconProps {
 
 const ViewOrHidePromptIcon = (props: ViewOrHidePromptIconProps) => (
   <TooltipIconButton
-    tooltip={props.showFullPrompt ? "Hide prompt" : "View prompt"}
+    tooltip={props.showFullPrompt ? 'Hide prompt' : 'View prompt'}
     variant="ghost"
     className="transition-colors"
     delayDuration={400}
@@ -73,8 +73,8 @@ export function NewCustomQuickActionDialog(
   const { user } = props;
   const { createCustomQuickAction, editCustomQuickAction } = useStore();
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [prompt, setPrompt] = useState("");
+  const [name, setName] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [includeReflections, setIncludeReflections] = useState(true);
   const [includePrefix, setIncludePrefix] = useState(true);
   const [includeRecentHistory, setIncludeRecentHistory] = useState(true);
@@ -82,8 +82,8 @@ export function NewCustomQuickActionDialog(
 
   useEffect(() => {
     if (props.customQuickAction) {
-      setName(props.customQuickAction.title || "");
-      setPrompt(props.customQuickAction.prompt || "");
+      setName(props.customQuickAction.title || '');
+      setPrompt(props.customQuickAction.prompt || '');
       setIncludeReflections(props.customQuickAction.includeReflections ?? true);
       setIncludePrefix(props.customQuickAction.includePrefix ?? true);
       setIncludeRecentHistory(
@@ -96,8 +96,8 @@ export function NewCustomQuickActionDialog(
     e.preventDefault();
     if (!user) {
       toast({
-        title: "User not found",
-        variant: "destructive",
+        title: 'User not found',
+        variant: 'destructive',
         duration: 5000,
       });
       return;
@@ -136,7 +136,7 @@ export function NewCustomQuickActionDialog(
 
       if (success) {
         toast({
-          title: `Custom quick action ${props.isEditing ? "edited" : "created"} successfully`,
+          title: `Custom quick action ${props.isEditing ? 'edited' : 'created'} successfully`,
         });
         handleClearState();
         props.onOpenChange(false);
@@ -144,8 +144,8 @@ export function NewCustomQuickActionDialog(
         await props.getAndSetCustomQuickActions(user.id);
       } else {
         toast({
-          title: `Failed to ${props.isEditing ? "edit" : "create"} custom quick action`,
-          variant: "destructive",
+          title: `Failed to ${props.isEditing ? 'edit' : 'create'} custom quick action`,
+          variant: 'destructive',
         });
       }
     } finally {
@@ -154,8 +154,8 @@ export function NewCustomQuickActionDialog(
   };
 
   const handleClearState = () => {
-    setName("");
-    setPrompt("");
+    setName('');
+    setPrompt('');
     setIncludeReflections(true);
     setIncludePrefix(true);
     setIncludeRecentHistory(true);
@@ -176,7 +176,7 @@ export function NewCustomQuickActionDialog(
         <DialogHeader>
           <DialogTitle className="text-3xl font-light text-gray-800">
             <TighterText>
-              {props.isEditing ? "Edit" : "Create"} Quick Action
+              {props.isEditing ? 'Edit' : 'Create'} Quick Action
             </TighterText>
           </DialogTitle>
           <DialogDescription className="mt-2 text-md font-light text-gray-600">

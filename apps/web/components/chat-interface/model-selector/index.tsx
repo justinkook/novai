@@ -1,40 +1,40 @@
-"use client";
+'use client';
 
-import LLMIcon from "@/components/icons/svg/LLMIcon.svg";
+import { CaretSortIcon, GearIcon } from '@radix-ui/react-icons';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@radix-ui/react-popover';
+import {
+  type ALL_MODEL_NAMES,
+  ALL_MODELS,
+  LANGCHAIN_USER_ONLY_MODELS,
+} from '@workspace/shared/models';
+import type {
+  CustomModelConfig,
+  ModelConfigurationParams,
+} from '@workspace/shared/types';
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@workspace/ui/components/command";
+} from '@workspace/ui/components/command';
+import { cn } from '@workspace/ui/lib/utils';
+import { Check } from 'lucide-react';
+import NextImage from 'next/image';
 import {
-  ALL_MODEL_NAMES,
-  ALL_MODELS,
-  LANGCHAIN_USER_ONLY_MODELS,
-} from "@workspace/shared/models";
-import {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useEffect,
   useState,
-} from "react";
-import { ModelConfigPanel } from "./model-config-pannel";
-import { IsNewBadge } from "./new-badge";
-import { cn } from "@workspace/ui/lib/utils";
-import {
-  CustomModelConfig,
-  ModelConfigurationParams,
-} from "@workspace/shared/types";
-import { CaretSortIcon, GearIcon } from "@radix-ui/react-icons";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@radix-ui/react-popover";
-import { Check } from "lucide-react";
-import NextImage from "next/image";
-import { useUserContext } from "@/contexts/UserContext";
+} from 'react';
+import LLMIcon from '@/components/icons/svg/LLMIcon.svg';
+import { useUserContext } from '@/contexts/UserContext';
+import { ModelConfigPanel } from './model-config-pannel';
+import { IsNewBadge } from './new-badge';
 
 interface ModelSelectorProps {
   modelName: ALL_MODEL_NAMES;
@@ -77,8 +77,8 @@ function CommandModelItem({
     >
       <Check
         className={cn(
-          "mr-1 size-4",
-          selectedModelName === model.name ? "opacity-100" : "opacity-0"
+          'mr-1 size-4',
+          selectedModelName === model.name ? 'opacity-100' : 'opacity-0'
         )}
       />
       <span className="flex flex-row w-full items-center justify-start gap-2">
@@ -128,7 +128,7 @@ export default function ModelSelector({
     if (!user) {
       return;
     }
-    setIsLangChainUser(user?.email?.endsWith("@langchain.dev") || false);
+    setIsLangChainUser(user?.email?.endsWith('@langchain.dev') || false);
   }, [user]);
 
   const handleModelChange = useCallback(
@@ -148,45 +148,45 @@ export default function ModelSelector({
     }
 
     if (
-      model.name.includes("fireworks/") &&
-      process.env.NEXT_PUBLIC_FIREWORKS_ENABLED === "false"
+      model.name.includes('fireworks/') &&
+      process.env.NEXT_PUBLIC_FIREWORKS_ENABLED === 'false'
     ) {
       return false;
     }
     if (
-      model.name.includes("claude-") &&
-      process.env.NEXT_PUBLIC_ANTHROPIC_ENABLED === "false"
+      model.name.includes('claude-') &&
+      process.env.NEXT_PUBLIC_ANTHROPIC_ENABLED === 'false'
     ) {
       return false;
     }
     if (
-      model.name.includes("gpt-") &&
-      process.env.NEXT_PUBLIC_OPENAI_ENABLED === "false"
+      model.name.includes('gpt-') &&
+      process.env.NEXT_PUBLIC_OPENAI_ENABLED === 'false'
     ) {
       return false;
     }
     if (
-      model.name.includes("azure/") &&
-      process.env.NEXT_PUBLIC_AZURE_ENABLED === "false"
+      model.name.includes('azure/') &&
+      process.env.NEXT_PUBLIC_AZURE_ENABLED === 'false'
     ) {
       return false;
     }
     if (
-      model.name.includes("gemini-") &&
-      process.env.NEXT_PUBLIC_GEMINI_ENABLED === "false"
+      model.name.includes('gemini-') &&
+      process.env.NEXT_PUBLIC_GEMINI_ENABLED === 'false'
     ) {
       return false;
     }
     if (
-      model.name.includes("ollama-") &&
-      process.env.NEXT_PUBLIC_OLLAMA_ENABLED === "false"
+      model.name.includes('ollama-') &&
+      process.env.NEXT_PUBLIC_OLLAMA_ENABLED === 'false'
     ) {
       return false;
     }
 
     if (
-      model.name.includes("groq/") &&
-      process.env.NEXT_PUBLIC_GROQ_ENABLED === "false"
+      model.name.includes('groq/') &&
+      process.env.NEXT_PUBLIC_GROQ_ENABLED === 'false'
     ) {
       return false;
     }
@@ -202,25 +202,25 @@ export default function ModelSelector({
   );
 
   const azureModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "azure_openai"
+    (m) => m.config.provider === 'azure_openai'
   );
   const openaiModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "openai"
+    (m) => m.config.provider === 'openai'
   );
   const ollamaModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "ollama"
+    (m) => m.config.provider === 'ollama'
   );
   const anthropicModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "anthropic"
+    (m) => m.config.provider === 'anthropic'
   );
   const genAiModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "google-genai"
+    (m) => m.config.provider === 'google-genai'
   );
   const fireworksModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "fireworks"
+    (m) => m.config.provider === 'fireworks'
   );
   const groqModelGroup = allAllowedModels.filter(
-    (m) => m.config.provider === "groq"
+    (m) => m.config.provider === 'groq'
   );
 
   return (
@@ -273,7 +273,7 @@ export default function ModelSelector({
             {azureModelGroup.length > 0 && (
               <CommandGroup heading="Azure OpenAI" className="w-full">
                 {azureModelGroup.map((model) => {
-                  const config = modelConfigs[model.name.replace("azure/", "")];
+                  const config = modelConfigs[model.name.replace('azure/', '')];
                   if (!config) {
                     return null;
                   }

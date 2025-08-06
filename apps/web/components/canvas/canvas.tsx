@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { ArtifactRenderer } from "@/components/artifacts/ArtifactRenderer";
-import { WebSearchResults } from "@/components/web-search-results";
 import {
-  ALL_MODEL_NAMES,
+  type ALL_MODEL_NAMES,
   DEFAULT_MODEL_CONFIG,
   DEFAULT_MODEL_NAME,
-} from "@workspace/shared/models";
-import { useGraphContext } from "@/contexts/GraphContext";
-import { useToast } from "@workspace/ui/hooks/use-toast";
-import { getLanguageTemplate } from "@/lib/get_language_template";
-import {
+} from '@workspace/shared/models';
+import type {
   ArtifactCodeV3,
   ArtifactMarkdownV3,
   ArtifactV3,
   CustomModelConfig,
   ProgrammingLanguageOptions,
-} from "@workspace/shared/types";
-import React, { useEffect, useState } from "react";
-import { ContentComposerChatInterface } from "./content-composer";
-import NoSSRWrapper from "../NoSSRWrapper";
-import { useThreadContext } from "@/contexts/ThreadProvider";
+} from '@workspace/shared/types';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@workspace/ui/components/resizable";
-import { CHAT_COLLAPSED_QUERY_PARAM } from "@/lib/constants";
-import { useRouter, useSearchParams } from "next/navigation";
+} from '@workspace/ui/components/resizable';
+import { useToast } from '@workspace/ui/hooks/use-toast';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { ArtifactRenderer } from '@/components/artifacts/ArtifactRenderer';
+import { WebSearchResults } from '@/components/web-search-results';
+import { useGraphContext } from '@/contexts/GraphContext';
+import { useThreadContext } from '@/contexts/ThreadProvider';
+import { CHAT_COLLAPSED_QUERY_PARAM } from '@/lib/constants';
+import { getLanguageTemplate } from '@/lib/get_language_template';
+import NoSSRWrapper from '../NoSSRWrapper';
+import { ContentComposerChatInterface } from './content-composer';
 
 export function CanvasComponent() {
   const { graphData } = useGraphContext();
@@ -56,13 +56,13 @@ export function CanvasComponent() {
   }, [chatCollapsedSearchParam, router, searchParams]);
 
   const handleQuickStart = (
-    type: "text" | "code",
+    type: 'text' | 'code',
     language?: ProgrammingLanguageOptions
   ) => {
-    if (type === "code" && !language) {
+    if (type === 'code' && !language) {
       toast({
-        title: "Language not selected",
-        description: "Please select a language to continue",
+        title: 'Language not selected',
+        description: 'Please select a language to continue',
         duration: 5000,
       });
       return;
@@ -70,10 +70,10 @@ export function CanvasComponent() {
     setChatStarted(true);
 
     let artifactContent: ArtifactCodeV3 | ArtifactMarkdownV3;
-    if (type === "code" && language) {
+    if (type === 'code' && language) {
       artifactContent = {
         index: 1,
-        type: "code",
+        type: 'code',
         title: `Quick start ${type}`,
         code: getLanguageTemplate(language),
         language,
@@ -81,9 +81,9 @@ export function CanvasComponent() {
     } else {
       artifactContent = {
         index: 1,
-        type: "text",
+        type: 'text',
         title: `Quick start ${type}`,
-        fullMarkdown: "",
+        fullMarkdown: '',
       };
     }
 

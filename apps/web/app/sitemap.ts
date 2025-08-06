@@ -1,8 +1,8 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://novai.com'
-  
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://novai.com';
+
   return [
     {
       url: baseUrl,
@@ -34,5 +34,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.7,
     },
-  ]
-} 
+  ];
+}

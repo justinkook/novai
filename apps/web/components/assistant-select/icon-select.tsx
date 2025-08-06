@@ -1,5 +1,4 @@
-import * as Icons from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,22 +6,28 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import { Input } from "@workspace/ui/components/input";
-import React from "react";
-import debounce from "lodash/debounce";
-import startCase from "lodash/startCase";
-import uniq from "lodash/uniq";
-import uniqBy from "lodash/uniqBy";
-import { Button } from "@workspace/ui/components/button";
+} from '@workspace/ui/components/dropdown-menu';
+import { Input } from '@workspace/ui/components/input';
+import debounce from 'lodash/debounce';
+import startCase from 'lodash/startCase';
+import uniq from 'lodash/uniq';
+import uniqBy from 'lodash/uniqBy';
+import * as Icons from 'lucide-react';
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 type KeyofIcons = keyof typeof Icons;
 
 const prettifyIconLabel = (iconName: string) => {
   iconName = iconName
-    .replace("Icon", "")
-    .replace("icon", "")
-    .replace("Lucide", "");
+    .replace('Icon', '')
+    .replace('icon', '')
+    .replace('Lucide', '');
   return startCase(iconName);
 };
 
@@ -40,7 +45,7 @@ export function IconSelect({
   iconColor: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [startIndex, setStartIndex] = useState(0);
   const WINDOW_SIZE = 300;
   const BUFFER_SIZE = 100;
@@ -57,7 +62,7 @@ export function IconSelect({
         value: iconName,
         label: prettifyIconLabel(iconName),
       })),
-      "label"
+      'label'
     );
   }, [searchTerm]);
 
@@ -105,7 +110,7 @@ export function IconSelect({
       onOpenChange={(c) => {
         if (!c) {
           setStartIndex(0);
-          setSearchTerm("");
+          setSearchTerm('');
           debouncedSearch.cancel(); // Cancel any pending debounced calls
         }
         setOpen(c);

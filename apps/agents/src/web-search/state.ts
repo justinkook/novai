@@ -1,5 +1,5 @@
-import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
-import { SearchResult } from "@workspace/shared/types";
+import { Annotation, MessagesAnnotation } from '@langchain/langgraph';
+import type { SearchResult } from '@workspace/shared/types';
 
 export const WebSearchGraphAnnotation = Annotation.Root({
   /**
