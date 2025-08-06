@@ -16,53 +16,56 @@ export function useStore() {
     Reflections & { assistantId: string; updatedAt: Date }
   >();
 
-  const getReflections = useCallback(async (assistantId: string): Promise<void> => {
-    setIsLoadingReflections(true);
-    const res = await fetch('/api/store/get', {
-      method: 'POST',
-      body: JSON.stringify({
-        namespace: ['memories', assistantId],
-        key: 'reflection',
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  const getReflections = useCallback(
+    async (assistantId: string): Promise<void> => {
+      setIsLoadingReflections(true);
+      const res = await fetch('/api/store/get', {
+        method: 'POST',
+        body: JSON.stringify({
+          namespace: ['memories', assistantId],
+          key: 'reflection',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (!res.ok) {
-      return;
-    }
+      if (!res.ok) {
+        return;
+      }
 
-    const { item } = await res.json();
+      const { item } = await res.json();
 
-    if (!item?.value) {
+      if (!item?.value) {
+        setIsLoadingReflections(false);
+        // No reflections found. Return early.
+        setReflections(undefined);
+        return;
+      }
+
+      let styleRules = item.value.styleRules ?? [];
+      let content = item.value.content ?? [];
+      try {
+        styleRules =
+          typeof styleRules === 'string' ? JSON.parse(styleRules) : styleRules;
+        content = typeof content === 'string' ? JSON.parse(content) : content;
+      } catch (e) {
+        console.error('Failed to parse reflections', e);
+        styleRules = [];
+        content = [];
+      }
+
+      setReflections({
+        ...item.value,
+        styleRules,
+        content,
+        updatedAt: new Date(item.updatedAt),
+        assistantId,
+      });
       setIsLoadingReflections(false);
-      // No reflections found. Return early.
-      setReflections(undefined);
-      return;
-    }
-
-    let styleRules = item.value.styleRules ?? [];
-    let content = item.value.content ?? [];
-    try {
-      styleRules =
-        typeof styleRules === 'string' ? JSON.parse(styleRules) : styleRules;
-      content = typeof content === 'string' ? JSON.parse(content) : content;
-    } catch (e) {
-      console.error('Failed to parse reflections', e);
-      styleRules = [];
-      content = [];
-    }
-
-    setReflections({
-      ...item.value,
-      styleRules,
-      content,
-      updatedAt: new Date(item.updatedAt),
-      assistantId,
-    });
-    setIsLoadingReflections(false);
-  }, []);
+    },
+    []
+  );
 
   const deleteReflections = async (assistantId: string): Promise<boolean> => {
     const res = await fetch('/api/store/delete', {

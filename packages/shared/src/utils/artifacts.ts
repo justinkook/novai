@@ -1,4 +1,4 @@
-import {
+import type {
   Artifact,
   ArtifactCodeV3,
   ArtifactMarkdownV3,

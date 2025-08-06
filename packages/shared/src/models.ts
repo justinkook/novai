@@ -1,4 +1,4 @@
-import { CustomModelConfig, ModelConfigurationParams } from './types.js';
+import type { CustomModelConfig, ModelConfigurationParams } from './types.js';
 
 const AZURE_MODELS: ModelConfigurationParams[] = [
   {

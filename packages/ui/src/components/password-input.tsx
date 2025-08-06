@@ -1,11 +1,10 @@
 'use client';
 
-import * as React from 'react';
-
-import { cn } from '@workspace/ui/lib/utils';
-import { Input, type InputProps } from '@workspace/ui/components/input';
 import { Button } from '@workspace/ui/components/button';
+import { Input, type InputProps } from '@workspace/ui/components/input';
+import { cn } from '@workspace/ui/lib/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import * as React from 'react';
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => {

@@ -1,8 +1,8 @@
 'use client';
 
-import * as ResizablePrimitive from 'react-resizable-panels';
-import { cn } from '@workspace/ui/lib/utils';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import { cn } from '@workspace/ui/lib/utils';
+import * as ResizablePrimitive from 'react-resizable-panels';
 
 const ResizablePanelGroup = ({
   className,

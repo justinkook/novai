@@ -24,9 +24,10 @@
   "scripts": {
     "build": "pnpm clean && tsc",
     "clean": "rm -rf ./dist .turbo || true",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "format": "biome format --write .",
+    "format:check": "biome format .",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {

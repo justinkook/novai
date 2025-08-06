@@ -7,9 +7,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "check": "biome check .",
-    "check:fix": "biome check --write .",
+    "clean": "rm -rf ./dist .turbo || true",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "format": "biome format --write .",
+    "format:check": "biome format .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
