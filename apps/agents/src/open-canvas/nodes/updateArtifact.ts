@@ -2,12 +2,12 @@ import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import {
   getArtifactContent,
   isArtifactCodeContent,
-} from "@opencanvas/shared/utils/artifacts";
+} from "@workspace/shared/utils/artifacts";
 import {
   ArtifactCodeV3,
   ArtifactV3,
   Reflections,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 import {
   createContextDocumentMessages,
   ensureStoreInConfig,

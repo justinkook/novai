@@ -3,14 +3,14 @@ import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import {
   getArtifactContent,
   isArtifactMarkdownContent,
-} from "@opencanvas/shared/utils/artifacts";
+} from "@workspace/shared/utils/artifacts";
 import {
   ArtifactCodeV3,
   ArtifactMarkdownV3,
   ArtifactV3,
   CustomQuickAction,
   Reflections,
-} from "@opencanvas/shared/types";
+} from "@workspace/shared/types";
 import {
   ensureStoreInConfig,
   formatReflections,
@@ -21,7 +21,7 @@ import {
   CUSTOM_QUICK_ACTION_ARTIFACT_PROMPT_PREFIX,
   CUSTOM_QUICK_ACTION_CONVERSATION_CONTEXT,
   REFLECTIONS_QUICK_ACTION_PROMPT,
-} from "@opencanvas/shared/prompts/quick-actions";
+} from "@workspace/shared/prompts/quick-actions";
 import {
   OpenCanvasGraphAnnotation,
   OpenCanvasGraphReturnType,

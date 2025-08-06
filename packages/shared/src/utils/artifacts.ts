@@ -48,7 +48,11 @@ export const getArtifactContent = (
     (a) => a.index === artifact.currentIndex
   );
   if (!currentContent) {
-    return artifact.contents[artifact.contents.length - 1];
+    const lastContent = artifact.contents[artifact.contents.length - 1];
+    if (!lastContent) {
+      throw new Error("No content found in artifact.");
+    }
+    return lastContent;
   }
   return currentContent;
 };

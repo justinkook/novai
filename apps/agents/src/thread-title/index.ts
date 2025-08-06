@@ -9,7 +9,7 @@ import { z } from "zod";
 import {
   getArtifactContent,
   isArtifactMarkdownContent,
-} from "@opencanvas/shared/utils/artifacts";
+} from "@workspace/shared/utils/artifacts";
 import { TITLE_SYSTEM_PROMPT, TITLE_USER_PROMPT } from "./prompts.js";
 import {
   TitleGenerationAnnotation,

@@ -3,12 +3,12 @@ import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import {
   extractThinkingAndResponseTokens,
   isThinkingModel,
-} from "@opencanvas/shared/utils/thinking";
+} from "@workspace/shared/utils/thinking";
 import {
   isArtifactMarkdownContent,
   getArtifactContent,
-} from "@opencanvas/shared/utils/artifacts";
-import { ArtifactV3, Reflections } from "@opencanvas/shared/types";
+} from "@workspace/shared/utils/artifacts";
+import { ArtifactV3, Reflections } from "@workspace/shared/types";
 import {
   ensureStoreInConfig,
   formatReflections,

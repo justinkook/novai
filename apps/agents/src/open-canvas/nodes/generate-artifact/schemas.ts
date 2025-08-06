@@ -1,4 +1,4 @@
-import { PROGRAMMING_LANGUAGES } from "@opencanvas/shared/constants";
+import { PROGRAMMING_LANGUAGES } from "@workspace/shared/constants";
 import { z } from "zod";
 
 export const ARTIFACT_TOOL_SCHEMA = z.object({

@@ -1,4 +1,4 @@
-import { ArtifactV3 } from "@opencanvas/shared/types";
+import { ArtifactV3 } from "@workspace/shared/types";
 import { Annotation, MessagesAnnotation } from "@langchain/langgraph";
 
 export const ReflectionGraphAnnotation = Annotation.Root({

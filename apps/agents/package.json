@@ -1,16 +1,13 @@
 {
-  "name": "@opencanvas/agents",
-  "author": "Brace Sproul",
-  "repository": "https://github.com/langchain-ai/open-canvas",
+  "name": "@workspace/agents",
   "version": "0.0.1",
+  "private": true,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
-  "license": "MIT",
-  "private": true,
   "scripts": {
     "dev": "pnpm langgraphjs dev --port 54367 --config ../../langgraph.json --no-browser",
     "build": "pnpm clean && tsc",
@@ -21,6 +18,7 @@
     "lint:fix": "biome check --write .",
     "check": "biome check .",
     "check:fix": "biome check --write .",
+    "type-check": "tsc --noEmit",
     "organize-imports": "biome check --write --apply-unsafe .",
     "postinstall": "pnpm turbo build"
   },
@@ -38,7 +36,7 @@
     "@langchain/ollama": "^0.2.0",
     "@langchain/openai": "^0.4.2",
     "@mendable/firecrawl-js": "1.10.1",
-    "@opencanvas/shared": "*",
+    "@workspace/shared": "workspace:*",
     "@supabase/supabase-js": "^2.45.5",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",

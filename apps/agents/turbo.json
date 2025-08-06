@@ -2,32 +2,42 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "lint": {
-      "outputs": []
-    },
-    "lint:fix": {
-      "outputs": []
-    },
-    "format": {
-      "outputs": []
-    },
-    "format:check": {
-      "outputs": []
-    },
     "check": {
-      "outputs": []
+      "dependsOn": ["^check"]
     },
     "check:fix": {
-      "outputs": []
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "cache": false
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"],
+      "cache": false
+    },
+    "format": {
+      "cache": false
+    },
+    "format:check": {
+      "cache": false
     },
     "organize-imports": {
-      "outputs": []
+      "cache": false
+    },
+    "clean": {
+      "cache": false
     }
   }
 }

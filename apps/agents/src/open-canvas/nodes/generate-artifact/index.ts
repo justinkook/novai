@@ -6,7 +6,7 @@ import {
   isUsingO1MiniModel,
   optionallyGetSystemPromptFromConfig,
 } from "../../../utils.js";
-import { ArtifactV3 } from "@opencanvas/shared/types";
+import { ArtifactV3 } from "@workspace/shared/types";
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
 import {
   OpenCanvasGraphAnnotation,

@@ -1,15 +1,14 @@
-import { expect } from "vitest";
-import * as ls from "langsmith/vitest";
-import { z } from "zod";
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAI } from '@langchain/openai';
+import { graph } from '@workspace/agents/dist/open-canvas/index';
+import * as ls from 'langsmith/vitest';
+import { expect } from 'vitest';
+import { z } from 'zod';
+import { CODEGEN_DATA } from './data/codegen.js';
+import { QUERY_ROUTING_DATA } from './data/query_routing.js';
 
-import { graph } from "@opencanvas/agents/dist/open-canvas/index";
-import { QUERY_ROUTING_DATA } from "./data/query_routing.js";
-import { CODEGEN_DATA } from "./data/codegen.js";
-
-ls.describe("query routing", () => {
+ls.describe('query routing', () => {
   ls.test(
-    "routes followups with questions to update artifact",
+    'routes followups with questions to update artifact',
     {
       inputs: QUERY_ROUTING_DATA.inputs,
       referenceOutputs: QUERY_ROUTING_DATA.referenceOutputs,
@@ -18,7 +17,7 @@ ls.describe("query routing", () => {
       const generatePathNode = graph.nodes.generatePath;
       const res = await generatePathNode.invoke(inputs, {
         configurable: {
-          customModelName: "gpt-4o-mini",
+          customModelName: 'gpt-4o-mini',
         },
       });
       ls.logOutputs(res);
@@ -31,19 +30,19 @@ const qualityEvaluator = async (params: {
   inputs: string;
   outputs: string;
 }) => {
-  const judge = new ChatOpenAI({ model: "gpt-4o" }).withStructuredOutput(
+  const judge = new ChatOpenAI({ model: 'gpt-4o' }).withStructuredOutput(
     z.object({
       justification: z
         .string()
-        .describe("reasoning for why you are assigning a given quality score"),
+        .describe('reasoning for why you are assigning a given quality score'),
       quality_score: z
         .number()
         .describe(
-          "quality score for how well the generated code answers the query."
+          'quality score for how well the generated code answers the query.'
         ),
     }),
     {
-      name: "judge",
+      name: 'judge',
     }
   );
   const EVAL_PROMPT = [
@@ -54,18 +53,18 @@ const qualityEvaluator = async (params: {
     `Justify your answer.\n`,
     `<query>\n${params.inputs}\n</query>\n`,
     `<generated_code>\n${params.outputs}\n</generated_code>`,
-  ].join(" ");
+  ].join(' ');
   const res = await judge.invoke(EVAL_PROMPT);
   return {
-    key: "quality",
+    key: 'quality',
     score: res.quality_score,
     comment: res.justification,
   };
 };
 
-ls.describe("codegen", () => {
+ls.describe('codegen', () => {
   ls.test(
-    "generate code with an LLM agent when asked",
+    'generate code with an LLM agent when asked',
     {
       inputs: CODEGEN_DATA.inputs,
       referenceOutputs: {},
@@ -74,7 +73,7 @@ ls.describe("codegen", () => {
       const generateArtifactNode = graph.nodes.generateArtifact;
       const res = await generateArtifactNode.invoke(inputs, {
         configurable: {
-          customModelName: "gpt-4o-mini",
+          customModelName: 'gpt-4o-mini',
         },
       });
       ls.logOutputs(res);

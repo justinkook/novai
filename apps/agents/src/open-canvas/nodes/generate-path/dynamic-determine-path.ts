@@ -12,7 +12,7 @@ import {
   createContextDocumentMessages,
 } from "../../../utils.js";
 import { LangGraphRunnableConfig } from "@langchain/langgraph";
-import { getArtifactContent } from "@opencanvas/shared/utils/artifacts";
+import { getArtifactContent } from "@workspace/shared/utils/artifacts";
 import z from "zod";
 import { BaseMessage } from "@langchain/core/messages";
 import { traceable } from "langsmith/traceable";
