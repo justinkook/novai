@@ -172,10 +172,10 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     setIsCreatingAssistant(true);
     try {
       const client = createClient();
-      const { tools, systemPrompt, name, documents, ...metadata } =
+      const { tools, systemPrompt, name, documents, graphId, ...metadata } =
         newAssistant;
       const createdAssistant = await client.assistants.create({
-        graphId: newAssistant.graphId || 'agent',
+        graphId: graphId || 'agent',
         name,
         metadata: {
           user_id: userId,
@@ -215,11 +215,11 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     setIsEditingAssistant(true);
     try {
       const client = createClient();
-      const { tools, systemPrompt, name, documents, ...metadata } =
+      const { tools, systemPrompt, name, documents, graphId, ...metadata } =
         editedAssistant;
       const response = await client.assistants.update(assistantId, {
         name,
-        graphId: editedAssistant.graphId || 'agent',
+        graphId: graphId || 'agent',
         metadata: {
           user_id: userId,
           ...metadata,
@@ -326,7 +326,6 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     // No cookie found. First, search for all assistants under the user's ID
     try {
       userAssistants = await client.assistants.search({
-        graphId: 'agent',
         metadata: {
           user_id: userId,
         },
@@ -368,6 +367,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       })[0];
       const updatedAssistant = await editCustomAssistant({
         editedAssistant: {
+          graphId: firstAssistant?.graph_id || 'agent',
           is_default: true,
           iconData: {
             iconName:

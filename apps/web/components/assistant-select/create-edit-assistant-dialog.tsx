@@ -13,6 +13,13 @@ import { TighterText } from '@workspace/ui/components/header';
 import { InlineContextTooltip } from '@workspace/ui/components/inline-context-tooltip';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@workspace/ui/components/select';
 import { Textarea } from '@workspace/ui/components/textarea';
 import { useToast } from '@workspace/ui/hooks/use-toast';
 import type * as Icons from 'lucide-react';
@@ -249,6 +256,7 @@ export function CreateEditAssistantDialog(
     setSystemPrompt('');
     setIconName('User');
     setIconColor('#000000');
+    setGraphId('agent');
   };
 
   const handleRemoveFile = (index: number) => {
@@ -338,6 +346,23 @@ export function CreateEditAssistantDialog(
             rows={5}
           />
 
+          <Label htmlFor="graph">
+            <TighterText>Graph</TighterText>
+          </Label>
+          <Select
+            value={graphId}
+            onValueChange={(v) => setGraphId(v as 'agent' | 'bg3')}
+            disabled={props.allDisabled}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select graph" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="agent">Default (Open Canvas)</SelectItem>
+              <SelectItem value="bg3">BG3 Adventure</SelectItem>
+            </SelectContent>
+          </Select>
+
           <div className="flex w-full items-center justify-between gap-4">
             <div className="flex flex-col gap-4 items-start justify-start w-full">
               <Label htmlFor="icon">
@@ -396,26 +421,11 @@ export function CreateEditAssistantDialog(
             setUrls={setUrls}
           />
 
-          <div className="flex flex-col gap-2 w-full">
-            <Label htmlFor="graph">
-              <TighterText>Graph</TighterText>
-            </Label>
-            <select
-              id="graph"
-              disabled={props.allDisabled}
-              value={graphId}
-              onChange={(e) => setGraphId(e.target.value as 'agent' | 'bg3')}
-              className="border rounded px-2 py-2"
-            >
-              <option value="agent">Default (Open Canvas)</option>
-              <option value="bg3">BG3 Adventure</option>
-            </select>
-          </div>
 
           <div className="flex items-center justify-center w-full mt-4 gap-3">
             <Button
               disabled={props.allDisabled}
-              className="w-full"
+              className="w-full max-w-xl"
               type="submit"
             >
               <TighterText>Save</TighterText>
