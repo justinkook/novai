@@ -1,7 +1,7 @@
 {
   "id": "baldurs-gate-3",
   "name": "Baldur's Gate 3",
-  "description": "A dark, mature D&D 5e campaign set in the Forgotten Realms. You awaken aboard a nautiloid ship with a Mind Flayer tadpole in your head, beginning a journey of survival, choice, and power.",
+  "description": "A dark, mature D&D 5e campaign in the Forgotten Realms centered on an Elder Brain scheme called the Absolute. You awaken infected with a Mind Flayer tadpole and must seek a cure while navigating factions, companions, and hard choices. Across three acts, you’ll resolve the Grove–Goblin crisis, break Ketheric Thorm’s immortality in the Shadow‑Cursed Lands, and confront Gortash and Orin in Baldur’s Gate. Three Netherstones and the Crown of Karsus determine whether the Elder Brain is destroyed or enthroned. Your choices shape companions’ fates and the city’s future.",
   "ruleset": "dnd-5e",
   "intro": "You awaken aboard a nautiloid ship, your head pounding with a strange, alien presence. A Mind Flayer tadpole has been implanted in your brain, and you're hurtling through the Astral Plane. The ship is under attack by Githyanki warriors, and you must fight for your survival while coming to terms with your new... condition.\n\nAs you struggle to escape the crashing vessel, you'll encounter other survivors - potential companions who share your fate. Together, you'll embark on a journey across the Forgotten Realms, seeking a cure for the tadpole while uncovering ancient secrets and facing impossible choices.\n\nYour decisions will shape not only your own destiny, but the fate of entire realms. Will you embrace the power the tadpole offers, or fight to remove it? Will you save the world, or watch it burn?\n\nThe adventure begins now...",
   "companions": [

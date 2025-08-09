@@ -1,3 +1,5 @@
+import { AIMessage } from '@langchain/core/messages';
+import { ExaRetriever } from '@langchain/exa';
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { END, START, StateGraph } from '@langchain/langgraph';
 import {
@@ -5,30 +7,18 @@ import {
   type GameState,
   LLMService,
 } from '@workspace/engine';
+import ExaClient from 'exa-js';
 import { getModelConfig } from '../utils.js';
 import { getOrCreateSession, persistChapter, persistTurn } from './persistence';
+import {
+  BG3_CAMPAIGN_GUARDRAILS,
+  BG3_CANON_QUERY_HINT,
+  BG3_RULESET_PROMPT,
+} from './prompts.js';
+import { Bg3GraphAnnotation } from './state.js';
 import { indexChapter, querySimilarChapters } from './vector';
 
-type Bg3State = {
-  messages: { role: 'user' | 'assistant' | 'system'; content: string }[];
-  output?: {
-    narration: string;
-    choices?: string[];
-    statCheck?: {
-      stat: string;
-      difficulty: number;
-      result: number;
-      success: boolean;
-    };
-    combat?: {
-      enemies: string[];
-      playerHealth: number;
-      enemyHealth: Record<string, number>;
-    };
-  };
-  gameState?: GameState;
-  finalizeChapter?: boolean;
-};
+type Bg3State = typeof Bg3GraphAnnotation.State;
 
 async function novelizeChapterContent(
   args: {
@@ -266,7 +256,9 @@ async function runTurn(
   state: Bg3State,
   config: LangGraphRunnableConfig
 ): Promise<Bg3State> {
-  if (!state.gameState) throw new Error('gameState missing in state');
+  if (!state.gameState) {
+    throw new Error('gameState missing in state');
+  }
   const playerInput = Array.isArray(state.messages)
     ? getLatestUserText(state.messages as unknown[])
     : '';
@@ -309,7 +301,7 @@ async function runTurn(
   })();
   const engine = new GameEngineService(engineLLMConfig2);
 
-  // Retrieve relevant chapter memory and pass as context
+  // Retrieve relevant chapter memory and optional canon web context, pass as context
   const threadId =
     (config.configurable?.thread_id as string | undefined) ||
     (config.configurable?.threadId as string | undefined);
@@ -331,10 +323,74 @@ async function runTurn(
     }
   }
 
+  // Optional: lightweight canon retrieval via web search (Exa)
+  let webCanonNote: string | undefined;
+  const webSearchEnabled = Boolean(
+    (config.configurable as Record<string, unknown> | undefined)
+      ?.web_search_enabled
+  );
+  if (webSearchEnabled && process.env.EXA_API_KEY) {
+    try {
+      const exaClient = new ExaClient(process.env.EXA_API_KEY);
+      const retriever = new ExaRetriever({
+        client: exaClient,
+        searchArgs: { filterEmptyResults: true, numResults: 5 },
+      });
+      // Build a BG3-focused query to stabilize pacing/timeline
+      const queryHints: string[] = [];
+      if (state.gameState?.currentLocation) {
+        queryHints.push(`location:${state.gameState.currentLocation}`);
+      }
+      if (state.gameState?.companions?.length) {
+        queryHints.push(
+          `companions:${state.gameState.companions.slice(0, 3).join(',')}`
+        );
+      }
+      const canonQuery = [
+        BG3_CANON_QUERY_HINT,
+        playerInput.slice(0, 160),
+        queryHints.join(' '),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      const results = await retriever.invoke(canonQuery);
+      const top =
+        (
+          results as unknown as Array<{
+            pageContent?: string;
+            metadata?: { title?: string; url?: string };
+          }>
+        )?.slice(0, 3) || [];
+      if (top.length) {
+        const bullets = top
+          .map((d) => {
+            const title = d?.metadata?.title || d?.metadata?.url || 'result';
+            const snippet = String(d?.pageContent || '')
+              .replace(/\s+/g, ' ')
+              .slice(0, 220);
+            return `- ${title}: ${snippet}`;
+          })
+          .join('\n');
+        webCanonNote = `Canon references (web):\n${bullets}`;
+      }
+    } catch {
+      // Ignore web retrieval errors and proceed
+    }
+  }
+
   const response = await engine.processGameRequest({
     gameState: state.gameState,
     playerInput,
-    context: memoryNote ? { chapterMemory: memoryNote } : undefined,
+    context:
+      memoryNote || webCanonNote
+        ? {
+            chapterMemory: memoryNote,
+            webCanon: webCanonNote,
+            ruleset: BG3_RULESET_PROMPT,
+            guardrails: BG3_CAMPAIGN_GUARDRAILS,
+          }
+        : { ruleset: BG3_RULESET_PROMPT, guardrails: BG3_CAMPAIGN_GUARDRAILS },
   });
 
   return {
@@ -346,10 +402,8 @@ async function runTurn(
       combat: response.combat,
     },
     gameState: response.updatedGameState,
-    messages: [
-      ...state.messages,
-      { role: 'assistant', content: response.narration },
-    ],
+    // Let the MessagesAnnotation reducer append this AI message to the history
+    messages: [new AIMessage(response.narration)],
   };
 }
 
@@ -404,7 +458,7 @@ async function persistAndReturn(
   return state;
 }
 
-const builder = new StateGraph<Bg3State>({ channels: {} as any })
+const builder = new StateGraph(Bg3GraphAnnotation)
   .addNode('loadOrInitSession', loadOrInitSession)
   .addNode('runTurn', runTurn)
   .addNode('persistAndReturn', persistAndReturn)
