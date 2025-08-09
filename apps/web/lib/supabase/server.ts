@@ -34,28 +34,3 @@ export async function createClient() {
     }
   );
 }
-
-// Helper to fetch the last chapter's summary/memo for a given thread using RLS
-export async function getLastChapterForThread(threadId: string) {
-  const supabase = await createClient();
-
-  const { data: session, error: sessionErr } = await supabase
-    .from('bg3_sessions')
-    .select('id')
-    .eq('thread_id', threadId)
-    .limit(1)
-    .maybeSingle();
-
-  if (sessionErr || !session) return null;
-
-  const { data: chapter, error: chapterErr } = await supabase
-    .from('bg3_chapters')
-    .select('chapter_id, title, summary, memo, created_at')
-    .eq('session_id', session.id)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (chapterErr) return null;
-  return chapter || null;
-}
