@@ -4,7 +4,7 @@ import {
   getArtifactContent,
   isArtifactMarkdownContent,
 } from '@workspace/shared/utils/artifacts';
-import { getModelFromConfig } from 'src/utils';
+import { getModelFromConfig } from '../../utils';
 import { persistChapter } from '../persistence';
 import type { NovaiGraphState } from '../state';
 import { indexChapter } from '../vector';

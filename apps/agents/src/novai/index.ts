@@ -4,12 +4,7 @@ import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { Command, END, Send, START, StateGraph } from '@langchain/langgraph';
 import { GameEngineService } from '@workspace/engine';
 import { DEFAULT_INPUTS } from '@workspace/shared/constants';
-import z from 'zod';
-import {
-  createAIMessageFromWebResults,
-  getModelConfig,
-  getModelFromConfig,
-} from '../utils.js';
+import { createAIMessageFromWebResults, getModelConfig } from '../utils.js';
 import { graph as webSearchGraph } from '../web-search/index.js';
 import { customAction } from './nodes/customAction.js';
 import { generateArtifact } from './nodes/generate-artifact/index.js';
@@ -122,46 +117,6 @@ function routePostWebSearch(
   });
 }
 
-// Reuse the Open Canvas style artifact tool schema for compatibility with the Canvas UI
-const BG3_ARTIFACT_TOOL_SCHEMA = z.object({
-  type: z
-    .enum(['code', 'text'])
-    .describe('The content type of the artifact generated.'),
-  language: z
-    .enum([
-      'typescript',
-      'javascript',
-      'cpp',
-      'java',
-      'php',
-      'python',
-      'html',
-      'sql',
-      'json',
-      'rust',
-      'xml',
-      'clojure',
-      'csharp',
-      'other',
-    ])
-    .optional()
-    .describe(
-      "The language/programming language of the artifact generated. If generating code, it should be one of the options, or 'other'. If not generating code, the language should ALWAYS be 'other'."
-    ),
-  isValidReact: z
-    .boolean()
-    .optional()
-    .describe(
-      'Whether or not the generated code is valid React code. Only populate this field if generating code.'
-    ),
-  artifact: z.string().describe('The content of the artifact to generate.'),
-  title: z
-    .string()
-    .describe(
-      'A short title to give to the artifact. Should be less than 5 words.'
-    ),
-});
-
 // Extracts the latest user message text from mixed message shapes
 function getLatestUserText(messages: unknown[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -200,7 +155,7 @@ function getLatestUserText(messages: unknown[]): string {
   return '';
 }
 
-async function loadOrInitSession(
+async function initGameEngine(
   state: NovaiGraphState,
   config: LangGraphRunnableConfig
 ): Promise<NovaiGraphState> {
@@ -275,7 +230,7 @@ async function loadOrInitSession(
   };
 }
 
-async function runTurn(
+async function processGameRequest(
   state: NovaiGraphState,
   config: LangGraphRunnableConfig
 ): Promise<NovaiGraphState> {
@@ -404,122 +359,10 @@ async function runTurn(
   };
 }
 
-// Stream a text artifact compatible with the Canvas UI from the Novai narration
-async function novaiGenerateArtifact(
-  state: NovaiGraphState,
-  config: LangGraphRunnableConfig
-): Promise<NovaiGraphState> {
-  if (!state.output || !state.gameState) {
-    return state;
-  }
-
-  const toolCallingModel = await getModelFromConfig(config, {
-    temperature: 0.5,
-    isToolCalling: true,
-  });
-  const modelWithTool = toolCallingModel.bindTools(
-    [
-      {
-        name: 'generate_artifact',
-        description: 'Generate a text artifact to render in the Canvas UI',
-        schema: BG3_ARTIFACT_TOOL_SCHEMA,
-      },
-    ],
-    { tool_choice: 'generate_artifact' }
-  );
-
-  const { narration } = state.output;
-  const { playerName, currentLocation, companions } = state.gameState;
-
-  const system = `You are an expert fiction editor adapting tabletop RPG session logs into a serialized web novel chapter.
-Requirements:
-- Remove or translate any explicit game mechanics (e.g., DC checks, dice rolls, turn order, combat rounds) into immersive prose.
-- Maintain continuity with provided context and incorporate outcomes of checks and combat as narrative consequences, not mechanics.
-- Write in a clean, engaging web novel style with proper paragraphs.
-- Do not include bullet lists or numbered choices in the final chapter.
-- When you are ready, call the tool 'generate_artifact' with fields: type='text', language='other', title (short, catchy), artifact (the full chapter text).`;
-
-  const contextBits: string[] = [];
-  if (state.output.statCheck) {
-    const { stat, difficulty, success } = state.output.statCheck;
-    contextBits.push(
-      `StatCheck: ${stat} vs DC ${difficulty} → ${success ? 'success' : 'failure'}`
-    );
-  }
-  if (state.output.combat) {
-    const { enemies } = state.output.combat;
-    contextBits.push(`Combat: ${enemies.join(', ')}`);
-  }
-
-  const user = `GAME CONTEXT\nPlayer: ${playerName}\nLocation: ${currentLocation}\nCompanions: ${
-    companions?.join(', ') || 'None'
-  }\n${contextBits.length ? `Notes: ${contextBits.join(' | ')}` : ''}\n\nRAW NARRATION\n${narration}`;
-
-  // Invoke with runName so the client can parse as the 'generateArtifact' node
-  const response = await modelWithTool.invoke(
-    [
-      { role: 'system', content: system },
-      { role: 'user', content: user },
-    ],
-    { runName: 'generate_artifact' }
-  );
-
-  // Also set the artifact in state at the end (for non-streaming models / persistence)
-  const args = response.tool_calls?.[0]?.args as
-    | z.infer<typeof BG3_ARTIFACT_TOOL_SCHEMA>
-    | undefined;
-  if (!args) {
-    return state;
-  }
-  return {
-    ...state,
-    artifact: {
-      currentIndex: 1,
-      contents: [
-        {
-          index: 1,
-          type: 'text',
-          title: args.title,
-          fullMarkdown: args.artifact,
-        },
-      ],
-    },
-  } as NovaiGraphState;
-}
-
-async function persistAndReturn(
-  state: NovaiGraphState
-): Promise<NovaiGraphState> {
-  // No-op persistence here; saving is handled by the explicit saveChapter action
-  return state;
-}
-
-function novaiRouteDecider(
-  state: NovaiGraphState
-): 'saveChapterNode' | 'loadOrInitSession' {
-  return state.saveChapter ? 'saveChapterNode' : 'loadOrInitSession';
-}
-
-// Decide between BG3 engine flow and Open Canvas flow
-async function routeInitial(
-  state: NovaiGraphState,
-  config: LangGraphRunnableConfig
-): Promise<Send> {
-  const useNovai = Boolean(
-    state.gameState ||
-      state.sessionId ||
-      state.saveChapter ||
-      (config.configurable?.campaign_id as string | undefined)
-  );
-  return new Send(useNovai ? 'novaiRouteStart' : 'generatePath', { ...state });
-}
-
 const builder = new StateGraph(NovaiGraphAnnotation)
-  // Initial router between BG3 and OC
-  .addNode('routeInitial', routeInitial)
-  .addEdge(START, 'routeInitial')
-  // ----- Open Canvas nodes -----
   .addNode('generatePath', generatePath)
+  .addEdge(START, 'generatePath')
+  // Nodes
   .addNode('replyToGeneralInput', replyToGeneralInput)
   .addNode('rewriteArtifact', rewriteArtifact)
   .addNode('rewriteArtifactTheme', rewriteArtifactTheme)
@@ -537,14 +380,12 @@ const builder = new StateGraph(NovaiGraphAnnotation)
   .addNode('routePostWebSearch', routePostWebSearch)
   // ----- BG3 nodes -----
   .addNode('saveChapterNode', saveChapterNode)
-  .addNode('novaiRouteStart', async (s: NovaiGraphState) => s)
-  .addNode('loadOrInitSession', loadOrInitSession)
-  .addNode('runTurn', runTurn)
-  .addNode('novaiGenerateArtifact', novaiGenerateArtifact)
-  .addNode('persistAndReturn', persistAndReturn)
+  .addNode('initGameEngine', initGameEngine)
+  .addNode('processGameRequest', processGameRequest)
   // Initial router
   .addConditionalEdges('generatePath', routeNode, [
     'saveChapterNode',
+    'initGameEngine',
     'updateArtifact',
     'rewriteArtifactTheme',
     'rewriteCodeArtifactTheme',
@@ -556,6 +397,8 @@ const builder = new StateGraph(NovaiGraphAnnotation)
     'webSearch',
   ])
   // Edges
+  .addEdge('initGameEngine', 'processGameRequest')
+  .addEdge('processGameRequest', 'generateArtifact')
   .addEdge('generateArtifact', 'generateFollowup')
   .addEdge('updateArtifact', 'generateFollowup')
   .addEdge('updateHighlightedText', 'generateFollowup')
@@ -574,17 +417,9 @@ const builder = new StateGraph(NovaiGraphAnnotation)
     'generateTitle',
     'summarizer',
   ])
-  .addConditionalEdges('novaiRouteStart', novaiRouteDecider, [
-    'loadOrInitSession',
-    'saveChapterNode',
-  ])
-  .addEdge('loadOrInitSession', 'runTurn')
-  .addEdge('runTurn', 'novaiGenerateArtifact')
-  .addEdge('novaiGenerateArtifact', 'persistAndReturn')
   // Terminal edges
   .addEdge('saveChapterNode', END)
   .addEdge('generateTitle', END)
-  .addEdge('summarizer', END)
-  .addEdge('persistAndReturn', END);
+  .addEdge('summarizer', END);
 
 export const graph = builder.compile().withConfig({ runName: 'novai' });
