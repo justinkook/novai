@@ -2,11 +2,7 @@ import { AIMessage } from '@langchain/core/messages';
 import { ExaRetriever } from '@langchain/exa';
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { END, START, StateGraph } from '@langchain/langgraph';
-import {
-  GameEngineService,
-  type GameState,
-  LLMService,
-} from '@workspace/engine';
+import { GameEngineService } from '@workspace/engine';
 import ExaClient from 'exa-js';
 import z from 'zod';
 import { getModelConfig, getModelFromConfig } from '../utils.js';
@@ -450,25 +446,26 @@ async function persistAndReturn(state: Bg3State): Promise<Bg3State> {
   return state;
 }
 
-function routeStart(state: Bg3State): 'saveChapter' | 'loadOrInitSession' {
-  return state.saveChapter ? 'saveChapter' : 'loadOrInitSession';
+function routeStart(state: Bg3State): 'saveChapterNode' | 'loadOrInitSession' {
+  return state.saveChapter ? 'saveChapterNode' : 'loadOrInitSession';
 }
 
 const builder = new StateGraph(Bg3GraphAnnotation)
   .addNode('loadOrInitSession', loadOrInitSession)
+  .addNode('saveChapterNode', saveChapter)
   .addNode('runTurn', runTurn)
   .addNode('generateArtifact', generateArtifact)
   .addNode('persistAndReturn', persistAndReturn)
-  .addNode('saveChapter', saveChapter)
   .addNode('routeStart', async (s: Bg3State) => s)
   .addEdge(START, 'routeStart')
   .addConditionalEdges('routeStart', routeStart, [
-    'saveChapter',
     'loadOrInitSession',
+    'saveChapterNode',
   ])
   .addEdge('loadOrInitSession', 'runTurn')
   .addEdge('runTurn', 'generateArtifact')
   .addEdge('generateArtifact', 'persistAndReturn')
+  .addEdge('saveChapterNode', END)
   .addEdge('persistAndReturn', END);
 
 export const graph = builder.compile().withConfig({ runName: 'novai' });
