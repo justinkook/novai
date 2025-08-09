@@ -96,7 +96,7 @@ export function CreateEditAssistantDialog(
   const [iconColor, setIconColor] = useState('#000000');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
-  const [graphId, setGraphId] = useState<'agent' | 'bg3'>('agent');
+  const [graphId, setGraphId] = useState<'agent' | 'novai'>('agent');
   const {
     documents,
     setDocuments,
@@ -123,7 +123,7 @@ export function CreateEditAssistantDialog(
       setHasSelectedIcon(true);
       setIconName(metadata?.iconData?.iconName || 'User');
       setIconColor(metadata?.iconData?.iconColor || '#000000');
-      setGraphId((props.assistant.graph_id as 'agent' | 'bg3') || 'agent');
+      setGraphId((props.assistant.graph_id as 'agent' | 'novai') || 'agent');
       setLoadingDocuments(true);
       getContextDocuments(props.assistant.assistant_id)
         .then((documents) => {
@@ -351,7 +351,7 @@ export function CreateEditAssistantDialog(
           </Label>
           <Select
             value={graphId}
-            onValueChange={(v) => setGraphId(v as 'agent' | 'bg3')}
+            onValueChange={(v) => setGraphId(v as 'agent' | 'novai')}
             disabled={props.allDisabled}
           >
             <SelectTrigger>
@@ -359,7 +359,7 @@ export function CreateEditAssistantDialog(
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="agent">Default (Open Canvas)</SelectItem>
-              <SelectItem value="bg3">BG3 Adventure</SelectItem>
+              <SelectItem value="novai">NoVai</SelectItem>
             </SelectContent>
           </Select>
 

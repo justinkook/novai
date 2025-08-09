@@ -81,7 +81,7 @@ export interface CreateAssistantFields {
    */
   documents?: ContextDocument[];
   /**
-   * Optional graph ID to bind this assistant to (e.g., 'bg3'). Defaults to 'agent'.
+   * Optional graph ID to bind this assistant to (e.g., 'novai'). Defaults to 'agent'.
    */
   graphId?: string;
 }

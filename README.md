@@ -7,7 +7,7 @@
 Build a **campaign-agnostic AI-driven text RPG system** that can:
 
 - Replicate full gameplay (characters, stat checks, combat, branching choices) using only text
-- Support multiple campaigns (BG3, Game of Thrones, Cyberpunk, etc.)
+- Support multiple campaigns (NovAI/BG3, Game of Thrones, Cyberpunk, etc.)
 - Export playthroughs as traditional web novels
 - Use LLMs as intelligent Game Masters
 
@@ -27,7 +27,7 @@ Build a **campaign-agnostic AI-driven text RPG system** that can:
 .
 ├── apps/
 │   ├── web/               # Next.js frontend for player input/output
-│   └── agents/            # LangGraph graphs (Open Canvas, BG3, Reflection, ...)
+│   └── agents/            # LangGraph graphs (Open Canvas, NovAI, Reflection, ...)
 │
 ├── packages/
 │   ├── engine/            # Core text RPG engine
@@ -37,7 +37,7 @@ Build a **campaign-agnostic AI-driven text RPG system** that can:
 │   ├── evals/             # Evaluation utilities/tests
 │   └── typescript-config/ # TS config presets
 │
-├── campaigns/             # Campaign data (e.g., BG3)
+├── campaigns/             # Campaign data (e.g., NovAI/BG3)
 ├── langgraph.json         # Graph registry for agents
 ├── turbo.json             # Turborepo config
 └── .env                   # Root env (used by agents)

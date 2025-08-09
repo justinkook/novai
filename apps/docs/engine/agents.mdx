@@ -5,7 +5,7 @@ description: "How NovAI uses LangGraph agents, graph configuration, environment 
 
 # Agents (LangGraph)
 
-NovAI uses LangGraph to orchestrate multi-step agent workflows (graphs) such as Open Canvas, BG3 gameplay, reflection, and thread titles.
+NovAI uses LangGraph to orchestrate multi-step agent workflows (graphs) such as Open Canvas, NovAI gameplay, reflection, and thread titles.
 
 ## Graph configuration
 
@@ -17,7 +17,7 @@ Graphs are declared in `langgraph.json` at the repo root for maximum compatibili
   "dependencies": ["."],
   "graphs": {
     "agent": "./apps/agents/src/open-canvas/index.ts:graph",
-    "bg3": "./apps/agents/src/bg3-adventure/index.ts:graph",
+    "novai": "./apps/agents/src/novai/index.ts:graph",
     "reflection": "./apps/agents/src/reflection/index.ts:graph",
     "thread_title": "./apps/agents/src/thread-title/index.ts:graph",
     "summarizer": "./apps/agents/src/summarizer/index.ts:graph",
