@@ -65,6 +65,8 @@
     "./tailwind.config": "./tailwind.config.ts",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.tsx"
+    "./hooks/use-toast": "./src/hooks/use-toast.ts",
+    "./hooks/use-mobile": "./src/hooks/use-mobile.tsx",
+    "./hooks/*": "./src/hooks/*"
   }
 }
