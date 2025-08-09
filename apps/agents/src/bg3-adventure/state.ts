@@ -4,6 +4,8 @@ import type { GameState } from '@workspace/engine';
 export const Bg3GraphAnnotation = Annotation.Root({
   // Conversation history
   ...MessagesAnnotation.spec,
+  // Active BG3 session id (propagated between nodes)
+  sessionId: Annotation<string | undefined>,
   // Whether to finalize the current narration into a chapter entry
   finalizeChapter: Annotation<boolean | undefined>,
   // The evolving game state for the active session

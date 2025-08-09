@@ -241,13 +241,9 @@ async function loadOrInitSession(
     engine,
   });
 
-  // Attach sessionId to config for downstream nodes
-  const cfg = config as unknown as { configurable?: Record<string, unknown> };
-  cfg.configurable = cfg.configurable || {};
-  cfg.configurable.bg3_session_id = sessionId;
-
   return {
     ...state,
+    sessionId,
     gameState,
   };
 }
@@ -297,10 +293,9 @@ async function runTurn(
 
   // Attempt to recover a missing gameState by reloading/creating the session
   let currentGameState = state.gameState;
+  let effectiveSessionId = state.sessionId as string | undefined;
   if (!currentGameState) {
-    const userId = config.configurable?.supabase_user_id as
-      | string
-      | undefined;
+    const userId = config.configurable?.supabase_user_id as string | undefined;
     const threadId =
       (config.configurable?.thread_id as string | undefined) ||
       (config.configurable?.threadId as string | undefined);
@@ -322,10 +317,8 @@ async function runTurn(
       engine,
     });
 
-    // Ensure downstream nodes have the session id available
-    const cfg = config as unknown as { configurable?: Record<string, unknown> };
-    cfg.configurable = cfg.configurable || {};
-    cfg.configurable.bg3_session_id = sessionId;
+    // Track session id locally for downstream use
+    effectiveSessionId = sessionId;
     currentGameState = gameState;
   }
   const playerInput = Array.isArray(state.messages)
@@ -433,6 +426,10 @@ async function runTurn(
       combat: response.combat,
     },
     gameState: response.updatedGameState,
+    sessionId:
+      effectiveSessionId ||
+      state.sessionId ||
+      (config.configurable?.bg3_session_id as string | undefined),
     // Let the MessagesAnnotation reducer append this AI message to the history
     messages: [new AIMessage(response.narration)],
   };
@@ -442,7 +439,9 @@ async function persistAndReturn(
   state: Bg3State,
   config: LangGraphRunnableConfig
 ): Promise<Bg3State> {
-  const sessionId = config.configurable?.bg3_session_id as string | undefined;
+  const sessionId =
+    state.sessionId ||
+    (config.configurable?.bg3_session_id as string | undefined);
   if (!sessionId) {
     throw new Error('Missing bg3_session_id in configurable');
   }

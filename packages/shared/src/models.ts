@@ -25,26 +25,6 @@ const AZURE_MODELS: ModelConfigurationParams[] = [
 
 const OPENAI_MODELS: ModelConfigurationParams[] = [
   {
-    name: 'gpt-5',
-    label: 'GPT-5',
-    config: {
-      provider: 'openai',
-      temperatureRange: {
-        min: 0,
-        max: 1,
-        default: 0.5,
-        current: 0.5,
-      },
-      maxTokens: {
-        min: 1,
-        max: 200_000,
-        default: 8_192,
-        current: 8_192,
-      },
-    },
-    isNew: true,
-  },
-  {
     name: 'gpt-4.1',
     label: 'GPT 4.1',
     config: {
@@ -652,10 +632,9 @@ export type ALL_MODEL_NAMES =
   | OLLAMA_MODEL_NAMES
   | GROQ_MODEL_NAMES;
 
-// Set GPT-5 as default if available
-export const DEFAULT_MODEL_NAME: ALL_MODEL_NAMES = OPENAI_MODELS[0]!.name;
+export const DEFAULT_MODEL_NAME: ALL_MODEL_NAMES = OPENAI_MODELS[1]!.name;
 export const DEFAULT_MODEL_CONFIG: CustomModelConfig = {
-  ...OPENAI_MODELS[0]!.config,
-  temperatureRange: { ...OPENAI_MODELS[0]!.config.temperatureRange },
-  maxTokens: { ...OPENAI_MODELS[0]!.config.maxTokens },
+  ...OPENAI_MODELS[1]!.config,
+  temperatureRange: { ...OPENAI_MODELS[1]!.config.temperatureRange },
+  maxTokens: { ...OPENAI_MODELS[1]!.config.maxTokens },
 };
