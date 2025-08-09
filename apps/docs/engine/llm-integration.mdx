@@ -15,10 +15,10 @@ The default provider for high-quality text generation:
 
 ```typescript
 const llmConfig: LLMConfig = {
-  provider: 'openai',
+  provider: "openai",
   apiKey: process.env.OPENAI_API_KEY,
-  model: 'gpt-4', // or 'gpt-3.5-turbo'
-  baseUrl: 'https://api.openai.com/v1'
+  model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+  baseUrl: "https://api.openai.com/v1",
 };
 ```
 
@@ -28,9 +28,9 @@ Support for local LLM servers and Ollama:
 
 ```typescript
 const llmConfig: LLMConfig = {
-  provider: 'local',
-  baseUrl: 'http://localhost:11434', // Ollama default
-  model: 'llama2:7b' // or other local models
+  provider: "local",
+  baseUrl: process.env.LOCAL_LLM_URL, // Ollama or LM Studio
+  model: process.env.LOCAL_LLM_MODEL, // e.g., 'llama3.1'
 };
 ```
 
@@ -44,7 +44,11 @@ interface LLMProvider {
 }
 
 class CustomLLMProvider implements LLMProvider {
-  async call(prompt: string, memory: string[], temperature: number): Promise<string> {
+  async call(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
     // Custom implementation
     return await this.callCustomAPI(prompt, memory, temperature);
   }
@@ -65,9 +69,9 @@ export class LLMService {
     temperature: number = 0.7
   ): Promise<string> {
     switch (this.config.provider) {
-      case 'openai':
+      case "openai":
         return this.callOpenAI(prompt, memory, temperature);
-      case 'local':
+      case "local":
         return this.callLocalLLM(prompt, memory, temperature);
       default:
         throw new Error(`Unsupported LLM provider: ${this.config.provider}`);
@@ -80,22 +84,22 @@ export class LLMService {
     temperature: number
   ): Promise<string> {
     const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.config.apiKey}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: this.config.model || 'gpt-4',
+        model: this.config.model || "gpt-4",
         messages: [
-          { role: 'system', content: this.buildSystemMessage() },
-          ...memory.map(msg => ({ role: 'user', content: msg })),
-          { role: 'user', content: prompt }
+          { role: "system", content: this.buildSystemMessage() },
+          ...memory.map((msg) => ({ role: "user", content: msg })),
+          { role: "user", content: prompt },
         ],
         temperature,
         max_tokens: 1000,
-        stream: false
-      })
+        stream: false,
+      }),
     });
 
     if (!response.ok) {
@@ -112,17 +116,17 @@ export class LLMService {
     temperature: number
   ): Promise<string> {
     const response = await fetch(`${this.config.baseUrl}/api/generate`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: this.config.model,
         prompt: this.buildLocalPrompt(prompt, memory),
         temperature,
         max_tokens: 1000,
-        stream: false
-      })
+        stream: false,
+      }),
     });
 
     if (!response.ok) {
@@ -220,9 +224,9 @@ const lowTemp = 0.3;
 
 // Choose temperature based on context
 function getTemperature(context: GameContext): number {
-  if (context.type === 'combat') return lowTemp;
-  if (context.type === 'dialogue') return balancedTemp;
-  if (context.type === 'exploration') return highTemp;
+  if (context.type === "combat") return lowTemp;
+  if (context.type === "dialogue") return balancedTemp;
+  if (context.type === "exploration") return highTemp;
   return balancedTemp;
 }
 ```
@@ -233,31 +237,31 @@ function getTemperature(context: GameContext): number {
 async processGameRequest(request: GameRequest): Promise<GameResponse> {
   // Determine appropriate temperature based on context
   const temperature = this.determineTemperature(request);
-  
+
   const aiResponse = await this.llmService.callLLM(
     prompt,
     memory,
     temperature
   );
-  
+
   return this.parseResponse(aiResponse);
 }
 
 private determineTemperature(request: GameRequest): number {
   const { gameState, playerInput } = request;
-  
+
   // Combat situations need consistency
-  if (playerInput.toLowerCase().includes('attack') || 
+  if (playerInput.toLowerCase().includes('attack') ||
       gameState.currentLocation.includes('battle')) {
     return 0.3;
   }
-  
+
   // Creative exploration
   if (playerInput.toLowerCase().includes('explore') ||
       playerInput.toLowerCase().includes('investigate')) {
     return 0.8;
   }
-  
+
   // Standard interaction
   return 0.7;
 }
@@ -279,11 +283,11 @@ async callLLMWithRetry(
       return await this.callLLM(prompt, memory, temperature);
     } catch (error) {
       console.error(`LLM call attempt ${attempt} failed:`, error);
-      
+
       if (attempt === maxRetries) {
         throw new Error(`LLM call failed after ${maxRetries} attempts: ${error.message}`);
       }
-      
+
       // Exponential backoff
       await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
     }
@@ -301,7 +305,7 @@ private getFallbackResponse(context: string): string {
     'exploration': "Your exploration is momentarily paused. Please describe what you'd like to do next.",
     'default': "The game world seems to be experiencing a brief disruption. Please try your action again."
   };
-  
+
   return fallbacks[context] || fallbacks.default;
 }
 ```
@@ -339,13 +343,13 @@ class LLMCache {
 private optimizePrompt(prompt: string): string {
   // Remove redundant whitespace
   prompt = prompt.replace(/\s+/g, ' ').trim();
-  
+
   // Limit prompt length to prevent token overflow
   const maxLength = 4000;
   if (prompt.length > maxLength) {
     prompt = prompt.substring(0, maxLength) + '...';
   }
-  
+
   return prompt;
 }
 ```
@@ -358,25 +362,31 @@ private optimizePrompt(prompt: string): string {
 class SecureLLMService extends LLMService {
   constructor(config: LLMConfig) {
     // Validate API key format
-    if (config.provider === 'openai' && !this.isValidAPIKey(config.apiKey)) {
-      throw new Error('Invalid OpenAI API key format');
+    if (config.provider === "openai" && !this.isValidAPIKey(config.apiKey)) {
+      throw new Error("Invalid OpenAI API key format");
     }
-    
+
     super(config);
   }
 
   private isValidAPIKey(apiKey?: string): boolean {
-    return apiKey?.startsWith('sk-') && apiKey.length > 20;
+    return apiKey?.startsWith("sk-") && apiKey.length > 20;
   }
 
   // Override to add logging
-  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
-    console.log(`LLM call to ${this.config.provider} with temperature ${temperature}`);
-    
+  async callLLM(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
+    console.log(
+      `LLM call to ${this.config.provider} with temperature ${temperature}`
+    );
+
     const startTime = Date.now();
     const result = await super.callLLM(prompt, memory, temperature);
     const duration = Date.now() - startTime;
-    
+
     console.log(`LLM call completed in ${duration}ms`);
     return result;
   }
@@ -390,16 +400,20 @@ class RateLimitedLLMService extends LLMService {
   private lastCall = 0;
   private minInterval = 1000; // 1 second between calls
 
-  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
+  async callLLM(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
     const now = Date.now();
     const timeSinceLastCall = now - this.lastCall;
-    
+
     if (timeSinceLastCall < this.minInterval) {
-      await new Promise(resolve => 
+      await new Promise((resolve) =>
         setTimeout(resolve, this.minInterval - timeSinceLastCall)
       );
     }
-    
+
     this.lastCall = Date.now();
     return super.callLLM(prompt, memory, temperature);
   }
@@ -425,34 +439,38 @@ interface LLMCallMetrics {
 class MonitoredLLMService extends LLMService {
   private metrics: LLMCallMetrics[] = [];
 
-  async callLLM(prompt: string, memory: string[], temperature: number): Promise<string> {
+  async callLLM(
+    prompt: string,
+    memory: string[],
+    temperature: number
+  ): Promise<string> {
     const startTime = Date.now();
     const startMetrics: Partial<LLMCallMetrics> = {
       provider: this.config.provider,
-      model: this.config.model || 'unknown',
+      model: this.config.model || "unknown",
       temperature,
-      promptLength: prompt.length
+      promptLength: prompt.length,
     };
 
     try {
       const response = await super.callLLM(prompt, memory, temperature);
-      
+
       this.metrics.push({
         ...startMetrics,
         responseLength: response.length,
         duration: Date.now() - startTime,
-        success: true
+        success: true,
       } as LLMCallMetrics);
-      
+
       return response;
     } catch (error) {
       this.metrics.push({
         ...startMetrics,
         duration: Date.now() - startTime,
         success: false,
-        error: error.message
+        error: error.message,
       } as LLMCallMetrics);
-      
+
       throw error;
     }
   }
@@ -472,4 +490,4 @@ class MonitoredLLMService extends LLMService {
 5. **Security**: Secure API keys and implement proper access controls
 6. **Monitoring**: Track usage and performance metrics
 7. **Caching**: Cache responses when appropriate to reduce API calls
-8. **Testing**: Test with different providers and configurations 
+8. **Testing**: Test with different providers and configurations

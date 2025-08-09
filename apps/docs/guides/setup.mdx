@@ -47,33 +47,25 @@ pnpm install
 
 ### 3. Environment Configuration
 
-Create a `.env` file in the root directory:
+- Agents: create `apps/agents/.env` with server-side secrets (e.g., `OPENAI_API_KEY`, `LOCAL_LLM_URL`, `SUPABASE_SERVICE_ROLE`, `PINECONE_*`).
+- Web: create `apps/web/.env.local` with client-facing vars (e.g., `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `LANGGRAPH_API_URL`).
 
 ```bash
-# Copy the example environment file
-cp .env.example .env
-```
+# apps/agents/.env (server-only)
+OPENAI_API_KEY=...
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+LOCAL_LLM_URL=http://localhost:11434/v1
+LOCAL_LLM_MODEL=llama3.1
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE=...
+PINECONE_API_KEY=...
+PINECONE_INDEX=novai-chapters
 
-Edit the `.env` file with your configuration:
-
-```bash
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/novai
-
-# Authentication
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=http://localhost:3000
-
-# Development Settings
-NODE_ENV=development
-LOG_LEVEL=debug
-
-# Optional: Local LLM Configuration
-LOCAL_LLM_URL=http://localhost:11434
-LOCAL_LLM_MODEL=llama2:7b
+# apps/web/.env.local (Next.js)
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+LANGGRAPH_API_URL=http://localhost:54367
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 ### 4. Database Setup
@@ -127,8 +119,9 @@ pnpm dev
 ```
 
 This starts:
+
 - Web application: `http://localhost:3000`
-- API server: `http://localhost:3001`
+- Agents LangGraph server: `http://localhost:54367`
 - Documentation: `http://localhost:3002`
 
 #### Individual Services
@@ -137,8 +130,8 @@ This starts:
 # Web application only
 pnpm dev:web
 
-# API server only
-pnpm dev:api
+# Agents only
+pnpm --filter @workspace/agents dev
 
 # Documentation only
 pnpm dev:docs
@@ -269,10 +262,12 @@ The project includes a `biome.json` configuration file that defines the linting 
 For the best development experience, install the Biome extension for your IDE:
 
 **VS Code:**
+
 - Install the "Biome" extension
 - Configure VS Code to use Biome as the default formatter
 
 **Other IDEs:**
+
 - Most modern IDEs support Biome through their extension systems
 - Configure your IDE to run `biome format` on save
 
@@ -281,13 +276,12 @@ For the best development experience, install the Biome extension for your IDE:
 ```
 novai/
 ├── apps/
-│   ├── api/                 # NestJS API server
+│   ├── agents/              # LangGraph agents
 │   ├── web/                 # Next.js web application
 │   └── docs/                # Documentation site
 ├── packages/
 │   ├── engine/              # Core game engine
 │   ├── prompts/             # Prompt templates
-│   ├── rulesets/            # Game rulesets
 │   ├── ui/                  # UI components
 │   └── typescript-config/   # TypeScript configurations
 ├── campaigns/               # Campaign definitions
@@ -482,21 +476,21 @@ CREATE TABLE users (
 
 ```typescript
 // packages/engine/src/__tests__/GameEngineService.test.ts
-import { GameEngineService } from '../GameEngineService';
+import { GameEngineService } from "../GameEngineService";
 
-describe('GameEngineService', () => {
+describe("GameEngineService", () => {
   let engine: GameEngineService;
 
   beforeEach(() => {
     engine = new GameEngineService({
-      provider: 'openai',
-      apiKey: 'test-key'
+      provider: "openai",
+      apiKey: "test-key",
     });
   });
 
-  it('should create a new game', async () => {
-    const gameState = await engine.createNewGame('test-campaign', 'Player');
-    expect(gameState.playerName).toBe('Player');
+  it("should create a new game", async () => {
+    const gameState = await engine.createNewGame("test-campaign", "Player");
+    expect(gameState.playerName).toBe("Player");
   });
 });
 ```
@@ -505,12 +499,12 @@ describe('GameEngineService', () => {
 
 ```typescript
 // apps/api/test/game.e2e-spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('Game Controller (e2e)', () => {
+describe("Game Controller (e2e)", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -522,10 +516,10 @@ describe('Game Controller (e2e)', () => {
     await app.init();
   });
 
-  it('/game/create (POST)', () => {
+  it("/game/create (POST)", () => {
     return request(app.getHttpServer())
-      .post('/game/create')
-      .send({ campaignId: 'test', playerName: 'Player' })
+      .post("/game/create")
+      .send({ campaignId: "test", playerName: "Player" })
       .expect(201);
   });
 });
@@ -716,4 +710,4 @@ Now that you have the development environment set up, you can:
 4. **Contribute to the project**: Pick up an issue or create a feature
 5. **Join the community**: Connect with other developers
 
-Happy coding! 
+Happy coding!

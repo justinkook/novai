@@ -13,7 +13,7 @@ function checkDevServer(): Promise<void> {
     const scriptDir = __dirname;
     const targetCwd = path.resolve(scriptDir, '..');
 
-    const serverProcess = spawn('yarn', ['dev'], {
+    const serverProcess = spawn('pnpm', ['dev'], {
       cwd: targetCwd,
       shell: true,
       stdio: 'pipe',

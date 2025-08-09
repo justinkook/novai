@@ -14,12 +14,12 @@ graph TB
     A[Client Application] --> B[GameEngineService]
     B --> C[CampaignService]
     B --> D[LLMService]
-    B --> E[RulesetService]
-    
+    B --> E[Prompt Mechanics]
+
     C --> F[Campaign Files]
     D --> G[LLM Providers]
-    E --> H[Ruleset Definitions]
-    
+    E --> H[Prompt Templates]
+
     B --> I[Game State]
     B --> J[Response Parser]
 ```
@@ -42,26 +42,39 @@ export class GameEngineService {
 
   async processGameRequest(request: GameRequest): Promise<GameResponse> {
     // 1. Load campaign data
-    const campaign = await this.campaignService.loadCampaign(request.gameState.campaignId);
-    
+    const campaign = await this.campaignService.loadCampaign(
+      request.gameState.campaignId
+    );
+
     // 2. Build prompts
-    const systemPrompt = await this.buildSystemPrompt(campaign, request.gameState);
-    const userPrompt = this.buildUserPrompt(request.playerInput, request.gameState, request.context);
-    
+    const systemPrompt = await this.buildSystemPrompt(
+      campaign,
+      request.gameState
+    );
+    const userPrompt = this.buildUserPrompt(
+      request.playerInput,
+      request.gameState,
+      request.context
+    );
+
     // 3. Call LLM
     const aiResponse = await this.llmService.callLLM(
       `${systemPrompt}\n\n${userPrompt}`,
       this.getNarrativeMemory(request.gameState),
       0.7
     );
-    
+
     // 4. Parse and update state
-    const updatedGameState = this.updateGameState(request.gameState, request.playerInput, aiResponse);
+    const updatedGameState = this.updateGameState(
+      request.gameState,
+      request.playerInput,
+      aiResponse
+    );
     const parsedResponse = this.parseAIResponse(aiResponse);
-    
+
     return {
       ...parsedResponse,
-      updatedGameState
+      updatedGameState,
     };
   }
 }
@@ -81,9 +94,9 @@ export class LLMService {
     temperature: number = 0.7
   ): Promise<string> {
     switch (this.config.provider) {
-      case 'openai':
+      case "openai":
         return this.callOpenAI(prompt, memory, temperature);
-      case 'local':
+      case "local":
         return this.callLocalLLM(prompt, memory, temperature);
       default:
         throw new Error(`Unsupported LLM provider: ${this.config.provider}`);
@@ -101,14 +114,24 @@ export class CampaignService {
   constructor(private campaignsPath?: string) {}
 
   async loadCampaign(campaignId: string): Promise<Campaign> {
-    const campaignPath = path.join(this.campaignsPath || 'campaigns', campaignId);
-    const campaignData = await fs.readFile(path.join(campaignPath, 'campaign.json'), 'utf8');
+    const campaignPath = path.join(
+      this.campaignsPath || "campaigns",
+      campaignId
+    );
+    const campaignData = await fs.readFile(
+      path.join(campaignPath, "campaign.json"),
+      "utf8"
+    );
     return JSON.parse(campaignData);
   }
 
   async getCampaignIntro(campaignId: string): Promise<string> {
-    const introPath = path.join(this.campaignsPath || 'campaigns', campaignId, 'intro.md');
-    return await fs.readFile(introPath, 'utf8');
+    const introPath = path.join(
+      this.campaignsPath || "campaigns",
+      campaignId,
+      "intro.md"
+    );
+    return await fs.readFile(introPath, "utf8");
   }
 }
 ```
@@ -220,7 +243,7 @@ interface GameState {
 interface NarrativeEntry {
   timestamp: string;
   content: string;
-  type: 'narration' | 'choice' | 'combat' | 'stat-check';
+  type: "narration" | "choice" | "combat" | "stat-check";
 }
 ```
 
@@ -268,4 +291,4 @@ interface LLMProvider {
 - **Input Validation**: All player input is validated and sanitized
 - **LLM Security**: Secure API key management and request signing
 - **State Integrity**: Validation of game state to prevent exploits
-- **Rate Limiting**: Protection against abuse and resource exhaustion 
+- **Rate Limiting**: Protection against abuse and resource exhaustion

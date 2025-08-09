@@ -14,13 +14,13 @@ The NovAI game engine is the heart of the platform, providing AI-powered tableto
 The main orchestrator that processes player input and generates AI responses.
 
 ```typescript
-import { GameEngineService } from '@novai/engine';
+import { GameEngineService } from "@novai/engine";
 
 const engine = new GameEngineService(llmConfig, campaignsPath);
 const response = await engine.processGameRequest({
   gameState,
   playerInput,
-  context
+  context,
 });
 ```
 
@@ -28,7 +28,7 @@ const response = await engine.processGameRequest({
 
 - **AI Game Master**: Intelligent narrative generation that adapts to player choices
 - **Campaign Management**: Load and manage custom campaigns with rich world-building
-- **Multi-Ruleset Support**: Extensible framework supporting D&D 5e and custom rulesets
+- **Prompt-driven Mechanics**: D&D 5e-flavored prompts and engine mechanics
 - **Real-time State Management**: Persistent game state with character progression
 - **Dynamic Choices**: AI-generated meaningful choices based on context
 - **Stat Checks**: Automatic stat check generation and resolution
@@ -58,9 +58,7 @@ const response = await engine.processGameRequest({
   <Step title="State Update">
     Updates game state with new narrative entries
   </Step>
-  <Step title="Response Return">
-    Returns structured response to the client
-  </Step>
+  <Step title="Response Return">Returns structured response to the client</Step>
 </Steps>
 
 ## Game State Management
@@ -97,7 +95,7 @@ The engine supports multiple LLM providers:
 
 ```typescript
 interface LLMConfig {
-  provider: 'openai' | 'local';
+  provider: "openai" | "local";
   apiKey?: string;
   model?: string;
   baseUrl?: string;
@@ -118,4 +116,4 @@ Campaigns define the world, characters, and story elements:
 - Learn about the [Game State Management](/engine/game-state)
 - Explore [Campaign Creation](/engine/campaigns)
 - Understand [LLM Integration](/engine/llm-integration)
-- Review the [API Reference](/api-reference/engine/game-request) 
+- Review the [API Reference](/api-reference/engine/game-request)

@@ -27,6 +27,7 @@
             "pages": [
               "engine/overview",
               "engine/architecture",
+              "engine/agents",
               "engine/game-state",
               "engine/campaigns",
               "engine/llm-integration"
@@ -37,31 +38,7 @@
             "pages": [
               "packages/engine",
               "packages/prompts",
-              "packages/rulesets",
               "packages/ui"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "groups": [
-          {
-            "group": "REST API",
-            "pages": [
-              "api-reference/introduction",
-              "api-reference/auth",
-              "api-reference/tenants",
-              "api-reference/users"
-            ]
-          },
-          {
-            "group": "Game Engine API",
-            "pages": [
-              "api-reference/engine/game-request",
-              "api-reference/engine/game-response",
-              "api-reference/engine/campaigns",
-              "api-reference/engine/llm-config"
             ]
           }
         ]
@@ -74,7 +51,6 @@
             "pages": [
               "guides/setup",
               "guides/campaigns",
-              "guides/rulesets",
               "guides/deployment"
             ]
           },

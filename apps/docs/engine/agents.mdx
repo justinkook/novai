@@ -1,0 +1,76 @@
+---
+title: "Agents (LangGraph)"
+description: "How NovAI uses LangGraph agents, graph configuration, environment variables, and local development"
+---
+
+# Agents (LangGraph)
+
+NovAI uses LangGraph to orchestrate multi-step agent workflows (graphs) such as Open Canvas, BG3 gameplay, reflection, and thread titles.
+
+## Graph configuration
+
+Graphs are declared in `langgraph.json` at the repo root for maximum compatibility with hosted deployments. Example:
+
+```json
+{
+  "node_version": "20",
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "./apps/agents/src/open-canvas/index.ts:graph",
+    "bg3": "./apps/agents/src/bg3-adventure/index.ts:graph",
+    "reflection": "./apps/agents/src/reflection/index.ts:graph",
+    "thread_title": "./apps/agents/src/thread-title/index.ts:graph",
+    "summarizer": "./apps/agents/src/summarizer/index.ts:graph",
+    "web_search": "./apps/agents/src/web-search/index.ts:graph"
+  },
+  "env": ".env"
+}
+```
+
+- Keep `langgraph.json` at the repo root. Hosted “auto-detect” flows typically look here by default.
+- The `graphs` map points to exported graphs inside `apps/agents/src/...`.
+- The `env` path is resolved relative to the config file.
+
+## Environment variables
+
+Recommended layout for this monorepo:
+
+- Agents: `apps/agents/.env` (server-only secrets)
+
+  - `OPENAI_API_KEY`, `OPENAI_MODEL`
+  - Optional providers: `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `FIREWORKS_API_KEY`, `GROQ_API_KEY`
+  - Local models: `LOCAL_LLM_URL`, `LOCAL_LLM_MODEL`
+  - Supabase (server write): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE`
+  - Vector/search: `PINECONE_API_KEY`, `PINECONE_INDEX`, `EXA_API_KEY`
+
+- Web: `apps/web/.env.local` (Next.js client-facing)
+  - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `LANGGRAPH_API_URL` (default: `http://localhost:54367`)
+  - Optional toggles: `NEXT_PUBLIC_{OPENAI,ANTHROPIC,AZURE,GEMINI,OLLAMA,GROQ,FIREWORKS}_ENABLED`
+
+If you need maximum hosted compatibility without passing `--config`, keep `langgraph.json` at the root and set its `env` to `apps/agents/.env`.
+
+## Local development
+
+Start the agents dev server (LangGraph):
+
+```bash
+pnpm --filter @workspace/agents dev
+```
+
+This runs `langgraphjs dev` on port `54367` by default (see `apps/agents/package.json`). The web app points to it via `LANGGRAPH_API_URL`.
+
+## Web ↔ Agents integration
+
+The web app communicates with agents using `LANGGRAPH_API_URL`. In development, set:
+
+```bash
+# apps/web/.env.local
+LANGGRAPH_API_URL=http://localhost:54367
+```
+
+## Deployment notes
+
+- Keep `langgraph.json` at the repo root for hosted providers that auto-detect config.
+- Provide agents’ env via your host (Railway/Fly/Render). Match keys from `apps/agents/.env`.
+- Set the web app environment in your frontend host (e.g., Vercel) using `NEXT_PUBLIC_*` variables and `LANGGRAPH_API_URL`.

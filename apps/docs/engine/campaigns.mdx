@@ -13,14 +13,13 @@ A campaign consists of several key components:
 
 ```typescript
 interface Campaign {
-  id: string;                    // Unique campaign identifier
-  name: string;                  // Campaign title
-  description: string;           // Campaign description
-  ruleset: string;              // Associated ruleset (e.g., "dnd-5e")
-  intro: string;                // Campaign introduction text
-  companions: Companion[];       // Available NPC companions
-  locations: Location[];        // World locations
-  plot: PlotPoint[];           // Story plot points
+  id: string; // Unique campaign identifier
+  name: string; // Campaign title
+  description: string; // Campaign description
+  intro: string; // Campaign introduction text
+  companions: Companion[]; // Available NPC companions
+  locations: Location[]; // World locations
+  plot: PlotPoint[]; // Story plot points
 }
 ```
 
@@ -49,7 +48,6 @@ campaigns/
   "id": "baldurs-gate-3",
   "name": "Baldur's Gate 3 Adventure",
   "description": "A thrilling adventure in the Forgotten Realms",
-  "ruleset": "dnd-5e",
   "intro": "Welcome to Baldur's Gate, a city of intrigue and danger...",
   "companions": [
     {
@@ -114,14 +112,14 @@ Create `intro.md` with the campaign's opening narrative:
 ```markdown
 # Welcome to My Campaign
 
-You find yourself standing at the gates of the ancient city of Eldoria. 
-The stone walls tower above you, weathered by centuries of history. 
+You find yourself standing at the gates of the ancient city of Eldoria.
+The stone walls tower above you, weathered by centuries of history.
 Merchants bustle about, and the sound of blacksmiths working fills the air.
 
-As you step through the gates, you notice a group of travelers gathered 
+As you step through the gates, you notice a group of travelers gathered
 around a notice board. One of them turns to you with a concerned expression.
 
-"Are you here for the quest?" they ask. "The mayor is offering a reward 
+"Are you here for the quest?" they ask. "The mayor is offering a reward
 for anyone who can help with the recent disappearances in the city."
 
 What would you like to do?
@@ -229,30 +227,33 @@ export class CampaignService {
   constructor(private campaignsPath?: string) {}
 
   async loadCampaign(campaignId: string): Promise<Campaign> {
-    const campaignPath = path.join(this.campaignsPath || 'campaigns', campaignId);
-    
+    const campaignPath = path.join(
+      this.campaignsPath || "campaigns",
+      campaignId
+    );
+
     // Load campaign configuration
     const campaignData = await fs.readFile(
-      path.join(campaignPath, 'campaign.json'),
-      'utf8'
+      path.join(campaignPath, "campaign.json"),
+      "utf8"
     );
     const campaign = JSON.parse(campaignData);
-    
+
     // Load additional campaign components
     campaign.companions = await this.loadCompanions(campaignPath);
     campaign.locations = await this.loadLocations(campaignPath);
     campaign.plot = await this.loadPlot(campaignPath);
-    
+
     return campaign;
   }
 
   async getCampaignIntro(campaignId: string): Promise<string> {
     const introPath = path.join(
-      this.campaignsPath || 'campaigns',
+      this.campaignsPath || "campaigns",
       campaignId,
-      'intro.md'
+      "intro.md"
     );
-    return await fs.readFile(introPath, 'utf8');
+    return await fs.readFile(introPath, "utf8");
   }
 }
 ```
@@ -281,12 +282,12 @@ CAMPAIGN CONTEXT:
 - Player Stats: ${JSON.stringify(gameState.stats)}
 
 WORLD LOCATIONS:
-${campaign.locations.map(loc => 
+${campaign.locations.map(loc =>
   `- ${loc.name}: ${loc.description}`
 ).join('\n')}
 
 AVAILABLE COMPANIONS:
-${campaign.companions.map(comp => 
+${campaign.companions.map(comp =>
   `- ${comp.name}: ${comp.description}`
 ).join('\n')}
 
@@ -309,7 +310,7 @@ Campaigns can include dynamic content that adapts to player choices:
 
 ```typescript
 interface DynamicContent {
-  type: 'location' | 'companion' | 'quest' | 'item';
+  type: "location" | "companion" | "quest" | "item";
   trigger: {
     condition: string;
     value: any;
@@ -371,7 +372,7 @@ async validateCampaign(campaignId: string): Promise<ValidationResult> {
   try {
     const campaign = await this.loadCampaign(campaignId);
     const validated = CampaignSchema.parse(campaign);
-    
+
     // Check for required files
     const requiredFiles = ['campaign.json', 'intro.md'];
     for (const file of requiredFiles) {
@@ -380,7 +381,7 @@ async validateCampaign(campaignId: string): Promise<ValidationResult> {
         throw new Error(`Missing required file: ${file}`);
       }
     }
-    
+
     return { valid: true, campaign: validated };
   } catch (error) {
     return { valid: false, error: error.message };
@@ -397,4 +398,4 @@ async validateCampaign(campaignId: string): Promise<ValidationResult> {
 5. **Testing**: Validate campaigns thoroughly before deployment
 6. **Documentation**: Include clear documentation for custom campaigns
 7. **Version Control**: Use version control for campaign development
-8. **Backup**: Keep backups of campaign data 
+8. **Backup**: Keep backups of campaign data
