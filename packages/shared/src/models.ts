@@ -586,7 +586,6 @@ const GEMINI_MODELS: ModelConfigurationParams[] = [
 ];
 
 export const LANGCHAIN_USER_ONLY_MODELS = [
-  'gpt-5',
   'o1',
   'gpt-4o',
   'gpt-4.5-preview',

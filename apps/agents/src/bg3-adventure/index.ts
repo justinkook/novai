@@ -256,13 +256,7 @@ async function runTurn(
   state: Bg3State,
   config: LangGraphRunnableConfig
 ): Promise<Bg3State> {
-  if (!state.gameState) {
-    throw new Error('gameState missing in state');
-  }
-  const playerInput = Array.isArray(state.messages)
-    ? getLatestUserText(state.messages as unknown[])
-    : '';
-
+  // Build engine config up-front as we may need it for session recovery
   const engineLLMConfig2 = (() => {
     if (process.env.LOCAL_LLM_URL) {
       return {
@@ -301,6 +295,43 @@ async function runTurn(
   })();
   const engine = new GameEngineService(engineLLMConfig2);
 
+  // Attempt to recover a missing gameState by reloading/creating the session
+  let currentGameState = state.gameState;
+  if (!currentGameState) {
+    const userId = config.configurable?.supabase_user_id as
+      | string
+      | undefined;
+    const threadId =
+      (config.configurable?.thread_id as string | undefined) ||
+      (config.configurable?.threadId as string | undefined);
+    const campaignId =
+      (config.configurable?.campaign_id as string | undefined) ||
+      'baldurs-gate-3';
+    const playerName =
+      (config.configurable?.player_name as string | undefined) || 'Traveler';
+
+    if (!userId || !threadId) {
+      throw new Error('gameState missing in state');
+    }
+
+    const { sessionId, gameState } = await getOrCreateSession({
+      threadId,
+      userId,
+      campaignId,
+      playerName,
+      engine,
+    });
+
+    // Ensure downstream nodes have the session id available
+    const cfg = config as unknown as { configurable?: Record<string, unknown> };
+    cfg.configurable = cfg.configurable || {};
+    cfg.configurable.bg3_session_id = sessionId;
+    currentGameState = gameState;
+  }
+  const playerInput = Array.isArray(state.messages)
+    ? getLatestUserText(state.messages as unknown[])
+    : '';
+
   // Retrieve relevant chapter memory and optional canon web context, pass as context
   const threadId =
     (config.configurable?.thread_id as string | undefined) ||
@@ -338,12 +369,12 @@ async function runTurn(
       });
       // Build a BG3-focused query to stabilize pacing/timeline
       const queryHints: string[] = [];
-      if (state.gameState?.currentLocation) {
-        queryHints.push(`location:${state.gameState.currentLocation}`);
+      if (currentGameState?.currentLocation) {
+        queryHints.push(`location:${currentGameState.currentLocation}`);
       }
-      if (state.gameState?.companions?.length) {
+      if (currentGameState?.companions?.length) {
         queryHints.push(
-          `companions:${state.gameState.companions.slice(0, 3).join(',')}`
+          `companions:${currentGameState.companions.slice(0, 3).join(',')}`
         );
       }
       const canonQuery = [
@@ -380,7 +411,7 @@ async function runTurn(
   }
 
   const response = await engine.processGameRequest({
-    gameState: state.gameState,
+    gameState: currentGameState,
     playerInput,
     context:
       memoryNote || webCanonNote
