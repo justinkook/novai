@@ -1,6 +1,12 @@
 import type { GraphInput } from '@workspace/shared/types';
 import { cn } from '@workspace/ui/lib/utils';
-import { BookOpen, Languages, SlidersVertical, SmilePlus } from 'lucide-react';
+import {
+  BookOpen,
+  Languages,
+  Save,
+  SlidersVertical,
+  SmilePlus,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { MagicPencilSVG } from '@/components/icons/magic_pencil';
 import { TooltipIconButton } from '@/components/ui/assistant-ui/tooltip-icon-button';
@@ -31,6 +37,12 @@ const toolbarOptions: ToolbarOption[] = [
     tooltip: 'Translate',
     icon: <Languages className="w-[26px] h-[26px]" />,
     component: (props: SharedComponentProps) => <TranslateOptions {...props} />,
+  },
+  {
+    id: 'saveChapter',
+    tooltip: 'Save as chapter',
+    icon: <Save className="w-[26px] h-[26px]" />,
+    component: null,
   },
   {
     id: 'readingLevel',
@@ -97,6 +109,10 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
       await streamMessage({
         regenerateWithEmojis: true,
       });
+    } else if (optionId === 'saveChapter') {
+      setIsExpanded(false);
+      setActiveOption(null);
+      await streamMessage({ saveChapter: true });
     } else {
       setActiveOption(optionId);
     }
@@ -124,7 +140,9 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
     >
       {isExpanded ? (
         <div className="flex flex-col gap-3 items-center w-full border-[1px] border-gray-200 rounded-3xl py-4 px-3">
-          {activeOption && activeOption !== 'addEmojis'
+          {activeOption &&
+          activeOption !== 'addEmojis' &&
+          activeOption !== 'saveChapter'
             ? toolbarOptions
                 .find((option) => option.id === activeOption)
                 ?.component?.({

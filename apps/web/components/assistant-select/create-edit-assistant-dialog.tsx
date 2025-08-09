@@ -421,7 +421,6 @@ export function CreateEditAssistantDialog(
             setUrls={setUrls}
           />
 
-
           <div className="flex items-center justify-center w-full mt-4 gap-3">
             <Button
               disabled={props.allDisabled}
