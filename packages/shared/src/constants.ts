@@ -22,6 +22,7 @@ export const DEFAULT_INPUTS = {
   customQuickActionId: undefined,
   webSearchEnabled: undefined,
   webSearchResults: undefined,
+  saveChapter: undefined,
 };
 
 export const PROGRAMMING_LANGUAGES: Array<{

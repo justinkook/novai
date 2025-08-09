@@ -4,15 +4,15 @@ import {
   getArtifactContent,
   isArtifactMarkdownContent,
 } from '@workspace/shared/utils/artifacts';
-import { getModelFromConfig } from '../utils.js';
-import { persistChapter } from './persistence.js';
-import type { Bg3GraphState } from './state.js';
-import { indexChapter } from './vector.js';
+import { getModelFromConfig } from '../../utils';
+import { persistChapter } from '../persistence';
+import type { NovaiGraphState } from '../state';
+import { indexChapter } from '../vector';
 
-export async function saveChapter(
-  state: Bg3GraphState,
+export async function saveChapterNode(
+  state: NovaiGraphState,
   config: LangGraphRunnableConfig
-): Promise<Partial<Bg3GraphState>> {
+): Promise<Partial<NovaiGraphState>> {
   const sessionId =
     state.sessionId ||
     (config.configurable?.bg3_session_id as string | undefined);

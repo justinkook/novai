@@ -1,22 +1,126 @@
+import type { BaseMessage } from '@langchain/core/messages';
 import { AIMessage } from '@langchain/core/messages';
-import { ExaRetriever } from '@langchain/exa';
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
-import { END, START, StateGraph } from '@langchain/langgraph';
+import { Command, END, Send, START, StateGraph } from '@langchain/langgraph';
 import { GameEngineService } from '@workspace/engine';
-import ExaClient from 'exa-js';
+import { DEFAULT_INPUTS } from '@workspace/shared/constants';
 import z from 'zod';
-import { getModelConfig, getModelFromConfig } from '../utils.js';
-import { getOrCreateSession } from './persistence';
 import {
-  BG3_CAMPAIGN_GUARDRAILS,
-  BG3_CANON_QUERY_HINT,
-  BG3_RULESET_PROMPT,
-} from './prompts.js';
-import { saveChapter } from './saveChapter';
-import { Bg3GraphAnnotation } from './state.js';
-import { querySimilarChapters } from './vector';
+  createAIMessageFromWebResults,
+  getModelConfig,
+  getModelFromConfig,
+} from '../utils.js';
+import { graph as webSearchGraph } from '../web-search/index.js';
+import { customAction } from './nodes/customAction.js';
+import { generateArtifact } from './nodes/generate-artifact/index.js';
+import { generatePath } from './nodes/generate-path/index.js';
+import { generateFollowup } from './nodes/generateFollowup.js';
+import { generateTitleNode } from './nodes/generateTitle.js';
+import { reflectNode } from './nodes/reflect.js';
+import { replyToGeneralInput } from './nodes/replyToGeneralInput.js';
+import { rewriteArtifact } from './nodes/rewrite-artifact/index.js';
+import { rewriteArtifactTheme } from './nodes/rewriteArtifactTheme.js';
+import { rewriteCodeArtifactTheme } from './nodes/rewriteCodeArtifactTheme.js';
+import { saveChapterNode } from './nodes/saveChapter.js';
+import { summarizer } from './nodes/summarizer.js';
+import { updateArtifact } from './nodes/updateArtifact.js';
+import { updateHighlightedText } from './nodes/updateHighlightedText.js';
+import { getOrCreateSession } from './persistence.js';
+import { BG3_CAMPAIGN_GUARDRAILS, BG3_RULESET_PROMPT } from './prompts.js';
+import { NovaiGraphAnnotation, type NovaiGraphState } from './state.js';
+import { querySimilarChapters } from './vector.js';
 
-type Bg3State = typeof Bg3GraphAnnotation.State;
+const routeNode = (state: typeof NovaiGraphAnnotation.State) => {
+  if (!state.next) {
+    throw new Error("'next' state field not set.");
+  }
+
+  return new Send(state.next, {
+    ...state,
+  });
+};
+
+const cleanState = (_: typeof NovaiGraphAnnotation.State) => {
+  return {
+    ...DEFAULT_INPUTS,
+  };
+};
+
+// ~ 4 chars per token, max tokens of 75000. 75000 * 4 = 300000
+const CHARACTER_MAX = 300000;
+
+function simpleTokenCalculator(
+  state: typeof NovaiGraphAnnotation.State
+): 'summarizer' | typeof END {
+  const totalChars = state._messages.reduce((acc: number, msg: BaseMessage) => {
+    if (typeof msg.content !== 'string') {
+      const contentArray = msg.content as Array<{ text?: string }>;
+      const allContent = contentArray.flatMap((c) =>
+        typeof c?.text === 'string' ? c.text : []
+      );
+      const innerCount = allContent.reduce(
+        (innerAcc: number, c: string) => innerAcc + c.length,
+        0
+      );
+      return acc + innerCount;
+    }
+    return acc + (msg.content as string).length;
+  }, 0);
+
+  if (totalChars > CHARACTER_MAX) {
+    return 'summarizer';
+  }
+  return END;
+}
+
+/**
+ * Conditionally route to the "generateTitle" node if there are only
+ * two messages in the conversation. This node generates a concise title
+ * for the conversation which is displayed in the thread history.
+ */
+const conditionallyGenerateTitle = (
+  state: typeof NovaiGraphAnnotation.State
+): 'generateTitle' | 'summarizer' | typeof END => {
+  if (state.messages.length > 2) {
+    // Do not generate if there are more than two messages (meaning it's not the first human-AI conversation)
+    return simpleTokenCalculator(state);
+  }
+  return 'generateTitle';
+};
+
+/**
+ * Updates state & routes the graph based on whether or not the web search
+ * graph returned any results.
+ */
+function routePostWebSearch(
+  state: typeof NovaiGraphAnnotation.State
+): Send | Command {
+  // If there is more than one artifact, then route to the "rewriteArtifact" node. Otherwise, generate the artifact.
+  const includesArtifacts = state.artifact?.contents?.length > 1;
+  if (!state.webSearchResults?.length) {
+    return new Send(
+      includesArtifacts ? 'rewriteArtifact' : 'generateArtifact',
+      {
+        ...state,
+        webSearchEnabled: false,
+      }
+    );
+  }
+
+  // This message is used as a way to reference the web search results in future chats.
+  const webSearchResultsMessage = createAIMessageFromWebResults(
+    state.webSearchResults
+  );
+
+  return new Command({
+    goto: includesArtifacts ? 'rewriteArtifact' : 'generateArtifact',
+    update: {
+      webSearchEnabled: false,
+      messages: [webSearchResultsMessage],
+      _messages: [webSearchResultsMessage],
+    },
+  });
+}
 
 // Reuse the Open Canvas style artifact tool schema for compatibility with the Canvas UI
 const BG3_ARTIFACT_TOOL_SCHEMA = z.object({
@@ -97,9 +201,9 @@ function getLatestUserText(messages: unknown[]): string {
 }
 
 async function loadOrInitSession(
-  state: Bg3State,
+  state: NovaiGraphState,
   config: LangGraphRunnableConfig
-): Promise<Bg3State> {
+): Promise<NovaiGraphState> {
   const userId = config.configurable?.supabase_user_id as string | undefined;
   const threadId =
     (config.configurable?.thread_id as string | undefined) ||
@@ -172,9 +276,9 @@ async function loadOrInitSession(
 }
 
 async function runTurn(
-  state: Bg3State,
+  state: NovaiGraphState,
   config: LangGraphRunnableConfig
-): Promise<Bg3State> {
+): Promise<NovaiGraphState> {
   // Build engine config up-front as we may need it for session recovery
   const engineLLMConfig2 = (() => {
     if (process.env.LOCAL_LLM_URL) {
@@ -270,74 +374,16 @@ async function runTurn(
     }
   }
 
-  // Optional: lightweight canon retrieval via web search (Exa)
-  let webCanonNote: string | undefined;
-  const webSearchEnabled = Boolean(
-    (config.configurable as Record<string, unknown> | undefined)
-      ?.web_search_enabled
-  );
-  if (webSearchEnabled && process.env.EXA_API_KEY) {
-    try {
-      const exaClient = new ExaClient(process.env.EXA_API_KEY);
-      const retriever = new ExaRetriever({
-        client: exaClient,
-        searchArgs: { filterEmptyResults: true, numResults: 5 },
-      });
-      // Build a BG3-focused query to stabilize pacing/timeline
-      const queryHints: string[] = [];
-      if (currentGameState?.currentLocation) {
-        queryHints.push(`location:${currentGameState.currentLocation}`);
-      }
-      if (currentGameState?.companions?.length) {
-        queryHints.push(
-          `companions:${currentGameState.companions.slice(0, 3).join(',')}`
-        );
-      }
-      const canonQuery = [
-        BG3_CANON_QUERY_HINT,
-        playerInput.slice(0, 160),
-        queryHints.join(' '),
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-      const results = await retriever.invoke(canonQuery);
-      const top =
-        (
-          results as unknown as Array<{
-            pageContent?: string;
-            metadata?: { title?: string; url?: string };
-          }>
-        )?.slice(0, 3) || [];
-      if (top.length) {
-        const bullets = top
-          .map((d) => {
-            const title = d?.metadata?.title || d?.metadata?.url || 'result';
-            const snippet = String(d?.pageContent || '')
-              .replace(/\s+/g, ' ')
-              .slice(0, 220);
-            return `- ${title}: ${snippet}`;
-          })
-          .join('\n');
-        webCanonNote = `Canon references (web):\n${bullets}`;
-      }
-    } catch {
-      // Ignore web retrieval errors and proceed
-    }
-  }
-
   const response = await engine.processGameRequest({
     gameState: currentGameState,
     playerInput,
-    context:
-      memoryNote || webCanonNote
-        ? {
-            chapterMemory: memoryNote,
-            webCanon: webCanonNote,
-            ruleset: BG3_RULESET_PROMPT,
-            guardrails: BG3_CAMPAIGN_GUARDRAILS,
-          }
-        : { ruleset: BG3_RULESET_PROMPT, guardrails: BG3_CAMPAIGN_GUARDRAILS },
+    context: memoryNote
+      ? {
+          chapterMemory: memoryNote,
+          ruleset: BG3_RULESET_PROMPT,
+          guardrails: BG3_CAMPAIGN_GUARDRAILS,
+        }
+      : { ruleset: BG3_RULESET_PROMPT, guardrails: BG3_CAMPAIGN_GUARDRAILS },
   });
 
   return {
@@ -358,11 +404,11 @@ async function runTurn(
   };
 }
 
-// Stream a text artifact compatible with the Canvas UI from the BG3 narration
-async function generateArtifact(
-  state: Bg3State,
+// Stream a text artifact compatible with the Canvas UI from the Novai narration
+async function novaiGenerateArtifact(
+  state: NovaiGraphState,
   config: LangGraphRunnableConfig
-): Promise<Bg3State> {
+): Promise<NovaiGraphState> {
   if (!state.output || !state.gameState) {
     return state;
   }
@@ -405,9 +451,9 @@ Requirements:
     contextBits.push(`Combat: ${enemies.join(', ')}`);
   }
 
-  const user = `GAME CONTEXT\nPlayer: ${playerName}\nLocation: ${currentLocation}\nCompanions: ${companions?.join(', ') || 'None'}\n${
-    contextBits.length ? `Notes: ${contextBits.join(' | ')}` : ''
-  }\n\nRAW NARRATION\n${narration}`;
+  const user = `GAME CONTEXT\nPlayer: ${playerName}\nLocation: ${currentLocation}\nCompanions: ${
+    companions?.join(', ') || 'None'
+  }\n${contextBits.length ? `Notes: ${contextBits.join(' | ')}` : ''}\n\nRAW NARRATION\n${narration}`;
 
   // Invoke with runName so the client can parse as the 'generateArtifact' node
   const response = await modelWithTool.invoke(
@@ -438,34 +484,107 @@ Requirements:
         },
       ],
     },
-  } as Bg3State;
+  } as NovaiGraphState;
 }
 
-async function persistAndReturn(state: Bg3State): Promise<Bg3State> {
+async function persistAndReturn(
+  state: NovaiGraphState
+): Promise<NovaiGraphState> {
   // No-op persistence here; saving is handled by the explicit saveChapter action
   return state;
 }
 
-function routeStart(state: Bg3State): 'saveChapterNode' | 'loadOrInitSession' {
+function novaiRouteDecider(
+  state: NovaiGraphState
+): 'saveChapterNode' | 'loadOrInitSession' {
   return state.saveChapter ? 'saveChapterNode' : 'loadOrInitSession';
 }
 
-const builder = new StateGraph(Bg3GraphAnnotation)
-  .addNode('loadOrInitSession', loadOrInitSession)
-  .addNode('saveChapterNode', saveChapter)
-  .addNode('runTurn', runTurn)
+// Decide between BG3 engine flow and Open Canvas flow
+async function routeInitial(
+  state: NovaiGraphState,
+  config: LangGraphRunnableConfig
+): Promise<Send> {
+  const useNovai = Boolean(
+    state.gameState ||
+      state.sessionId ||
+      state.saveChapter ||
+      (config.configurable?.campaign_id as string | undefined)
+  );
+  return new Send(useNovai ? 'novaiRouteStart' : 'generatePath', { ...state });
+}
+
+const builder = new StateGraph(NovaiGraphAnnotation)
+  // Initial router between BG3 and OC
+  .addNode('routeInitial', routeInitial)
+  .addEdge(START, 'routeInitial')
+  // ----- Open Canvas nodes -----
+  .addNode('generatePath', generatePath)
+  .addNode('replyToGeneralInput', replyToGeneralInput)
+  .addNode('rewriteArtifact', rewriteArtifact)
+  .addNode('rewriteArtifactTheme', rewriteArtifactTheme)
+  .addNode('rewriteCodeArtifactTheme', rewriteCodeArtifactTheme)
+  .addNode('updateArtifact', updateArtifact)
+  .addNode('updateHighlightedText', updateHighlightedText)
   .addNode('generateArtifact', generateArtifact)
+  .addNode('customAction', customAction)
+  .addNode('generateFollowup', generateFollowup)
+  .addNode('cleanState', cleanState)
+  .addNode('reflect', reflectNode)
+  .addNode('generateTitle', generateTitleNode)
+  .addNode('summarizer', summarizer)
+  .addNode('webSearch', webSearchGraph)
+  .addNode('routePostWebSearch', routePostWebSearch)
+  // ----- BG3 nodes -----
+  .addNode('saveChapterNode', saveChapterNode)
+  .addNode('novaiRouteStart', async (s: NovaiGraphState) => s)
+  .addNode('loadOrInitSession', loadOrInitSession)
+  .addNode('runTurn', runTurn)
+  .addNode('novaiGenerateArtifact', novaiGenerateArtifact)
   .addNode('persistAndReturn', persistAndReturn)
-  .addNode('routeStart', async (s: Bg3State) => s)
-  .addEdge(START, 'routeStart')
-  .addConditionalEdges('routeStart', routeStart, [
+  // Initial router
+  .addConditionalEdges('generatePath', routeNode, [
+    'saveChapterNode',
+    'updateArtifact',
+    'rewriteArtifactTheme',
+    'rewriteCodeArtifactTheme',
+    'replyToGeneralInput',
+    'generateArtifact',
+    'rewriteArtifact',
+    'customAction',
+    'updateHighlightedText',
+    'webSearch',
+  ])
+  // Edges
+  .addEdge('generateArtifact', 'generateFollowup')
+  .addEdge('updateArtifact', 'generateFollowup')
+  .addEdge('updateHighlightedText', 'generateFollowup')
+  .addEdge('rewriteArtifact', 'generateFollowup')
+  .addEdge('rewriteArtifactTheme', 'generateFollowup')
+  .addEdge('rewriteCodeArtifactTheme', 'generateFollowup')
+  .addEdge('customAction', 'generateFollowup')
+  .addEdge('webSearch', 'routePostWebSearch')
+  // End edges
+  .addEdge('replyToGeneralInput', 'cleanState')
+  // Only reflect if an artifact was generated/updated.
+  .addEdge('generateFollowup', 'reflect')
+  .addEdge('reflect', 'cleanState')
+  .addConditionalEdges('cleanState', conditionallyGenerateTitle, [
+    END,
+    'generateTitle',
+    'summarizer',
+  ])
+  .addConditionalEdges('novaiRouteStart', novaiRouteDecider, [
     'loadOrInitSession',
     'saveChapterNode',
   ])
   .addEdge('loadOrInitSession', 'runTurn')
-  .addEdge('runTurn', 'generateArtifact')
-  .addEdge('generateArtifact', 'persistAndReturn')
+  .addEdge('runTurn', 'novaiGenerateArtifact')
+  .addEdge('novaiGenerateArtifact', 'persistAndReturn')
+  // Terminal edges
   .addEdge('saveChapterNode', END)
+  .addEdge('generateTitle', END)
+  .addEdge('summarizer', END)
   .addEdge('persistAndReturn', END);
 
 export const graph = builder.compile().withConfig({ runName: 'novai' });
