@@ -150,6 +150,10 @@ export const NovaiGraphAnnotation = Annotation.Root({
    */
   saveChapter: Annotation<boolean | undefined>,
   /**
+   * BG3-specific: flag to convert current artifact to novel
+   */
+  convertNovel: Annotation<boolean | undefined>,
+  /**
    * BG3-specific: evolving game state
    */
   gameState: Annotation<GameState | undefined>,

@@ -76,7 +76,8 @@ export async function generatePath(
     state.language ||
     state.artifactLength ||
     state.regenerateWithEmojis ||
-    state.readingLevel
+    state.readingLevel ||
+    state.convertNovel
   ) {
     return {
       next: 'rewriteArtifactTheme',

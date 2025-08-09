@@ -23,6 +23,7 @@ export const DEFAULT_INPUTS = {
   webSearchEnabled: undefined,
   webSearchResults: undefined,
   saveChapter: undefined,
+  convertNovel: undefined,
 };
 
 export const PROGRAMMING_LANGUAGES: Array<{

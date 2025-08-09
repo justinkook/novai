@@ -83,11 +83,10 @@ export async function indexChapter(args: {
   title: string;
   content: string; // full novelized content (not embedded)
   summary: string; // concise summary (embedded)
-  memo?: string; // ultra-short continuity memo
 }) {
-  const { threadId, chapterId, title, summary, memo } = args;
-  // Only embed the concise summary (and optional memo) for efficient context
-  const embeddingTarget = memo ? `${summary}\n\nMemo: ${memo}` : summary;
+  const { threadId, chapterId, title, summary } = args;
+  // Only embed the concise summary for efficient context
+  const embeddingTarget = summary;
   const embedding = await embedText(embeddingTarget);
   await upsertChapterEmbedding({
     threadId,

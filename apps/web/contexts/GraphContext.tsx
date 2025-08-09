@@ -421,6 +421,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       input.portLanguage,
       input.customQuickActionId,
       input.saveChapter,
+      input.convertNovel,
     ];
 
     if (fieldsToCheck.filter((field) => field !== undefined).length >= 2) {

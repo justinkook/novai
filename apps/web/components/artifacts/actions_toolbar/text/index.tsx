@@ -2,6 +2,7 @@ import type { GraphInput } from '@workspace/shared/types';
 import { cn } from '@workspace/ui/lib/utils';
 import {
   BookOpen,
+  BookType,
   Languages,
   Save,
   SlidersVertical,
@@ -42,6 +43,12 @@ const toolbarOptions: ToolbarOption[] = [
     id: 'saveChapter',
     tooltip: 'Save as chapter',
     icon: <Save className="w-[26px] h-[26px]" />,
+    component: null,
+  },
+  {
+    id: 'convertNovel',
+    tooltip: 'Convert to novel',
+    icon: <BookType className="w-[26px] h-[26px]" />,
     component: null,
   },
   {
@@ -113,6 +120,10 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
       setIsExpanded(false);
       setActiveOption(null);
       await streamMessage({ saveChapter: true });
+    } else if (optionId === 'convertNovel') {
+      setIsExpanded(false);
+      setActiveOption(null);
+      await streamMessage({ convertNovel: true });
     } else {
       setActiveOption(optionId);
     }
@@ -142,7 +153,8 @@ export function ActionsToolbar(props: ActionsToolbarProps) {
         <div className="flex flex-col gap-3 items-center w-full border-[1px] border-gray-200 rounded-3xl py-4 px-3">
           {activeOption &&
           activeOption !== 'addEmojis' &&
-          activeOption !== 'saveChapter'
+          activeOption !== 'saveChapter' &&
+          activeOption !== 'convertNovel'
             ? toolbarOptions
                 .find((option) => option.id === activeOption)
                 ?.component?.({

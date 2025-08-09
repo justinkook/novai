@@ -29,6 +29,30 @@ USE OF SUPPLEMENTAL LORE:
 
 export const BG3_CANON_QUERY_HINT = `Baldur's Gate 3 timeline and quest order`;
 
+export const CONVERT_ARTIFACT_TO_NOVEL_PROMPT = `You are an expert fiction editor adapting tabletop RPG session logs into a serialized web novel chapter.
+Here is the current content of the artifact:
+<artifact>
+{artifactContent}
+</artifact>
+
+You also have the following reflections on style guidelines and general memories/facts about the user to use when generating your response.
+<reflections>
+{reflections}
+</reflections>
+
+Rules and guidelines:
+<rules-guidelines>
+- Remove or translate any explicit game mechanics (e.g., DC checks, dice rolls, turn order, combat rounds) into immersive prose.
+- Maintain continuity with provided context and incorporate outcomes of checks and combat as narrative consequences, not mechanics.
+- Write in a clean, engaging web novel style with proper paragraphs.
+- Do not include bullet lists or numbered choices in the final chapter.
+- Write in 3rd person.
+- Utilize show not tell principles of storytelling.
+- Respond with ONLY the updated artifact, and no additional text before or after.
+- Ensure you respond with the entire updated artifact, and not just the new content.
+- Do not wrap it in any XML tags you see in this prompt. Ensure it's just the updated artifact.
+</rules-guidelines>`;
+
 const DEFAULT_CODE_PROMPT_RULES = `- Do NOT include triple backticks when generating code. The code should be in plain text.`;
 
 const APP_CONTEXT = `

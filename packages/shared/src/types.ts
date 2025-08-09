@@ -228,4 +228,5 @@ export interface GraphInput {
   webSearchResults?: SearchResult[];
 
   saveChapter?: boolean;
+  convertNovel?: boolean;
 }
