@@ -52,7 +52,7 @@ const ViewOrHidePromptIcon = (props: ViewOrHidePromptIconProps) => (
     variant="ghost"
     className="transition-colors"
     delayDuration={400}
-    onClick={(e) => {
+    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
       props.setShowFullPrompt((p) => !p);

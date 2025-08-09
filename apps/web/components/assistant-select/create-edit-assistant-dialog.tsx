@@ -89,6 +89,7 @@ export function CreateEditAssistantDialog(
   const [iconColor, setIconColor] = useState('#000000');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
+  const [graphId, setGraphId] = useState<'agent' | 'bg3'>('agent');
   const {
     documents,
     setDocuments,
@@ -115,6 +116,7 @@ export function CreateEditAssistantDialog(
       setHasSelectedIcon(true);
       setIconName(metadata?.iconData?.iconName || 'User');
       setIconColor(metadata?.iconData?.iconColor || '#000000');
+      setGraphId((props.assistant.graph_id as 'agent' | 'bg3') || 'agent');
       setLoadingDocuments(true);
       getContextDocuments(props.assistant.assistant_id)
         .then((documents) => {
@@ -152,6 +154,7 @@ export function CreateEditAssistantDialog(
       setIconColor('#000000');
       setDocuments(undefined);
       setUrls([]);
+      setGraphId('agent');
     }
   }, [props.assistant, props.isEditing]);
 
@@ -185,6 +188,7 @@ export function CreateEditAssistantDialog(
           name,
           description,
           systemPrompt,
+          graphId,
           iconData: {
             iconName,
             iconColor,
@@ -206,6 +210,7 @@ export function CreateEditAssistantDialog(
           name,
           description,
           systemPrompt,
+          graphId,
           iconData: {
             iconName,
             iconColor,
@@ -390,6 +395,22 @@ export function CreateEditAssistantDialog(
             urls={urls}
             setUrls={setUrls}
           />
+
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor="graph">
+              <TighterText>Graph</TighterText>
+            </Label>
+            <select
+              id="graph"
+              disabled={props.allDisabled}
+              value={graphId}
+              onChange={(e) => setGraphId(e.target.value as 'agent' | 'bg3')}
+              className="border rounded px-2 py-2"
+            >
+              <option value="agent">Default (Open Canvas)</option>
+              <option value="bg3">BG3 Adventure</option>
+            </select>
+          </div>
 
           <div className="flex items-center justify-center w-full mt-4 gap-3">
             <Button

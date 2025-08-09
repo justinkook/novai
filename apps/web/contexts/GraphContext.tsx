@@ -399,11 +399,18 @@ export function GraphProvider({ children }: { children: ReactNode }) {
 
     // TODO: update to properly pass the highlight data back
     // one field for highlighted text, and one for code
+    // Detect finalize command to trigger chapter indexing on the server graph
+    const lastMsg = params.messages?.[params.messages.length - 1] as any;
+    const finalizeChapter =
+      typeof lastMsg?.content === 'string' &&
+      lastMsg.content.trim().toLowerCase().startsWith('/finalize');
+
     const input = {
       ...DEFAULT_INPUTS,
       artifact,
       ...params,
       ...messagesInput,
+      ...(finalizeChapter ? { finalizeChapter } : {}),
       ...(selectedBlocks && {
         highlightedText: selectedBlocks,
       }),
@@ -1321,6 +1328,19 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               } else if (result && typeof result === 'object') {
                 setFirstTokenReceived(true);
                 setArtifact(result);
+              }
+            }
+
+            // Handle BG3 graph final output
+            if (langgraphNode === 'runTurn') {
+              const output = nodeOutput as any;
+              const narration = output?.output?.narration;
+              if (typeof narration === 'string' && narration.length > 0) {
+                setFirstTokenReceived(true);
+                setMessages((prev) => [
+                  ...prev,
+                  new AIMessage({ content: narration }),
+                ]);
               }
             }
           }

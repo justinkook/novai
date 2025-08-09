@@ -150,7 +150,9 @@ export function CodeToolBar(props: CodeToolbarProps) {
                   variant="ghost"
                   className="transition-colors w-[36px] h-[36px]"
                   delayDuration={400}
-                  onClick={async (e) => await handleOptionClick(e, option.id)}
+                  onClick={async (e: React.MouseEvent<HTMLButtonElement>) =>
+                    await handleOptionClick(e, option.id)
+                  }
                 >
                   {option.icon}
                 </TooltipIconButton>

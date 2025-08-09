@@ -80,6 +80,10 @@ export interface CreateAssistantFields {
    * The documents to include in the LLMs context.
    */
   documents?: ContextDocument[];
+  /**
+   * Optional graph ID to bind this assistant to (e.g., 'bg3'). Defaults to 'agent'.
+   */
+  graphId?: string;
 }
 
 export type CreateCustomAssistantArgs = {
@@ -171,7 +175,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       const { tools, systemPrompt, name, documents, ...metadata } =
         newAssistant;
       const createdAssistant = await client.assistants.create({
-        graphId: 'agent',
+        graphId: newAssistant.graphId || 'agent',
         name,
         metadata: {
           user_id: userId,
@@ -215,7 +219,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
         editedAssistant;
       const response = await client.assistants.update(assistantId, {
         name,
-        graphId: 'agent',
+        graphId: editedAssistant.graphId || 'agent',
         metadata: {
           user_id: userId,
           ...metadata,

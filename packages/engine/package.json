@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "openai": "^4.28.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@workspace/prompts": "workspace:*"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",

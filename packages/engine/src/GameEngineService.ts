@@ -1,3 +1,4 @@
+import { getCampaignSystemPrompt, getRulesetPrompt } from '@workspace/prompts';
 import { CampaignService } from './CampaignService';
 import { LLMService } from './LLMService';
 import type { GameRequest, GameResponse, GameState, LLMConfig } from './types';
@@ -57,15 +58,17 @@ export class GameEngineService {
   }
 
   private async buildSystemPrompt(
-    campaign: any,
+    campaign: { name: string; description: string; ruleset?: string },
     gameState: GameState
   ): Promise<string> {
     const ruleset = campaign.ruleset || 'dnd-5e';
-    const rulesetPrompt = await this.loadRulesetPrompt(ruleset);
+    const rulesetPrompt = getRulesetPrompt(ruleset);
+    const campaignExtra = getCampaignSystemPrompt(gameState.campaignId);
 
     return `You are a Dungeon Master narrating ${campaign.name} in ${ruleset} style.
 
 ${rulesetPrompt}
+${campaignExtra ? `\n${campaignExtra}\n` : ''}
 
 CAMPAIGN CONTEXT:
 - Campaign: ${campaign.name}
@@ -99,21 +102,6 @@ CURRENT GAME STATE:
 ${context ? `CONTEXT: ${JSON.stringify(context)}\n` : ''}
 
 Respond as the Game Master, continuing the narrative based on the player's input.`;
-  }
-
-  private async loadRulesetPrompt(ruleset: string): Promise<string> {
-    // This would load from packages/rulesets/{ruleset}.ts
-    // For now, return a basic D&D 5e prompt
-    if (ruleset === 'dnd-5e') {
-      return `D&D 5E RULES:
-- Core stats: Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma
-- Skill checks use d20 + modifier vs Difficulty Class (DC)
-- Combat is turn-based with initiative
-- Spellcasting requires spell slots
-- Death saves at 0 HP`;
-    }
-
-    return `Generic RPG rules - use common sense for checks and combat.`;
   }
 
   private updateGameState(

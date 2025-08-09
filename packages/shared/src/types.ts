@@ -226,4 +226,6 @@ export interface GraphInput {
 
   webSearchEnabled?: boolean;
   webSearchResults?: SearchResult[];
+  // BG3 graph custom flag to finalize a chapter
+  finalizeChapter?: boolean;
 }
