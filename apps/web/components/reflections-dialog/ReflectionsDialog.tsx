@@ -61,6 +61,7 @@ interface ReflectionsDialogProps {
 export function ReflectionsDialog(props: ReflectionsDialogProps) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [lastFetchedFor, setLastFetchedFor] = useState<string | null>(null);
   const { selectedAssistant } = props;
   const {
     isLoadingReflections,
@@ -70,24 +71,34 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
   } = useStore();
 
   useEffect(() => {
-    if (!selectedAssistant || typeof window === 'undefined') {
+    if (!open || !selectedAssistant || typeof window === 'undefined') {
       return;
     }
     // Don't re-fetch reflections if they already exist & are for the same assistant
-    if (
+    const alreadyHasReflectionsForAssistant =
       (reflections?.content || reflections?.styleRules) &&
-      reflections.assistantId === selectedAssistant.assistant_id
-    ) {
+      reflections.assistantId === selectedAssistant.assistant_id;
+    if (alreadyHasReflectionsForAssistant) {
+      return;
+    }
+    if (isLoadingReflections) {
+      return;
+    }
+    if (lastFetchedFor === selectedAssistant.assistant_id) {
       return;
     }
 
+    setLastFetchedFor(selectedAssistant.assistant_id);
     getReflections(selectedAssistant.assistant_id);
   }, [
+    open,
     selectedAssistant,
     getReflections,
     reflections?.content,
     reflections?.styleRules,
     reflections?.assistantId,
+    isLoadingReflections,
+    lastFetchedFor,
   ]);
 
   const handleDelete = async () => {
@@ -104,11 +115,22 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
     return await deleteReflections(selectedAssistant.assistant_id);
   };
 
-  const iconData = (selectedAssistant?.metadata as Record<string, any>)
-    ?.iconData;
+  const iconData = (
+    selectedAssistant?.metadata as
+      | { iconData?: { iconColor?: string; iconName?: string } }
+      | undefined
+  )?.iconData;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(change) => {
+        setOpen(change);
+        if (change) {
+          setLastFetchedFor(null);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <TooltipIconButton
           tooltip="Reflections"
@@ -141,10 +163,7 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                 className="flex items-center justify-center gap-2 px-2 py-1"
               >
                 <span className="flex items-center justify-start w-4 h-4">
-                  {getIcon(
-                    (selectedAssistant?.metadata as Record<string, any>)
-                      ?.iconData?.iconName
-                  )}
+                  {getIcon((iconData?.iconName as string) || 'User')}
                 </span>
                 {selectedAssistant?.name}
               </Badge>
@@ -178,9 +197,8 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                     Style Reflections:
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">
-                    {reflections.styleRules?.map((rule, index) => (
-                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                      <li key={index} className="flex items-baseline">
+                    {reflections.styleRules?.map((rule) => (
+                      <li key={rule} className="flex items-baseline">
                         <span className="mr-2">•</span>
                         <TighterText className="text-gray-600 font-light">
                           {rule}
@@ -196,9 +214,8 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
                     Content Reflections:
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">
-                    {reflections.content.map((rule, index) => (
-                      // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                      <li key={index} className="flex items-baseline">
+                    {reflections.content.map((rule) => (
+                      <li key={rule} className="flex items-baseline">
                         <span className="mr-2">•</span>
                         <TighterText className="text-gray-600 font-light">
                           {rule}

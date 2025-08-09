@@ -119,19 +119,6 @@ export async function generatePath(
     };
   }
 
-  // Novai game engine routing: if a campaign is specified or a game state exists, initialize engine path
-  const campaignId =
-    (config.configurable?.campaign_id as string | undefined) ||
-    (config.configurable?.campaignId as string | undefined);
-  if (campaignId || state.gameState) {
-    return {
-      next: 'initGameEngine',
-      ...(newMessages.length
-        ? { messages: newMessages, _messages: newMessages }
-        : {}),
-    };
-  }
-
   if (state.webSearchEnabled) {
     return {
       next: 'webSearch',

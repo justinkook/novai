@@ -360,8 +360,10 @@ async function processGameRequest(
 }
 
 const builder = new StateGraph(NovaiGraphAnnotation)
+  .addNode('initGameEngine', initGameEngine)
+  .addEdge(START, 'initGameEngine')
+  .addNode('processGameRequest', processGameRequest)
   .addNode('generatePath', generatePath)
-  .addEdge(START, 'generatePath')
   // Nodes
   .addNode('replyToGeneralInput', replyToGeneralInput)
   .addNode('rewriteArtifact', rewriteArtifact)
@@ -380,12 +382,9 @@ const builder = new StateGraph(NovaiGraphAnnotation)
   .addNode('routePostWebSearch', routePostWebSearch)
   // ----- BG3 nodes -----
   .addNode('saveChapterNode', saveChapterNode)
-  .addNode('initGameEngine', initGameEngine)
-  .addNode('processGameRequest', processGameRequest)
   // Initial router
   .addConditionalEdges('generatePath', routeNode, [
     'saveChapterNode',
-    'initGameEngine',
     'updateArtifact',
     'rewriteArtifactTheme',
     'rewriteCodeArtifactTheme',
@@ -398,7 +397,7 @@ const builder = new StateGraph(NovaiGraphAnnotation)
   ])
   // Edges
   .addEdge('initGameEngine', 'processGameRequest')
-  .addEdge('processGameRequest', 'generateArtifact')
+  .addEdge('processGameRequest', 'generatePath')
   .addEdge('generateArtifact', 'generateFollowup')
   .addEdge('updateArtifact', 'generateFollowup')
   .addEdge('updateHighlightedText', 'generateFollowup')
