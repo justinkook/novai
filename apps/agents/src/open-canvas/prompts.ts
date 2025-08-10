@@ -387,7 +387,7 @@ Rules and guidelines:
 - Maintain continuity with provided context and incorporate outcomes of checks and combat as narrative consequences, not mechanics.
 - Write in a clean, engaging web novel style with proper paragraphs.
 - Do not include bullet lists or numbered choices in the final chapter.
-- Write in 3rd person.
+- Write in 3rd person and past tense.
 - Utilize show not tell principles of storytelling.
 - Respond with ONLY the updated artifact, and no additional text before or after.
 - Ensure you respond with the entire updated artifact, and not just the new content.
