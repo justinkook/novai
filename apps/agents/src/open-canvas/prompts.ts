@@ -439,3 +439,17 @@ USE OF SUPPLEMENTAL LORE:
 - If additional lore snippets are provided in CONTEXT, prefer those over memory.
 - Summarize long lore briefly; do not dump large blocks.
 - Keep scene continuity consistent with the player’s current location and active goals.`;
+
+export const SUMMARIZE_CHAPTER_SYSTEM_PROMPT =
+  'You are an expert editor. Summarize the chapter into ONE concise paragraph, capturing key plot points, characters, locations, and outcomes. Use plain text only. Hard limit: 600 characters.';
+
+export const GENERATE_ARTIFACT_FROM_ENGINE_PROMPT = `You are formatting an already generated narrative.
+
+Use the generate_artifact tool NOW with:
+- type: "text"
+- title: a concise 3–5 word title that fits the narrative
+- artifact: EXACTLY the narrative below (do not paraphrase).
+
+<artifact>
+{narration}
+</artifact>`;
