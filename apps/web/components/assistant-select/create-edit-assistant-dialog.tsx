@@ -13,13 +13,6 @@ import { TighterText } from '@workspace/ui/components/header';
 import { InlineContextTooltip } from '@workspace/ui/components/inline-context-tooltip';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@workspace/ui/components/select';
 import { Textarea } from '@workspace/ui/components/textarea';
 import { useToast } from '@workspace/ui/hooks/use-toast';
 import type * as Icons from 'lucide-react';
@@ -96,7 +89,6 @@ export function CreateEditAssistantDialog(
   const [iconColor, setIconColor] = useState('#000000');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
-  const [graphId, setGraphId] = useState<'agent' | 'novai'>('agent');
   const {
     documents,
     setDocuments,
@@ -123,7 +115,6 @@ export function CreateEditAssistantDialog(
       setHasSelectedIcon(true);
       setIconName(metadata?.iconData?.iconName || 'User');
       setIconColor(metadata?.iconData?.iconColor || '#000000');
-      setGraphId((props.assistant.graph_id as 'agent' | 'novai') || 'agent');
       setLoadingDocuments(true);
       getContextDocuments(props.assistant.assistant_id)
         .then((documents) => {
@@ -161,7 +152,6 @@ export function CreateEditAssistantDialog(
       setIconColor('#000000');
       setDocuments(undefined);
       setUrls([]);
-      setGraphId('agent');
     }
   }, [props.assistant, props.isEditing]);
 
@@ -195,7 +185,6 @@ export function CreateEditAssistantDialog(
           name,
           description,
           systemPrompt,
-          graphId,
           iconData: {
             iconName,
             iconColor,
@@ -217,7 +206,6 @@ export function CreateEditAssistantDialog(
           name,
           description,
           systemPrompt,
-          graphId,
           iconData: {
             iconName,
             iconColor,
@@ -256,7 +244,6 @@ export function CreateEditAssistantDialog(
     setSystemPrompt('');
     setIconName('User');
     setIconColor('#000000');
-    setGraphId('agent');
   };
 
   const handleRemoveFile = (index: number) => {
@@ -346,23 +333,6 @@ export function CreateEditAssistantDialog(
             rows={5}
           />
 
-          <Label htmlFor="graph">
-            <TighterText>Graph</TighterText>
-          </Label>
-          <Select
-            value={graphId}
-            onValueChange={(v) => setGraphId(v as 'agent' | 'novai')}
-            disabled={props.allDisabled}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select graph" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="agent">Default (Open Canvas)</SelectItem>
-              <SelectItem value="novai">NoVai</SelectItem>
-            </SelectContent>
-          </Select>
-
           <div className="flex w-full items-center justify-between gap-4">
             <div className="flex flex-col gap-4 items-start justify-start w-full">
               <Label htmlFor="icon">
@@ -424,7 +394,7 @@ export function CreateEditAssistantDialog(
           <div className="flex items-center justify-center w-full mt-4 gap-3">
             <Button
               disabled={props.allDisabled}
-              className="w-full max-w-xl"
+              className="w-full"
               type="submit"
             >
               <TighterText>Save</TighterText>

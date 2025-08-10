@@ -38,7 +38,6 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -181,6 +180,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
     };
   }, [debouncedAPIUpdate]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a side effect that should only run once
   useEffect(() => {
     if (!threadData.threadId) {
       return;
@@ -217,87 +217,77 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       // We need to update
       debouncedAPIUpdate(artifact, threadData.threadId);
     }
-  }, [
-    artifact,
-    threadData.threadId,
-    updateRenderedArtifactRequired,
-    threadSwitched,
-    isStreaming,
-    debouncedAPIUpdate,
-    messages.length,
-  ]);
+  }, [artifact, threadData.threadId]);
 
   const searchOrCreateEffectRan = useRef(false);
 
-  const switchSelectedThread = useCallback(
-    (thread: Thread) => {
-      setUpdateRenderedArtifactRequired(true);
-      setThreadSwitched(true);
-      setChatStarted(true);
+  const switchSelectedThread = (thread: Thread) => {
+    setUpdateRenderedArtifactRequired(true);
+    setThreadSwitched(true);
+    setChatStarted(true);
 
-      // Set the thread ID in state. Then set in cookies so a new thread
-      // isn't created on page load if one already exists.
-      threadData.setThreadId(thread.thread_id);
+    // Set the thread ID in state. Then set in cookies so a new thread
+    // isn't created on page load if one already exists.
+    threadData.setThreadId(thread.thread_id);
 
-      // Set the model name and config
-      if (thread.metadata?.customModelName) {
-        threadData.setModelName(
-          thread.metadata.customModelName as ALL_MODEL_NAMES
-        );
-        threadData.setModelConfig(
-          thread.metadata.customModelName as ALL_MODEL_NAMES,
-          thread.metadata.modelConfig as CustomModelConfig
-        );
-      } else {
-        threadData.setModelName(DEFAULT_MODEL_NAME);
-        threadData.setModelConfig(DEFAULT_MODEL_NAME, DEFAULT_MODEL_CONFIG);
-      }
-
-      const castValues: {
-        artifact: ArtifactV3 | undefined;
-        messages: Record<string, any>[] | undefined;
-      } = {
-        artifact: undefined,
-        messages: (thread.values as Record<string, any>)?.messages || undefined,
-      };
-      const castThreadValues = thread.values as Record<string, any>;
-      if (castThreadValues?.artifact) {
-        if (isDeprecatedArtifactType(castThreadValues.artifact)) {
-          castValues.artifact = convertToArtifactV3(castThreadValues.artifact);
-        } else {
-          castValues.artifact = castThreadValues.artifact;
-        }
-      } else {
-        castValues.artifact = undefined;
-      }
-      lastSavedArtifact.current = castValues?.artifact;
-
-      if (!castValues?.messages?.length) {
-        setMessages([]);
-        setArtifact(castValues?.artifact);
-        return;
-      }
-      setArtifact(castValues?.artifact);
-      setMessages(
-        castValues.messages.map((msg: Record<string, any>) => {
-          if (msg.response_metadata?.langSmithRunURL) {
-            msg.tool_calls = msg.tool_calls ?? [];
-            msg.tool_calls.push({
-              name: 'langsmith_tool_ui',
-              args: { sharedRunURL: msg.response_metadata.langSmithRunURL },
-              id: msg.response_metadata.langSmithRunURL
-                ?.split('https://smith.langchain.com/public/')[1]
-                .split('/')[0],
-            });
-          }
-          return msg as BaseMessage;
-        })
+    // Set the model name and config
+    if (thread.metadata?.customModelName) {
+      threadData.setModelName(
+        thread.metadata.customModelName as ALL_MODEL_NAMES
       );
-    },
-    [threadData.setThreadId, threadData.setModelName, threadData.setModelConfig]
-  );
+      threadData.setModelConfig(
+        thread.metadata.customModelName as ALL_MODEL_NAMES,
+        thread.metadata.modelConfig as CustomModelConfig
+      );
+    } else {
+      threadData.setModelName(DEFAULT_MODEL_NAME);
+      threadData.setModelConfig(DEFAULT_MODEL_NAME, DEFAULT_MODEL_CONFIG);
+    }
+
+    const castValues: {
+      artifact: ArtifactV3 | undefined;
+      messages: Record<string, any>[] | undefined;
+    } = {
+      artifact: undefined,
+      messages: (thread.values as Record<string, any>)?.messages || undefined,
+    };
+    const castThreadValues = thread.values as Record<string, any>;
+    if (castThreadValues?.artifact) {
+      if (isDeprecatedArtifactType(castThreadValues.artifact)) {
+        castValues.artifact = convertToArtifactV3(castThreadValues.artifact);
+      } else {
+        castValues.artifact = castThreadValues.artifact;
+      }
+    } else {
+      castValues.artifact = undefined;
+    }
+    lastSavedArtifact.current = castValues?.artifact;
+
+    if (!castValues?.messages?.length) {
+      setMessages([]);
+      setArtifact(castValues?.artifact);
+      return;
+    }
+    setArtifact(castValues?.artifact);
+    setMessages(
+      castValues.messages.map((msg: Record<string, any>) => {
+        if (msg.response_metadata?.langSmithRunURL) {
+          msg.tool_calls = msg.tool_calls ?? [];
+          msg.tool_calls.push({
+            name: 'langsmith_tool_ui',
+            args: { sharedRunURL: msg.response_metadata.langSmithRunURL },
+            id: msg.response_metadata.langSmithRunURL
+              ?.split('https://smith.langchain.com/public/')[1]
+              .split('/')[0],
+          });
+        }
+        return msg as BaseMessage;
+      })
+    );
+  };
 
   // Attempt to load the thread if an ID is present in query params.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a side effect that should only run once
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
@@ -323,14 +313,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       // Failed to fetch thread. Remove from query params
       threadData.setThreadId(null);
     });
-  }, [
-    threadData.threadId,
-    userData.user,
-    threadData.createThreadLoading,
-    threadData.getThread,
-    threadData.setThreadId,
-    switchSelectedThread,
-  ]);
+  }, [threadData.threadId, userData.user]);
 
   const updateArtifact = async (
     artifactToUpdate: ArtifactV3,
@@ -397,7 +380,9 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       _messages: params.messages,
     };
 
-    const input: GraphInput = {
+    // TODO: update to properly pass the highlight data back
+    // one field for highlighted text, and one for code
+    const input = {
       ...DEFAULT_INPUTS,
       artifact,
       ...params,
@@ -1321,30 +1306,6 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               } else if (result && typeof result === 'object') {
                 setFirstTokenReceived(true);
                 setArtifact(result);
-              }
-            }
-
-            // Handle BG3 graph final output
-            if (langgraphNode === 'runTurn') {
-              const output = nodeOutput as any;
-              const narration = output?.output?.narration;
-              if (typeof narration === 'string' && narration.length > 0) {
-                setFirstTokenReceived(true);
-                setMessages((prev) => [
-                  ...prev,
-                  new AIMessage({ content: narration }),
-                ]);
-              }
-            } else if (langgraphNode === 'persistAndReturn') {
-              // Fallback: some providers may only surface final state at persistAndReturn
-              const output = nodeOutput as any;
-              const narration = output?.output?.narration;
-              if (typeof narration === 'string' && narration.length > 0) {
-                setFirstTokenReceived(true);
-                setMessages((prev) => [
-                  ...prev,
-                  new AIMessage({ content: narration }),
-                ]);
               }
             }
           }

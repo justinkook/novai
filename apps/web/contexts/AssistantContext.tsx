@@ -80,10 +80,6 @@ export interface CreateAssistantFields {
    * The documents to include in the LLMs context.
    */
   documents?: ContextDocument[];
-  /**
-   * Optional graph ID to bind this assistant to (e.g., 'novai'). Defaults to 'agent'.
-   */
-  graphId?: string;
 }
 
 export type CreateCustomAssistantArgs = {
@@ -172,10 +168,10 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     setIsCreatingAssistant(true);
     try {
       const client = createClient();
-      const { tools, systemPrompt, name, documents, graphId, ...metadata } =
+      const { tools, systemPrompt, name, documents, ...metadata } =
         newAssistant;
       const createdAssistant = await client.assistants.create({
-        graphId: graphId || 'agent',
+        graphId: 'agent',
         name,
         metadata: {
           user_id: userId,
@@ -215,11 +211,11 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     setIsEditingAssistant(true);
     try {
       const client = createClient();
-      const { tools, systemPrompt, name, documents, graphId, ...metadata } =
+      const { tools, systemPrompt, name, documents, ...metadata } =
         editedAssistant;
       const response = await client.assistants.update(assistantId, {
         name,
-        graphId: graphId || 'agent',
+        graphId: 'agent',
         metadata: {
           user_id: userId,
           ...metadata,
@@ -326,6 +322,7 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
     // No cookie found. First, search for all assistants under the user's ID
     try {
       userAssistants = await client.assistants.search({
+        graphId: 'agent',
         metadata: {
           user_id: userId,
         },
@@ -367,7 +364,6 @@ export function AssistantProvider({ children }: { children: ReactNode }) {
       })[0];
       const updatedAssistant = await editCustomAssistant({
         editedAssistant: {
-          graphId: firstAssistant?.graph_id || 'agent',
           is_default: true,
           iconData: {
             iconName:

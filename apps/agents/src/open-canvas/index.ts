@@ -12,6 +12,7 @@ import { replyToGeneralInput } from './nodes/replyToGeneralInput.js';
 import { rewriteArtifact } from './nodes/rewrite-artifact/index.js';
 import { rewriteArtifactTheme } from './nodes/rewriteArtifactTheme.js';
 import { rewriteCodeArtifactTheme } from './nodes/rewriteCodeArtifactTheme.js';
+import { saveChapterNode } from './nodes/saveChapter.js';
 import { summarizer } from './nodes/summarizer.js';
 import { updateArtifact } from './nodes/updateArtifact.js';
 import { updateHighlightedText } from './nodes/updateHighlightedText.js';
@@ -125,8 +126,11 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addNode('summarizer', summarizer)
   .addNode('webSearch', webSearchGraph)
   .addNode('routePostWebSearch', routePostWebSearch)
+  // ----- Novai nodes -----
+  .addNode('saveChapterNode', saveChapterNode)
   // Initial router
   .addConditionalEdges('generatePath', routeNode, [
+    'saveChapterNode',
     'updateArtifact',
     'rewriteArtifactTheme',
     'rewriteCodeArtifactTheme',
@@ -157,6 +161,8 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
     'summarizer',
   ])
   .addEdge('generateTitle', END)
-  .addEdge('summarizer', END);
+  .addEdge('summarizer', END)
+  // ----- Novai nodes -----
+  .addEdge('saveChapterNode', END);
 
 export const graph = builder.compile().withConfig({ runName: 'open_canvas' });

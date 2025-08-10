@@ -137,6 +137,18 @@ export const OpenCanvasGraphAnnotation = Annotation.Root({
    * The search results to include in context.
    */
   webSearchResults: Annotation<SearchResult[] | undefined>,
+  /**
+   * Novai-specific: flag to save current artifact as chapter
+   */
+  saveChapter: Annotation<boolean | undefined>,
+  /**
+   * Novai-specific: flag to convert current artifact to novel
+   */
+  convertNovel: Annotation<boolean | undefined>,
+  /**
+   * Novai-specific: Active session id
+   */
+  sessionId: Annotation<string | undefined>,
 });
 
 export type OpenCanvasGraphReturnType = Partial<
