@@ -32,14 +32,6 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
 
   const containerVariants = {
     collapsed: {
-      width:
-        (searchEnabled || gameEngineEnabled) && !isDefaultSelected
-          ? '120px'
-          : searchEnabled || gameEngineEnabled
-            ? '80px'
-            : !isDefaultSelected
-              ? '80px'
-              : '40px',
       transition: {
         type: 'spring',
         stiffness: 500,
@@ -47,7 +39,6 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
       },
     },
     expanded: {
-      width: '160px',
       transition: {
         type: 'spring',
         stiffness: 500,
@@ -88,7 +79,8 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
       }}
     >
       <motion.div
-        className="rounded-full flex items-center h-8 justify-start px-2 py-5 bg-blue-50 overflow-hidden"
+        layout
+        className="rounded-full flex items-center h-8 justify-start px-2 py-5 bg-blue-50"
         variants={containerVariants}
         animate={isExpanded ? 'expanded' : 'collapsed'}
         initial="collapsed"

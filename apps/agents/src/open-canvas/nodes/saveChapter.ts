@@ -5,7 +5,7 @@ import {
   isArtifactMarkdownContent,
 } from '@workspace/shared/utils/artifacts';
 import { v4 as uuidv4 } from 'uuid';
-import { formatMessages, getModelFromConfig } from '../../utils';
+import { getModelFromConfig } from '../../utils';
 import { persistChapter } from '../persistence';
 import { SUMMARIZE_CHAPTER_SYSTEM_PROMPT } from '../prompts';
 import type { OpenCanvasGraphAnnotation } from '../state';
@@ -14,15 +14,17 @@ import { indexChapter } from '../vector';
 const SUMMARY_CHARACTER_LIMIT = 600;
 
 async function summarizeForEmbedding(
-  state: typeof OpenCanvasGraphAnnotation.State,
+  content: string,
   config: LangGraphRunnableConfig
 ): Promise<string> {
   const model = await getModelFromConfig(config, { temperature: 0 });
-  const messagesToSummarize = formatMessages(state.messages);
 
   const response = await model.invoke([
     ['system', SUMMARIZE_CHAPTER_SYSTEM_PROMPT],
-    ['user', `Here are the messages to summarize:\n${messagesToSummarize}`],
+    [
+      'user',
+      `Summarize the following chapter content for embedding:\n${content}`,
+    ],
   ]);
 
   return response.content.toString();
@@ -46,7 +48,7 @@ export async function saveChapterNode(
 
   const title = (artifactContent.title || 'Chapter Draft').slice(0, 120);
   const content = artifactContent.fullMarkdown; // Normalized upstream
-  const summary = await summarizeForEmbedding(state, config).catch(() =>
+  const summary = await summarizeForEmbedding(content, config).catch(() =>
     content.slice(0, SUMMARY_CHARACTER_LIMIT)
   );
 
