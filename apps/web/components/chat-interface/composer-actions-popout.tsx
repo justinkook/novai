@@ -2,7 +2,7 @@
 
 import { cn } from '@workspace/ui/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CirclePlus, Globe } from 'lucide-react';
+import { CirclePlus, Gamepad2, Globe } from 'lucide-react';
 import { useState } from 'react';
 import { useAssistantContext } from '@/contexts/AssistantContext';
 import { useGraphContext } from '@/contexts/GraphContext';
@@ -20,7 +20,12 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
   const [isAssistantSelectOpen, setIsAssistantSelectOpen] = useState(false);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const {
-    graphData: { searchEnabled, setSearchEnabled },
+    graphData: {
+      searchEnabled,
+      setSearchEnabled,
+      gameEngineEnabled,
+      setGameEngineEnabled,
+    },
   } = useGraphContext();
   const { selectedAssistant } = useAssistantContext();
   const isDefaultSelected = !!selectedAssistant?.metadata?.is_default;
@@ -28,9 +33,9 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
   const containerVariants = {
     collapsed: {
       width:
-        searchEnabled && !isDefaultSelected
+        (searchEnabled || gameEngineEnabled) && !isDefaultSelected
           ? '120px'
-          : searchEnabled
+          : searchEnabled || gameEngineEnabled
             ? '80px'
             : !isDefaultSelected
               ? '80px'
@@ -105,6 +110,16 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
               <Globe />
             </TooltipIconButton>
           )}
+          {gameEngineEnabled && (
+            <TooltipIconButton
+              tooltip="Game engine"
+              variant="ghost"
+              className="size-7 flex-shrink-0 bg-blue-100 hover:bg-blue-100"
+              onClick={() => setGameEngineEnabled((p) => !p)}
+            >
+              <Gamepad2 />
+            </TooltipIconButton>
+          )}
           {!isDefaultSelected && (
             <AssistantSelect
               userId={props.userId}
@@ -137,6 +152,16 @@ export function ComposerActionsPopOut(props: ComposerActionsPopOutProps) {
                   onClick={() => setSearchEnabled((p) => !p)}
                 >
                   <Globe />
+                </TooltipIconButton>
+              )}
+              {!gameEngineEnabled && (
+                <TooltipIconButton
+                  tooltip="Game engine"
+                  variant="ghost"
+                  className="size-7 flex-shrink-0 hover:bg-blue-100 transition-colors ease-in-out"
+                  onClick={() => setGameEngineEnabled((p) => !p)}
+                >
+                  <Gamepad2 />
                 </TooltipIconButton>
               )}
               {isDefaultSelected && (

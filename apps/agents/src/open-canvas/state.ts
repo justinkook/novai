@@ -138,6 +138,10 @@ export const OpenCanvasGraphAnnotation = Annotation.Root({
    */
   webSearchResults: Annotation<SearchResult[] | undefined>,
   /**
+   * Whether or not to run the Game Engine pre-filter (DM lens).
+   */
+  gameEngineEnabled: Annotation<boolean | undefined>,
+  /**
    * Novai-specific: flag to save current artifact as chapter
    */
   saveChapter: Annotation<boolean | undefined>,

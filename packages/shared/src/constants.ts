@@ -24,6 +24,7 @@ export const DEFAULT_INPUTS = {
   webSearchResults: undefined,
   saveChapter: undefined,
   convertNovel: undefined,
+  gameEngineEnabled: undefined,
 };
 
 export const PROGRAMMING_LANGUAGES: Array<{

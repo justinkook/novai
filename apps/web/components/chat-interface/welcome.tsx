@@ -147,7 +147,7 @@ export const ThreadWelcome: FC<ThreadWelcomeProps> = (
             <AvatarImage src="/lc_logo.jpg" alt="LangChain Logo" />
             <AvatarFallback>LC</AvatarFallback>
           </Avatar>
-          <TighterText className="mt-4 text-lg font-medium">
+          <TighterText as="p" className="mt-4 text-lg font-medium">
             What would you like to write today?
           </TighterText>
           <div className="mt-8 w-full">

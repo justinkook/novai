@@ -174,7 +174,10 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
             <>
               {reflections?.styleRules && (
                 <div className="mb-6">
-                  <TighterText className="text-xl font-light text-gray-800 sticky top-0 bg-white py-2 mb-3">
+                  <TighterText
+                    as="p"
+                    className="text-xl font-light text-gray-800 sticky top-0 bg-white py-2 mb-3"
+                  >
                     Style Reflections:
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">
@@ -192,7 +195,10 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
               )}
               {reflections?.content && (
                 <div className="mb-6">
-                  <TighterText className="text-xl font-light text-gray-800 sticky top-0 bg-white py-2 mb-3">
+                  <TighterText
+                    as="p"
+                    className="text-xl font-light text-gray-800 sticky top-0 bg-white py-2 mb-3"
+                  >
                     Content Reflections:
                   </TighterText>
                   <ul className="list-disc list-inside space-y-2">

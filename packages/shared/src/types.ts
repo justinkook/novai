@@ -229,4 +229,6 @@ export interface GraphInput {
 
   saveChapter?: boolean;
   convertNovel?: boolean;
+
+  gameEngineEnabled?: boolean;
 }

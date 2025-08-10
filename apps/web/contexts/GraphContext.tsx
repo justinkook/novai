@@ -78,6 +78,8 @@ interface GraphData {
   chatStarted: boolean;
   searchEnabled: boolean;
   setSearchEnabled: Dispatch<SetStateAction<boolean>>;
+  gameEngineEnabled: boolean;
+  setGameEngineEnabled: Dispatch<SetStateAction<boolean>>;
   setChatStarted: Dispatch<SetStateAction<boolean>>;
   setIsStreaming: Dispatch<SetStateAction<boolean>>;
   setFeedbackSubmitted: Dispatch<SetStateAction<boolean>>;
@@ -142,6 +144,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState(false);
   const [artifactUpdateFailed, setArtifactUpdateFailed] = useState(false);
   const [searchEnabled, setSearchEnabled] = useState(false);
+  const [gameEngineEnabled, setGameEngineEnabled] = useState(false);
 
   const [_, setWebSearchResultsId] = useQueryState(
     WEB_SEARCH_RESULTS_QUERY_PARAM
@@ -391,6 +394,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
         highlightedText: selectedBlocks,
       }),
       webSearchEnabled: searchEnabled,
+      gameEngineEnabled,
     };
     // Add check for multiple defined fields
     const fieldsToCheck = [
@@ -1446,6 +1450,8 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       artifactUpdateFailed,
       searchEnabled,
       setSearchEnabled,
+      gameEngineEnabled,
+      setGameEngineEnabled,
       setChatStarted,
       setIsStreaming,
       setFeedbackSubmitted,

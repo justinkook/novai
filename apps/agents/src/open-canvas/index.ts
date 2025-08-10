@@ -1,5 +1,6 @@
 import { Command, END, Send, START, StateGraph } from '@langchain/langgraph';
 import { DEFAULT_INPUTS } from '@workspace/shared/constants';
+import { graph as gameEngineGraph } from '../game-engine/index.js';
 import { createAIMessageFromWebResults } from '../utils.js';
 import { graph as webSearchGraph } from '../web-search/index.js';
 import { customAction } from './nodes/customAction.js';
@@ -125,6 +126,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addNode('generateTitle', generateTitleNode)
   .addNode('summarizer', summarizer)
   .addNode('webSearch', webSearchGraph)
+  .addNode('gameEngine', gameEngineGraph)
   .addNode('routePostWebSearch', routePostWebSearch)
   // ----- Novai nodes -----
   .addNode('saveChapterNode', saveChapterNode)
@@ -140,6 +142,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
     'customAction',
     'updateHighlightedText',
     'webSearch',
+    'gameEngine',
   ])
   // Edges
   .addEdge('generateArtifact', 'generateFollowup')
@@ -150,6 +153,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addEdge('rewriteCodeArtifactTheme', 'generateFollowup')
   .addEdge('customAction', 'generateFollowup')
   .addEdge('webSearch', 'routePostWebSearch')
+  .addEdge('gameEngine', 'reflect')
   // End edges
   .addEdge('replyToGeneralInput', 'cleanState')
   // Only reflect if an artifact was generated/updated.

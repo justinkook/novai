@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Core game state types
 export const GameStateSchema = z.object({
   id: z.string(),
   campaignId: z.string(),
@@ -22,7 +21,6 @@ export const GameStateSchema = z.object({
 
 export type GameState = z.infer<typeof GameStateSchema>;
 
-// Campaign configuration types
 export const CampaignSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -57,24 +55,7 @@ export const CampaignSchema = z.object({
 
 export type Campaign = z.infer<typeof CampaignSchema>;
 
-// LLM provider types
-export type LLMProvider = 'openai' | 'local';
-
-export interface LLMConfig {
-  provider: LLMProvider;
-  apiKey?: string;
-  model?: string;
-  baseUrl?: string;
-}
-
-// Game engine request/response types
-export interface GameRequest {
-  gameState: GameState;
-  playerInput: string;
-  context?: Record<string, unknown>;
-}
-
-export interface GameResponse {
+export type GameResponse = {
   narration: string;
   choices?: string[];
   statCheck?: {
@@ -89,14 +70,4 @@ export interface GameResponse {
     enemyHealth: Record<string, number>;
   };
   updatedGameState: GameState;
-}
-
-// Ruleset types
-export interface Ruleset {
-  name: string;
-  description: string;
-  stats: string[];
-  skills: Record<string, string[]>;
-  combatRules: Record<string, unknown>;
-  statCheckRules: Record<string, unknown>;
-}
+};

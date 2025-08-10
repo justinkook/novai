@@ -1,4 +1,6 @@
-# Baldur's Gate 3 - The Adventure Begins
+import type { Campaign } from '../types.js';
+
+export const BG3_INTRO_MD = `# Baldur's Gate 3 - The Adventure Begins
 
 You awaken aboard a nautiloid ship, your head pounding with a strange, alien presence. A Mind Flayer tadpole has been implanted in your brain, and you're hurtling through the Astral Plane. The ship is under attack by Githyanki warriors, and you must fight for your survival while coming to terms with your new... condition.
 
@@ -136,4 +138,138 @@ The nautiloid is crashing, and you must act quickly. Your choices will determine
 - Orin the Red (Bhaal): Shapeshifting assassin; Slayer form; hostage blackmail.
 - Enver Gortash (Bane): Steel Watch tyrant; political control of the city.
 - The Emperor: Free-willed illithid (Balduran); pragmatic ally or rival.
-- Elder Brain (The Absolute): Psionic nexus; broken or enthroned via Crown/Netherstones.
+- Elder Brain (The Absolute): Psionic nexus; broken or enthroned via Crown/Netherstones.`;
+
+export const BG3_CAMPAIGN: Campaign = {
+  id: 'baldurs-gate-3',
+  name: "Baldur's Gate 3",
+  description:
+    'A dark, mature D&D 5e campaign in the Forgotten Realms centered on an Elder Brain scheme called the Absolute. You awaken infected with a Mind Flayer tadpole and must seek a cure while navigating factions, companions, and hard choices. Across three acts, you’ll resolve the Grove–Goblin crisis, break Ketheric Thorm’s immortality in the Shadow‑Cursed Lands, and confront Gortash and Orin in Baldur’s Gate. Three Netherstones and the Crown of Karsus determine whether the Elder Brain is destroyed or enthroned. Your choices shape companions’ fates and the city’s future.',
+  ruleset: 'dnd-5e',
+  intro: BG3_INTRO_MD,
+  companions: [
+    {
+      id: 'shadowheart',
+      name: 'Shadowheart',
+      description:
+        "A mysterious half-elf cleric of Shar, the goddess of darkness and loss. She's secretive about her past and mission, but her healing abilities make her a valuable ally.",
+    },
+    {
+      id: 'astarion',
+      name: 'Astarion',
+      description:
+        "A charismatic high elf vampire spawn with a sharp wit and sharper fangs. He's been a slave to a cruel master for 200 years and seeks freedom and power.",
+    },
+    {
+      id: 'laezel',
+      name: "Lae'zel",
+      description:
+        "A fierce Githyanki warrior with a strict code of honor and a burning desire to return to her people. She's pragmatic and direct, but not without depth.",
+    },
+    {
+      id: 'gale',
+      name: 'Gale',
+      description:
+        'A human wizard of great renown who carries a dangerous secret - he has a Netherese orb in his chest that threatens to consume him and everything around him.',
+    },
+    {
+      id: 'wyll',
+      name: 'Wyll',
+      description:
+        "The Blade of Frontiers, a human warlock who made a pact with a devil to gain power and protect the innocent. He's charming and heroic, but his past haunts him.",
+    },
+    {
+      id: 'karlach',
+      name: 'Karlach',
+      description:
+        "A tiefling barbarian who escaped from the Nine Hells after being sold to Zariel. She's full of life and energy, but her infernal engine heart threatens to burn her alive.",
+    },
+  ],
+  locations: [
+    {
+      id: 'nautiloid',
+      name: 'Nautiloid Ship',
+      description:
+        'A massive Mind Flayer vessel floating through the Astral Plane. The ship is under attack and crashing, filled with dangerous creatures and potential allies.',
+      connections: ['crash-site'],
+    },
+    {
+      id: 'crash-site',
+      name: 'Crash Site',
+      description:
+        'The wreckage of the nautiloid ship on the Sword Coast. The area is dangerous but may contain survivors and valuable resources.',
+      connections: ['nautiloid', 'grove'],
+    },
+    {
+      id: 'grove',
+      name: 'Emerald Grove',
+      description:
+        "A sacred druid grove protected by nature magic. It's currently under threat from goblin raiders and internal strife.",
+      connections: ['crash-site', 'goblin-camp'],
+    },
+    {
+      id: 'goblin-camp',
+      name: 'Goblin Camp',
+      description:
+        "A chaotic encampment of goblins, bugbears, and other creatures. It's a dangerous place but may hold answers about the Mind Flayer threat.",
+      connections: ['grove', 'underdark'],
+    },
+    {
+      id: 'underdark',
+      name: 'Underdark',
+      description:
+        "A vast network of underground caverns and tunnels. It's home to dangerous creatures but may offer a path to safety or power.",
+      connections: ['goblin-camp', 'moonrise-towers'],
+    },
+    {
+      id: 'moonrise-towers',
+      name: 'Moonrise Towers',
+      description:
+        "An ancient fortress that serves as the base of operations for the cult of the Absolute. It's heavily defended and holds many secrets.",
+      connections: ['underdark', 'baldurs-gate'],
+    },
+    {
+      id: 'baldurs-gate',
+      name: "Baldur's Gate",
+      description:
+        "The great city of Baldur's Gate, a center of commerce, politics, and intrigue. It's here that the final confrontation may take place.",
+      connections: ['moonrise-towers'],
+    },
+  ],
+  plot: [
+    {
+      id: 'escape-nautiloid',
+      title: 'Escape the Nautiloid',
+      description:
+        'Survive the crash of the Mind Flayer ship and escape with your life.',
+      requirements: [],
+    },
+    {
+      id: 'find-companions',
+      title: 'Find Companions',
+      description:
+        'Locate and recruit potential allies who share your condition.',
+      requirements: ['escape-nautiloid'],
+    },
+    {
+      id: 'investigate-tadpole',
+      title: 'Investigate the Tadpole',
+      description:
+        'Learn more about the Mind Flayer tadpole and potential cures.',
+      requirements: ['find-companions'],
+    },
+    {
+      id: 'confront-absolute',
+      title: 'Confront the Absolute',
+      description: 'Face the cult of the Absolute and their mysterious leader.',
+      requirements: ['investigate-tadpole'],
+    },
+    {
+      id: 'final-choice',
+      title: 'The Final Choice',
+      description:
+        'Make the ultimate decision about your fate and the fate of the realms.',
+      requirements: ['confront-absolute'],
+    },
+  ],
+};

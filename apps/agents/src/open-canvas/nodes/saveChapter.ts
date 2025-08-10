@@ -4,37 +4,28 @@ import {
   getArtifactContent,
   isArtifactMarkdownContent,
 } from '@workspace/shared/utils/artifacts';
-import { getModelFromConfig } from '../../utils';
+import { v4 as uuidv4 } from 'uuid';
+import { formatMessages, getModelFromConfig } from '../../utils';
 import { persistChapter } from '../persistence';
 import { SUMMARIZE_CHAPTER_SYSTEM_PROMPT } from '../prompts';
 import type { OpenCanvasGraphAnnotation } from '../state';
 import { indexChapter } from '../vector';
 
 const SUMMARY_CHARACTER_LIMIT = 600;
-const MAX_INPUT_CHARACTERS = 24000;
-
-function clampInputLength(text: string, max: number): string {
-  return text.length > max ? text.slice(0, max) : text;
-}
-
-function normalizeModelContent(content: unknown): string {
-  return (typeof content === 'string' ? content : String(content ?? ''))
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 async function summarizeForEmbedding(
-  sourceMarkdown: string,
+  state: typeof OpenCanvasGraphAnnotation.State,
   config: LangGraphRunnableConfig
 ): Promise<string> {
   const model = await getModelFromConfig(config, { temperature: 0 });
-  const input = clampInputLength(sourceMarkdown, MAX_INPUT_CHARACTERS);
+  const messagesToSummarize = formatMessages(state.messages);
+
   const response = await model.invoke([
-    { role: 'system', content: SUMMARIZE_CHAPTER_SYSTEM_PROMPT },
-    { role: 'user', content: input },
+    ['system', SUMMARIZE_CHAPTER_SYSTEM_PROMPT],
+    ['user', `Here are the messages to summarize:\n${messagesToSummarize}`],
   ]);
-  const normalized = normalizeModelContent(response.content);
-  return normalized.slice(0, SUMMARY_CHARACTER_LIMIT);
+
+  return response.content.toString();
 }
 
 export async function saveChapterNode(
@@ -63,11 +54,11 @@ export async function saveChapterNode(
 
   const title = (artifactContent.title || 'Chapter Draft').slice(0, 120);
   const content = artifactContent.fullMarkdown; // Normalized upstream
-  const summary = await summarizeForEmbedding(content, config).catch(() =>
+  const summary = await summarizeForEmbedding(state, config).catch(() =>
     content.slice(0, SUMMARY_CHARACTER_LIMIT)
   );
 
-  const chapterId = `${Date.now()}`;
+  const chapterId = uuidv4();
   await persistChapter({
     sessionId,
     threadId,
