@@ -1,44 +1,72 @@
-# Mintlify Starter Kit
+# NovAI Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+This is the documentation site for NovAI. It’s built with Mintlify (MDX + docs.json). All docs live in `apps/docs`.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Prerequisites
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+- Node.js 20+
+- pnpm 9+ (recommended)
+- Mintlify CLI (`mint`) for local preview
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+Install the Mintlify CLI globally:
 
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
+```bash
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+## Local development
 
-```
+From the project root:
+
+```bash
+cd apps/docs
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+Then open `http://localhost:3000`.
 
-## Publishing changes
+## Project structure
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- `apps/docs/docs.json`: Site configuration (theme, navigation, anchors, links)
+- `apps/docs/*.mdx`: Top-level pages
+- `apps/docs/**/`: Section folders (e.g., `engine/`, `ai-tools/`, `essentials/`)
+- `apps/docs/images/`: Images used in docs
+- `apps/docs/logo/`: Logo assets
 
-## Need help?
+Navigation is controlled by `docs.json`. New pages won’t appear in the sidebar until added there.
 
-### Troubleshooting
+## Adding pages
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+1. Create an MDX file under `apps/docs/` (e.g., `engine/new-page.mdx`).
+2. Add it to `docs.json` under an appropriate group.
+3. Use Mintlify components for rich content (e.g., `Note`, `Tip`, `Steps`, `CodeGroup`).
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
-- [Mintlify community](https://mintlify.com/community)
+Example MDX frontmatter:
+
+```mdx
+---
+title: "My Page Title"
+description: "Short description for nav/SEO"
+---
+```
+
+## Authoring guidelines
+
+- Keep sections concise and scannable with clear headings
+- Prefer examples and short code snippets with language tags
+- Use relative links for internal pages (e.g., `/engine/overview`)
+- Store images in `apps/docs/images/` and use descriptive alt text
+
+## Deployment
+
+- You can deploy with Mintlify’s GitHub app or host the generated site elsewhere. See Mintlify’s docs for deployment details.
+
+## Troubleshooting
+
+- CLI not starting: `mint update` to upgrade the CLI
+- 404 on a page: ensure it’s added under the correct group in `docs.json`
+
+## Useful links
+
+- Mintlify docs: https://mintlify.com/docs
+- Components catalog: https://mintlify.com/docs/components/overview

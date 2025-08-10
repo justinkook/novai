@@ -1,4 +1,4 @@
-# Novai - AI-Powered Text RPG Engine
+# NovAI - AI-Powered Text RPG Engine
 
 **Novai** is a source-agnostic AI-driven text RPG system that replicates the full gameplay experience of games like Baldur's Gate 3 using only text, powered by LLMs as the Game Master.
 
@@ -30,14 +30,12 @@ Build a **campaign-agnostic AI-driven text RPG system** that can:
 │   └── agents/            # LangGraph graphs (Open Canvas, NovAI, Reflection, ...)
 │
 ├── packages/
-│   ├── engine/            # Core text RPG engine
-│   ├── prompts/           # Dynamic system prompts per campaign
 │   ├── shared/            # Shared utils, model lists, types
 │   ├── ui/                # Shared UI components
 │   ├── evals/             # Evaluation utilities/tests
 │   └── typescript-config/ # TS config presets
 │
-├── campaigns/             # Campaign data (e.g., NovAI/BG3)
+├── apps/docs/             # Mintlify documentation site
 ├── langgraph.json         # Graph registry for agents
 ├── turbo.json             # Turborepo config
 └── .env                   # Root env (used by agents)
@@ -45,14 +43,12 @@ Build a **campaign-agnostic AI-driven text RPG system** that can:
 
 ## 🎮 Features
 
-### Core Engine
+### Core Engine (in agents)
 
 - **AI Game Master**: LLM-powered narration and decision-making
 - **Campaign-Aware Prompts**: D&D 5e-flavored guidance and mechanics
-- **Dynamic Campaigns**: Load campaigns from `/campaigns/{name}/`
-- **Stat System**: Full RPG stat checks and combat mechanics
-- **Choice System**: Branching narratives with consequences
-- **Companion System**: AI-driven companion interactions
+- **Campaign Data**: Lives in `apps/agents/src/game-engine/campaigns/`
+- **Stat/Choice/Combat**: Extracted from AI output with structured summary
 
 ### Campaign Support
 
@@ -174,23 +170,17 @@ pnpm --filter web dev
 
 ### Campaigns
 
-#### `campaigns/baldurs-gate-3/`
-
-- `campaign.json`: Campaign configuration
-- `intro.md`: Opening narrative
-- `companions.json`: Character data
-- `locations.json`: World locations
-- `plot.json`: Story progression
+- Campaigns are TypeScript modules under `apps/agents/src/game-engine/campaigns/` (e.g., `bg3.ts`).
+- Each campaign exports metadata (companions, locations, plot) and an intro string.
 
 ## 🔧 Development
 
 ### Adding New Campaigns
 
-1. Create campaign directory: `campaigns/{campaign-name}/`
-2. Add `campaign.json` with configuration
-3. Create `intro.md` for opening narrative
-4. Add companion and location data
-5. Update prompts for campaign-specific style
+1. Create a new file under `apps/agents/src/game-engine/campaigns/` and export a `Campaign`.
+2. Register it in `apps/agents/src/game-engine/campaigns/index.ts`.
+3. Provide `intro`, `companions`, `locations`, and `plot`.
+4. Optionally add campaign-specific prompts later.
 
 ### Local LLM Development
 
@@ -217,19 +207,17 @@ When `LOCAL_LLM_URL` is set, agents use the local provider; otherwise they use h
 
 ### Phase 2 🚧
 
-- [ ] Vector DB integration for memory
-- [ ] Advanced combat mechanics
+- [x] Vector DB integration for memory
+- [x] Advanced combat mechanics
 - [ ] Companion AI interactions
 - [ ] Story branching and consequences
-- [ ] Export to web novel format
+- [x] Export to web novel format
 
 ### Phase 3 📋
 
 - [ ] Game of Thrones campaign
 - [ ] Cyberpunk campaign
-- [ ] Multiplayer support
 - [ ] Advanced AI features
-- [ ] Mobile app
 
 ## 🤝 Contributing
 
