@@ -3,11 +3,6 @@ import { getModelFromConfig } from '../../utils.js';
 import { getCampaign } from '../campaigns/index.js';
 import { getOrCreateSession, getSupabaseClient } from '../persistence.js';
 import {
-  computeStatCheckForNextTurn,
-  extractLatestUserText,
-  normalizeModelContent,
-} from '../utils.js';
-import {
   BG3_CAMPAIGN_GUARDRAILS,
   BG3_RULESET_PROMPT,
   DND_5E_COMBAT_PROMPT,
@@ -21,6 +16,11 @@ import {
 } from '../prompts.js';
 import type { GameEngineState } from '../state.js';
 import type { GameState } from '../types.js';
+import {
+  computeStatCheckForNextTurn,
+  extractLatestUserText,
+  normalizeModelContent,
+} from '../utils.js';
 
 export async function runEngineNode(
   state: GameEngineState,

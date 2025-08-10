@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type SupportedMessage = {
   role?: string;
@@ -18,7 +18,7 @@ function xmur3(str: string): () => number {
     h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
     h = (h << 13) | (h >>> 19);
   }
-  return function () {
+  return () => {
     h = Math.imul(h ^ (h >>> 16), 2246822507);
     h = Math.imul(h ^ (h >>> 13), 3266489909);
     h ^= h >>> 16;
@@ -30,7 +30,7 @@ function xmur3(str: string): () => number {
  * Small fast PRNG using a 32-bit seed. Returns a float in [0, 1).
  */
 function mulberry32(a: number): () => number {
-  return function () {
+  return () => {
     a += 0x6d2b79f5;
     let t = a;
     t = Math.imul(t ^ (t >>> 15), t | 1);
