@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: 'NovAI - AI-Powered RPG Engine',
   description:
     'An AI-powered RPG engine that creates immersive tabletop gaming experiences with intelligent NPCs, dynamic storytelling, and adaptive gameplay.',
+  manifest: '/manifest.json',
   keywords: [
     'RPG',
     'AI',
