@@ -30,6 +30,10 @@ export const GameEngineGraphAnnotation = Annotation.Root({
    * The original thread ID to use to update the message state.
    */
   threadId: Annotation<string>,
+  /**
+   * Latest raw player input extracted from messages for persistence/analytics.
+   */
+  lastPlayerInput: Annotation<string | undefined>,
 });
 
 export type GameEngineState = typeof GameEngineGraphAnnotation.State;

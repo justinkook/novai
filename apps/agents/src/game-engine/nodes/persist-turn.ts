@@ -18,6 +18,9 @@ export async function persistEngineTurnNode(
       threadId,
       gameState: (results as unknown as { updatedGameState: GameState })
         .updatedGameState,
+      playerInput:
+        (state as unknown as { lastPlayerInput?: string }).lastPlayerInput ||
+        '',
       output: {
         narration: results.narration,
         choices: results.choices,

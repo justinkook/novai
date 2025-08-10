@@ -1,7 +1,12 @@
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { getModelFromConfig } from '../../utils.js';
 import { getCampaign } from '../campaigns/index.js';
-import { getOrCreateSession } from '../persistence.js';
+import { getOrCreateSession, getSupabaseClient } from '../persistence.js';
+import {
+  computeStatCheckForNextTurn,
+  extractLatestUserText,
+  normalizeModelContent,
+} from '../utils.js';
 import {
   BG3_CAMPAIGN_GUARDRAILS,
   BG3_RULESET_PROMPT,
@@ -16,36 +21,6 @@ import {
 } from '../prompts.js';
 import type { GameEngineState } from '../state.js';
 import type { GameState } from '../types.js';
-
-type SupportedMessage = {
-  role?: string;
-  getType?: () => string;
-  _getType?: () => string;
-  type?: string;
-  kwargs?: { type?: string; content?: string };
-  content?: string | Array<{ type: string; text?: string }>;
-};
-
-function extractLatestUserText(messages: unknown[]): string {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const raw = messages[i] as SupportedMessage;
-    const type =
-      raw?.getType?.() || raw?._getType?.() || raw?.type || raw?.kwargs?.type;
-    if (type === 'human' || raw?.role === 'user') {
-      if (Array.isArray(raw?.content) && raw?.content[0]?.type === 'text') {
-        const first = raw.content[0] as { type: string; text?: string };
-        return String(first?.text || '');
-      }
-      if (typeof raw?.content === 'string') {
-        return raw.content;
-      }
-      if (typeof raw?.kwargs?.content === 'string') {
-        return raw.kwargs.content;
-      }
-    }
-  }
-  return '';
-}
 
 export async function runEngineNode(
   state: GameEngineState,
@@ -78,25 +53,23 @@ export async function runEngineNode(
     config,
     gameState,
     playerInput,
+    threadId,
   });
 
   return {
     gameEngineResults: response,
     messages: [],
     threadId,
+    // carry forward latest player input for persistence node
+    lastPlayerInput: playerInput,
   };
-}
-
-function normalizeModelContent(content: unknown): string {
-  return (typeof content === 'string' ? content : String(content ?? ''))
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 async function processGameRequest(args: {
   config: LangGraphRunnableConfig;
   gameState: GameState;
   playerInput: string;
+  threadId: string;
 }): Promise<{
   narration: string;
   choices?: string[];
@@ -113,7 +86,7 @@ async function processGameRequest(args: {
   };
   updatedGameState: GameState;
 }> {
-  const { config, gameState, playerInput } = args;
+  const { config, gameState, playerInput, threadId } = args;
   const campaign = getCampaign(gameState.campaignId);
 
   const narrativeStyle =
@@ -137,8 +110,11 @@ async function processGameRequest(args: {
   const updatedGameState = updateGameState(gameState, playerInput, aiResponse);
   const struct = extractStructuredExtras(aiResponse);
   const choices = struct?.choices || extractChoices(aiResponse);
-  const rawStatCheck = struct?.statCheck || extractStatCheck(aiResponse);
-  const statCheck = ensureCompleteStatCheck(rawStatCheck);
+  const statCheck = await resolveServerStatCheck({
+    threadId,
+    structured: struct?.statCheck,
+    aiResponse,
+  });
   const combat = struct?.combat || extractCombat(aiResponse);
 
   return {
@@ -340,7 +316,12 @@ function extractStructuredExtras(aiResponse: string):
           ...(typeof sc.success !== 'undefined'
             ? { success: Boolean(sc.success) }
             : {}),
-        } as any;
+        } as {
+          stat: string;
+          difficulty: number;
+          result?: number;
+          success?: boolean;
+        };
       }
     }
     if (json.combat && typeof json.combat === 'object') {
@@ -363,50 +344,76 @@ function extractStructuredExtras(aiResponse: string):
   }
 }
 
-function ensureCompleteStatCheck(input?: {
-  stat: string;
-  difficulty: number;
-  result?: number;
-  success?: boolean;
-}):
+async function resolveServerStatCheck(args: {
+  threadId: string;
+  structured?: {
+    stat: string;
+    difficulty: number;
+    result?: number;
+    success?: boolean;
+  };
+  aiResponse: string;
+}): Promise<
   | {
       stat: string;
       difficulty: number;
       result: number;
       success: boolean;
     }
-  | undefined {
-  if (!input) return undefined;
-  const rolled =
-    typeof input.result === 'number'
-      ? input.result
-      : Math.floor(Math.random() * 20) + 1;
-  const succeeded =
-    typeof input.success === 'boolean'
-      ? input.success
-      : rolled >= input.difficulty;
-  return {
-    stat: input.stat,
-    difficulty: input.difficulty,
-    result: rolled,
-    success: succeeded,
-  };
+  | undefined
+> {
+  const { threadId, structured, aiResponse } = args;
+  const supabase = getSupabaseClient();
+  // Prefer structured stat/difficulty from the model, but always roll server-side
+  if (
+    structured &&
+    structured.stat &&
+    typeof structured.difficulty === 'number'
+  ) {
+    const roll = await computeStatCheckForNextTurn({
+      supabase,
+      threadId,
+      stat: structured.stat,
+      difficulty: structured.difficulty,
+    });
+    return {
+      stat: roll.stat,
+      difficulty: roll.difficulty,
+      result: roll.result,
+      success: roll.success,
+    };
+  }
+
+  // Fallback: parse "Make a X check (DC N)" just to extract stat/difficulty
+  const basic = extractStatCheckSpec(aiResponse);
+  if (basic) {
+    const roll = await computeStatCheckForNextTurn({
+      supabase,
+      threadId,
+      stat: basic.stat,
+      difficulty: basic.difficulty,
+    });
+    return {
+      stat: roll.stat,
+      difficulty: roll.difficulty,
+      result: roll.result,
+      success: roll.success,
+    };
+  }
+  return undefined;
 }
 
-function extractStatCheck(aiResponse: string):
+function extractStatCheckSpec(aiResponse: string):
   | {
       stat: string;
       difficulty: number;
-      result: number;
-      success: boolean;
     }
   | undefined {
   const statCheckMatch = aiResponse.match(/Make a (\w+) check \(DC (\d+)\)/i);
   if (statCheckMatch?.[1] && statCheckMatch[2]) {
     const stat = statCheckMatch[1];
     const difficulty = parseInt(statCheckMatch[2]);
-    const result = Math.floor(Math.random() * 20) + 1;
-    return { stat, difficulty, result, success: result >= difficulty };
+    return { stat, difficulty };
   }
   return undefined;
 }

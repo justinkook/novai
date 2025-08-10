@@ -80,7 +80,7 @@ export async function persistChapter(args: {
     const sha256 = computeSha256Hex(contentBuffer);
     const mime = 'text/markdown; charset=utf-8';
     const version = 1;
-    const key = `bg3/threads/${threadId}/chapters/${chapterId}/v${version}.md`;
+    const key = `threads/${threadId}/chapters/${chapterId}/v${version}.md`;
 
     const supabase = getSupabaseClient();
     const { error: uploadErr } = await supabase.storage
@@ -94,7 +94,7 @@ export async function persistChapter(args: {
       throw uploadErr;
     }
 
-    const { error } = await supabase.from('bg3_chapters').insert({
+    const { error } = await supabase.from('game_chapters').insert({
       session_id: threadId,
       thread_id: threadId,
       chapter_id: chapterId,
