@@ -52,9 +52,7 @@ export async function runEngineNode(
   config: LangGraphRunnableConfig
 ): Promise<Partial<GameEngineState>> {
   const userId = config.configurable?.supabase_user_id as string | undefined;
-  const threadId =
-    (config.configurable?.thread_id as string | undefined) ||
-    (config.configurable?.threadId as string | undefined);
+  const threadId = config.configurable?.thread_id;
   const campaignId =
     (config.configurable?.campaign_id as string | undefined) ||
     'baldurs-gate-3';
@@ -65,7 +63,7 @@ export async function runEngineNode(
     return {};
   }
 
-  const { sessionId, gameState } = await getOrCreateSession({
+  const { gameState } = await getOrCreateSession({
     threadId,
     userId,
     campaignId,
@@ -85,7 +83,7 @@ export async function runEngineNode(
   return {
     gameEngineResults: response,
     messages: [],
-    sessionId,
+    threadId,
   };
 }
 

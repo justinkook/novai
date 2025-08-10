@@ -27,9 +27,9 @@ export const GameEngineGraphAnnotation = Annotation.Root({
    */
   gameEngineResults: Annotation<GameResponse | undefined>,
   /**
-   * Active session id for persistence.
+   * The original thread ID to use to update the message state.
    */
-  sessionId: Annotation<string | undefined>,
+  threadId: Annotation<string>,
 });
 
 export type GameEngineState = typeof GameEngineGraphAnnotation.State;

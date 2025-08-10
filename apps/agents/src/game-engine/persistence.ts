@@ -29,7 +29,7 @@ export async function getOrCreateSession(args: {
   userId: string;
   campaignId: string;
   playerName: string;
-}): Promise<{ sessionId: string; gameState: GameState }> {
+}): Promise<{ threadId: string; gameState: GameState }> {
   const { threadId, userId, campaignId, playerName } = args;
 
   const supabase = getSupabaseClient();
@@ -46,7 +46,7 @@ export async function getOrCreateSession(args: {
 
   if (existing) {
     return {
-      sessionId: existing.id,
+      threadId: existing.thread_id,
       gameState: existing.game_state as GameState,
     };
   }
@@ -55,6 +55,7 @@ export async function getOrCreateSession(args: {
   const { data: created, error: insertErr } = await supabase
     .from('bg3_sessions')
     .insert({
+      id: threadId,
       user_id: userId,
       thread_id: threadId,
       campaign_id: campaignId,
@@ -67,11 +68,11 @@ export async function getOrCreateSession(args: {
     throw insertErr;
   }
 
-  return { sessionId: created.id, gameState: initial };
+  return { threadId: created.thread_id, gameState: initial };
 }
 
 export async function persistTurn(args: {
-  sessionId: string;
+  threadId: string;
   gameState: GameState;
   output: {
     narration: string;
@@ -89,19 +90,19 @@ export async function persistTurn(args: {
     };
   };
 }) {
-  const { sessionId, gameState, output } = args;
+  const { threadId, gameState, output } = args;
 
   const supabase = getSupabaseClient();
   const { error: updateErr } = await supabase
     .from('bg3_sessions')
     .update({ game_state: gameState, updated_at: new Date().toISOString() })
-    .eq('id', sessionId);
+    .eq('id', threadId);
   if (updateErr) {
     throw updateErr;
   }
 
   const { error: insertTurnErr } = await supabase.from('bg3_turns').insert({
-    session_id: sessionId,
+    session_id: threadId,
     narration: output.narration,
     choices: output.choices || null,
     stat_check: output.statCheck || null,

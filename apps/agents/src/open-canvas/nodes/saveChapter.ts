@@ -32,16 +32,8 @@ export async function saveChapterNode(
   state: typeof OpenCanvasGraphAnnotation.State,
   config: LangGraphRunnableConfig
 ): Promise<Partial<typeof OpenCanvasGraphAnnotation.State>> {
-  const sessionId =
-    state.sessionId ||
-    (config.configurable?.bg3_session_id as string | undefined);
-  const threadId =
-    (config.configurable?.thread_id as string | undefined) ||
-    (config.configurable?.threadId as string | undefined);
+  const threadId = config.configurable?.thread_id;
 
-  if (!sessionId) {
-    throw new Error('Missing bg3_session_id in configurable');
-  }
   if (!threadId) {
     throw new Error('Missing thread_id in configurable');
   }
@@ -60,7 +52,6 @@ export async function saveChapterNode(
 
   const chapterId = uuidv4();
   await persistChapter({
-    sessionId,
     threadId,
     chapterId,
     title,

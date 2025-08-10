@@ -63,7 +63,6 @@ function computeSha256Hex(buffer: Buffer): string {
 }
 
 export async function persistChapter(args: {
-  sessionId: string;
   threadId: string;
   chapterId: string;
   title: string;
@@ -71,8 +70,7 @@ export async function persistChapter(args: {
   summary: string;
   memo?: string;
 }) {
-  const { sessionId, threadId, chapterId, title, content, summary, memo } =
-    args;
+  const { threadId, chapterId, title, content, summary, memo } = args;
   try {
     // Upload sanitized content to Supabase Storage and store pointer + metadata
     const bucket = getChaptersBucket();
@@ -97,7 +95,7 @@ export async function persistChapter(args: {
     }
 
     const { error } = await supabase.from('bg3_chapters').insert({
-      session_id: sessionId,
+      session_id: threadId,
       thread_id: threadId,
       chapter_id: chapterId,
       title,

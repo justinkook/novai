@@ -7,17 +7,15 @@ export async function persistEngineTurnNode(
   state: GameEngineState,
   _config: LangGraphRunnableConfig
 ): Promise<Partial<GameEngineState>> {
-  const sessionId = (state as Record<string, unknown>)?.sessionId as
-    | string
-    | undefined;
+  const threadId = state.threadId;
   const results = state.gameEngineResults;
-  if (!sessionId || !results) {
+  if (!threadId || !results) {
     // Pass-through unchanged
     return {};
   }
   try {
     await persistTurn({
-      sessionId,
+      threadId,
       gameState: (results as unknown as { updatedGameState: GameState })
         .updatedGameState,
       output: {

@@ -149,10 +149,6 @@ export const OpenCanvasGraphAnnotation = Annotation.Root({
    * Novai-specific: flag to convert current artifact to novel
    */
   convertNovel: Annotation<boolean | undefined>,
-  /**
-   * Novai-specific: Active session id
-   */
-  sessionId: Annotation<string | undefined>,
 });
 
 export type OpenCanvasGraphReturnType = Partial<
