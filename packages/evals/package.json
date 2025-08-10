@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.38",
+    "@langchain/core": "^0.3.68",
     "@langchain/openai": "^0.4.2",
     "@workspace/agents": "workspace:*",
     "langsmith": "^0.3.5",
