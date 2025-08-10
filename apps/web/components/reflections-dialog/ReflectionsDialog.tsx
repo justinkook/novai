@@ -69,6 +69,7 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
     deleteReflections,
   } = useStore();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: stable references from hooks
   useEffect(() => {
     if (!selectedAssistant || typeof window === 'undefined') {
       return;
@@ -82,13 +83,7 @@ export function ReflectionsDialog(props: ReflectionsDialogProps) {
     }
 
     getReflections(selectedAssistant.assistant_id);
-  }, [
-    selectedAssistant,
-    getReflections,
-    reflections?.content,
-    reflections?.styleRules,
-    reflections?.assistantId,
-  ]);
+  }, [selectedAssistant]);
 
   const handleDelete = async () => {
     if (!selectedAssistant) {

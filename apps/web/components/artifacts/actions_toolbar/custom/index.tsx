@@ -102,20 +102,18 @@ export function CustomQuickActions(props: CustomQuickActionsProps) {
     setIsEditingId(id);
   };
 
-  const getAndSetCustomQuickActions = useCallback(
-    async (userId: string) => {
-      const actions = await getCustomQuickActions(userId);
-      setCustomQuickActions(actions);
-    },
-    [getCustomQuickActions]
-  );
+  const getAndSetCustomQuickActions = async (userId: string) => {
+    const actions = await getCustomQuickActions(userId);
+    setCustomQuickActions(actions);
+  };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: stable references from hooks
   useEffect(() => {
     if (typeof window === 'undefined' || !assistantId || !user) {
       return;
     }
     getAndSetCustomQuickActions(user.id);
-  }, [assistantId, user, getAndSetCustomQuickActions]);
+  }, [assistantId, user]);
 
   const handleNewActionClick = (e: Event) => {
     e.preventDefault();
