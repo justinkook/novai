@@ -153,7 +153,7 @@ const builder = new StateGraph(OpenCanvasGraphAnnotation)
   .addEdge('rewriteCodeArtifactTheme', 'generateFollowup')
   .addEdge('customAction', 'generateFollowup')
   .addEdge('webSearch', 'routePostWebSearch')
-  .addEdge('gameEngine', 'reflect')
+  .addEdge('gameEngine', 'cleanState')
   // End edges
   .addEdge('replyToGeneralInput', 'cleanState')
   // Only reflect if an artifact was generated/updated.
