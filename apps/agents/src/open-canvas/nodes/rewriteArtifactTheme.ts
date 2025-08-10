@@ -22,6 +22,7 @@ import {
   CHANGE_ARTIFACT_LENGTH_PROMPT,
   CHANGE_ARTIFACT_READING_LEVEL_PROMPT,
   CHANGE_ARTIFACT_TO_PIRATE_PROMPT,
+  CONVERT_ARTIFACT_TO_NOVEL_PROMPT,
 } from '../prompts.js';
 import type {
   OpenCanvasGraphAnnotation,
@@ -110,6 +111,11 @@ export const rewriteArtifactTheme = async (
     ).replace('{artifactContent}', currentArtifactContent.fullMarkdown);
   } else if (state.regenerateWithEmojis) {
     formattedPrompt = ADD_EMOJIS_TO_ARTIFACT_PROMPT.replace(
+      '{artifactContent}',
+      currentArtifactContent.fullMarkdown
+    );
+  } else if (state.convertNovel) {
+    formattedPrompt = CONVERT_ARTIFACT_TO_NOVEL_PROMPT.replace(
       '{artifactContent}',
       currentArtifactContent.fullMarkdown
     );
