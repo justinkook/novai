@@ -18,9 +18,6 @@ export function useStore() {
 
   const getReflections = useCallback(
     async (assistantId: string): Promise<void> => {
-      if (isLoadingReflections) {
-        return;
-      }
       setIsLoadingReflections(true);
       const res = await fetch('/api/store/get', {
         method: 'POST',
@@ -34,18 +31,15 @@ export function useStore() {
       });
 
       if (!res.ok) {
-        setIsLoadingReflections(false);
         return;
       }
 
       const { item } = await res.json();
 
       if (!item?.value) {
-        // No reflections found. Return early without thrashing state repeatedly.
-        setReflections((prev) =>
-          prev?.assistantId === assistantId ? prev : undefined
-        );
         setIsLoadingReflections(false);
+        // No reflections found. Return early.
+        setReflections(undefined);
         return;
       }
 
@@ -70,7 +64,7 @@ export function useStore() {
       });
       setIsLoadingReflections(false);
     },
-    [isLoadingReflections]
+    []
   );
 
   const deleteReflections = async (assistantId: string): Promise<boolean> => {
