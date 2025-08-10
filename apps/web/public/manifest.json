@@ -26,6 +26,12 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Home screen"
+    },
+    {
+      "src": "/lc_logo.jpg",
+      "sizes": "900x900",
+      "type": "image/jpg",
+      "label": "Mobile screen"
     }
   ],
   "categories": ["games", "entertainment", "productivity"],
