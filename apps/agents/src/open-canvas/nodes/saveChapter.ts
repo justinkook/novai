@@ -70,7 +70,7 @@ export async function saveChapterNode(
   if (structured?.json) {
     await upsertChapterSummary(structured.json, {
       id: `chapter:${chapterId}`,
-      namespace: process.env.PINECONE_NAMESPACE || '__default__',
+      namespace: process.env.PINECONE_NAMESPACE || 'chapter_summaries',
       threadId,
     });
   }

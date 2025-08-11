@@ -164,7 +164,7 @@ export async function upsertChapterSummary(
   // Ensure index exists (first use will create)
   const index = await ensureIndexes();
   const ns = index.namespace(
-    opts?.namespace || process.env.PINECONE_NAMESPACE || '__default__'
+    opts?.namespace || process.env.PINECONE_NAMESPACE || 'chapter_summaries'
   );
 
   const id =
@@ -206,6 +206,6 @@ export async function upsertChapterSummary(
   ]);
 
   const namespace =
-    opts?.namespace || process.env.PINECONE_NAMESPACE || '__default__';
+    opts?.namespace || process.env.PINECONE_NAMESPACE || 'chapter_summaries';
   return { id, dimension: vector.length, namespace };
 }
