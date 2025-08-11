@@ -32,7 +32,7 @@ Open Canvas is an open source web application for collaborating with agents to b
 - **TypeScript**: Type-safe development
 - **Tailwind CSS**: Utility-first CSS framework
 - **shadcn/ui**: Beautiful, accessible UI components
-- **NextAuth.js**: Authentication system
+- **Supabase**: Authentication and Postgres as a service backend
 - **PostHog**: Analytics and feature flags
 - **Sentry**: Error monitoring and performance tracking
 
