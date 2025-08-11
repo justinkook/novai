@@ -36,8 +36,6 @@
           {
             "group": "Packages",
             "pages": [
-              "packages/engine",
-              "packages/prompts",
               "packages/ui"
             ]
           }
@@ -49,9 +47,7 @@
           {
             "group": "Development",
             "pages": [
-              "guides/setup",
-              "guides/campaigns",
-              "guides/deployment"
+              "guides/setup"
             ]
           },
           {
@@ -61,6 +57,18 @@
               "ai-tools/claude-code",
               "ai-tools/windsurf"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "LangGraph Platform",
+            "openapi": {
+              "source": "/api-reference/openapi.json",
+              "directory": "api-reference"
+            }
           }
         ]
       }

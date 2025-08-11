@@ -11,8 +11,8 @@ Get your first AI-powered tabletop RPG campaign running in minutes with NovAI. T
 
 Before you begin, make sure you have the following installed:
 
-- **Node.js** (v18 or higher)
-- **pnpm** (recommended) or npm
+- **Node.js** (v20 or higher)
+- **pnpm** (recommended)
 - **Git**
 
 ## Installation
@@ -32,18 +32,38 @@ pnpm install
 
 ### 3. Set Up Environment Variables
 
-Create a `.env` file in the root directory:
+Create two env files: one at the repo root for agents, and one for the web app.
 
 ```bash
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+# ./.env (agents)
+OPENAI_API_KEY=...
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+# Optional local model (LM Studio/Ollama)
+LOCAL_LLM_URL=http://localhost:11434/v1
+LOCAL_LLM_MODEL=llama3.1
 
-# Database Configuration (if using)
-DATABASE_URL=your_database_url_here
+# Optional providers
+ANTHROPIC_API_KEY=...
+GOOGLE_API_KEY=...
+FIREWORKS_API_KEY=...
+GROQ_API_KEY=...
+EXA_API_KEY=...
 
-# Authentication (if using)
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=http://localhost:3000
+# Vector DB
+PINECONE_API_KEY=...
+PINECONE_INDEX=novai-chapters
+
+# Supabase (server write)
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE=...
+```
+
+```bash
+# apps/web/.env.local (web)
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+LANGGRAPH_API_URL=http://localhost:54367
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
 ### 4. Code Quality Tools
@@ -63,13 +83,13 @@ pnpm lint:fix
 
 ## Running the Development Environment
 
-### 1. Start the API Server
+### 1. Start the Agents (LangGraph)
 
 ```bash
-pnpm dev:api
+pnpm --filter @workspace/agents dev
 ```
 
-This starts the NestJS API server on `http://localhost:3001`.
+This runs the LangGraph dev server on `http://localhost:54367`.
 
 ### 2. Start the Web Application
 
@@ -79,10 +99,11 @@ pnpm dev:web
 
 This starts the Next.js web application on `http://localhost:3000`.
 
-### 3. Start the Documentation
+### 3. Start the Documentation (Mintlify)
 
 ```bash
-pnpm dev:docs
+cd apps/docs
+mint dev --port 3002
 ```
 
 This starts the documentation site on `http://localhost:3002`.
@@ -264,96 +285,15 @@ Open your browser and navigate to `http://localhost:3000`.
 4. Review the response and any available choices
 5. Continue the adventure!
 
-## Using the API
+## Using the Web App
 
-### 1. Authentication
-
-First, authenticate with the API:
-
-```bash
-curl -X POST http://localhost:3001/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "your-email@example.com",
-    "password": "your-password"
-  }'
-```
-
-### 2. Create a Game Session
-
-```bash
-curl -X POST http://localhost:3001/game/create \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "campaignId": "my-first-campaign",
-    "playerName": "Adventurer"
-  }'
-```
-
-### 3. Process Player Input
-
-```bash
-curl -X POST http://localhost:3001/game/process \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "gameId": "GAME_ID_FROM_PREVIOUS_RESPONSE",
-    "playerInput": "I want to explore the village square",
-    "context": {
-      "timeOfDay": "morning"
-    }
-  }'
-```
+The web app proxies requests to the LangGraph server configured by `LANGGRAPH_API_URL`. Ensure the agents server is running before interacting with the UI.
 
 ## Customizing Your Campaign
 
-### 1. Adding Custom Rulesets
+### 1. Creating Custom Prompts
 
-Create a custom ruleset in `packages/rulesets/src/`:
-
-```typescript
-// packages/rulesets/src/custom-fantasy.ts
-import { Ruleset, RulesetConfig } from '@novai/rulesets';
-
-const customConfig: RulesetConfig = {
-  name: 'custom-fantasy',
-  description: 'A custom fantasy RPG ruleset',
-  version: '1.0.0',
-  stats: ['strength', 'agility', 'intelligence', 'charisma'],
-  skills: {
-    strength: ['athletics', 'intimidation'],
-    agility: ['acrobatics', 'stealth'],
-    intelligence: ['arcana', 'history'],
-    charisma: ['deception', 'persuasion']
-  },
-  combatRules: {
-    initiative: { type: 'd20', modifier: 'agility' },
-    actions: [
-      {
-        name: 'attack',
-        type: 'attack',
-        range: 5,
-        damage: { die: 6, count: 1, modifier: 'strength' }
-      }
-    ],
-    damage: { type: 'hp', deathThreshold: 0 },
-    conditions: []
-  },
-  statCheckRules: {
-    baseDie: 20,
-    modifierCalculation: (stat) => Math.floor((stat - 10) / 2),
-    criticalSuccess: 20,
-    criticalFailure: 1
-  }
-};
-
-export const CustomFantasyRuleset = new Ruleset(customConfig);
-```
-
-### 2. Creating Custom Prompts
-
-Create custom prompt templates in `packages/prompts/src/`:
+Create custom prompt templates in a prompts module:
 
 ```typescript
 // packages/prompts/src/custom-adventure.ts

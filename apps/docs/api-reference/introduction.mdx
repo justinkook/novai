@@ -1,33 +1,35 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "LangGraph API"
+description: "API reference generated from the LangGraph OpenAPI specification used by NovAI"
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+<Info>
+  This API reference is powered by the LangGraph Platform OpenAPI spec bundled
+  in this repo at `apps/docs/api-reference/openapi.json`.
+</Info>
 
-## Welcome
+## Base URL
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+- Local development: `http://localhost:54367` (configurable via `LANGGRAPH_API_URL`)
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+## Key Resources
+
+- Assistants: create and manage configured graph instances
+- Threads: stateful containers for runs and their outputs
+- Runs: invoke graphs on threads; includes stream and wait endpoints
+- Store: key-value long-term memory available across threads
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+If enabled, endpoints use Bearer token authentication as defined in the spec.
 
 ```json
 "security": [
-  {
-    "bearerAuth": []
-  }
+  { "bearerAuth": [] }
 ]
 ```
+
+## Notes
+
+- Endpoints and schemas are taken directly from the LangGraph spec; consult the spec for complete request/response details.
+- The web app proxies to this API using `LANGGRAPH_API_URL`.

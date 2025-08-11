@@ -111,51 +111,45 @@ DATABASE_URL=postgresql://username:password@host:port/database
 
 ### 1. Starting Development Servers
 
-#### All Services (Recommended)
+#### Agents (LangGraph)
 
 ```bash
-# Start all development servers
-pnpm dev
-```
-
-This starts:
-
-- Web application: `http://localhost:3000`
-- Agents LangGraph server: `http://localhost:54367`
-- Documentation: `http://localhost:3002`
-
-#### Individual Services
-
-```bash
-# Web application only
-pnpm dev:web
-
-# Agents only
+# Start the LangGraph dev server
 pnpm --filter @workspace/agents dev
-
-# Documentation only
-pnpm dev:docs
-
-# Database migrations
-pnpm db:migrate
-
-# Database seeding
-pnpm db:seed
 ```
+
+This runs on `http://localhost:54367` by default per `apps/agents/package.json` and `langgraph.json`.
+
+#### Web (Next.js)
+
+```bash
+pnpm --filter web dev
+```
+
+The web app will proxy to the LangGraph server using `LANGGRAPH_API_URL`.
+
+#### Docs (Mintlify)
+
+```bash
+cd apps/docs
+mint dev --port 3002
+```
+
+Then open `http://localhost:3002`.
 
 ### 2. Package Development
 
-#### Engine Package
+#### Shared Package
 
 ```bash
-# Navigate to engine package
-cd packages/engine
+# Navigate to shared package
+cd packages/shared
 
 # Install dependencies
 pnpm install
 
 # Run tests
-pnpm test
+pnpm build
 
 # Build package
 pnpm build
