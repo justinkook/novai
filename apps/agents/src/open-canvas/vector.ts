@@ -3,110 +3,6 @@ import { Pinecone } from '@pinecone-database/pinecone';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
-export function getPinecone() {
-  const apiKey = process.env.PINECONE_API_KEY;
-  if (!apiKey) {
-    throw new Error('PINECONE_API_KEY not set');
-  }
-  return new Pinecone({ apiKey });
-}
-
-export async function ensureIndexes() {
-  const pc = getPinecone();
-  const indexName = process.env.PINECONE_INDEX || 'novai-chapters';
-  const indexes = await pc.listIndexes();
-  const exists = indexes.indexes?.some((i) => i.name === indexName);
-  if (!exists) {
-    await pc.createIndex({
-      name: indexName,
-      dimension: 1536,
-      metric: 'cosine',
-      spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
-    });
-  }
-  return pc.index(indexName);
-}
-
-export async function upsertChapterEmbedding(args: {
-  threadId: string;
-  chapterId: string;
-  title: string;
-  summary?: string;
-  embedding: number[];
-}) {
-  const { threadId, chapterId, title, summary, embedding } = args;
-  const index = await ensureIndexes();
-  const namespaceName = process.env.PINECONE_NAMESPACE || 'chapter_summaries';
-  const ns = index.namespace(namespaceName);
-  await ns.upsert([
-    {
-      id: `${threadId}:${chapterId}`,
-      values: embedding,
-      metadata: {
-        threadId,
-        chapterId,
-        title,
-        summary: summary || '',
-      },
-    },
-  ]);
-}
-
-export async function embedText(text: string): Promise<number[]> {
-  const model = new OpenAIEmbeddings({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small',
-  });
-  return model.embedQuery(text);
-}
-
-export async function querySimilarChapters(args: {
-  threadId: string;
-  query: string;
-  topK?: number;
-}) {
-  const { threadId, query, topK = 5 } = args;
-  const index = await ensureIndexes();
-  const namespaceName = process.env.PINECONE_NAMESPACE || 'chapter_summaries';
-  const ns = index.namespace(namespaceName);
-  const vector = await embedText(query);
-  const res = await ns.query({
-    vector,
-    topK,
-    includeMetadata: true,
-    filter: { threadId: { $eq: threadId } },
-  });
-  return (
-    res.matches?.map((m) => ({
-      score: m.score || 0,
-      id: m.id,
-      metadata: m.metadata as Record<string, unknown>,
-    })) || []
-  );
-}
-
-export async function indexChapter(args: {
-  threadId: string;
-  chapterId: string;
-  title: string;
-  content: string; // full novelized content (not embedded)
-  summary: string; // concise summary (embedded)
-}) {
-  const { threadId, chapterId, title, summary } = args;
-  // Only embed the concise summary for efficient context
-  const embeddingTarget = summary;
-  const embedding = await embedText(embeddingTarget);
-  await upsertChapterEmbedding({
-    threadId,
-    chapterId,
-    title,
-    summary,
-    embedding,
-  });
-}
-
-// ----- Rich chapter schema + upsert -----
-
 export const ChapterSummarySchema = z.object({
   embedding_text: z.string().min(1),
   metadata: z.object({
@@ -155,6 +51,63 @@ export type ChapterSummary = z.infer<typeof ChapterSummarySchema>;
 // Use a conservative metadata type to satisfy type checking.
 type PineconePrimitive = string | number | boolean | string[];
 type PineconeMetadata = Record<string, PineconePrimitive>;
+
+export function getPinecone() {
+  const apiKey = process.env.PINECONE_API_KEY;
+  if (!apiKey) {
+    throw new Error('PINECONE_API_KEY not set');
+  }
+  return new Pinecone({ apiKey });
+}
+
+export async function ensureIndexes() {
+  const pc = getPinecone();
+  const indexName = process.env.PINECONE_INDEX || 'novai-chapters';
+  const indexes = await pc.listIndexes();
+  const exists = indexes.indexes?.some((i) => i.name === indexName);
+  if (!exists) {
+    await pc.createIndex({
+      name: indexName,
+      dimension: 1536,
+      metric: 'cosine',
+      spec: { serverless: { cloud: 'aws', region: 'us-east-1' } },
+    });
+  }
+  return pc.index(indexName);
+}
+
+export async function embedText(text: string): Promise<number[]> {
+  const model = new OpenAIEmbeddings({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: process.env.OPENAI_EMBEDDING_MODEL || 'text-embedding-3-small',
+  });
+  return model.embedQuery(text);
+}
+
+export async function querySimilarChapters(args: {
+  threadId: string;
+  query: string;
+  topK?: number;
+}) {
+  const { threadId, query, topK = 5 } = args;
+  const index = await ensureIndexes();
+  const namespaceName = process.env.PINECONE_NAMESPACE || 'chapter_summaries';
+  const ns = index.namespace(namespaceName);
+  const vector = await embedText(query);
+  const res = await ns.query({
+    vector,
+    topK,
+    includeMetadata: true,
+    filter: { threadId: { $eq: threadId } },
+  });
+  return (
+    res.matches?.map((m) => ({
+      score: m.score || 0,
+      id: m.id,
+      metadata: m.metadata as Record<string, unknown>,
+    })) || []
+  );
+}
 
 export async function upsertChapterSummary(
   llmJsonString: string,

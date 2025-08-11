@@ -68,9 +68,8 @@ export async function persistChapter(args: {
   title: string;
   content: string;
   summary: string;
-  memo?: string;
 }) {
-  const { threadId, chapterId, title, content, summary, memo } = args;
+  const { threadId, chapterId, title, content, summary } = args;
   try {
     // Upload sanitized content to Supabase Storage and store pointer + metadata
     const bucket = getChaptersBucket();
@@ -108,7 +107,6 @@ export async function persistChapter(args: {
       version,
       // auxiliary metadata
       summary,
-      memo: memo || null,
       created_at: new Date().toISOString(),
     });
     if (error) {
