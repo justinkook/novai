@@ -211,13 +211,14 @@ RULES:
 - Handle stat checks, choices, companions, turn-based combat
 - Never break character
 - Use 2nd-person narration
-- Provide 2-4 meaningful choices when appropriate
-- Include stat checks when relevant (e.g., "Make a Strength check (DC 15)")
-- Describe combat in turn-based format
+- Provide 2-3 meaningful choices when appropriate
+- Automate all dice rolls (initiative, attacks, checks) server-side. Do not ask the player to roll.
+- When a stat check is relevant, state it naturally, but do not instruct the player to roll; narrate the outcome directly.
+- Describe combat concisely. Avoid excessive micro-turns and back-and-forth prompts; batch actions where reasonable to keep pace brisk.
 - Maintain narrative consistency and immersion
 
 OUTPUT FORMAT REQUIREMENTS:
-- Write immersive narration and choices normally.
+- Write immersive narration. Do not print numbered choices inside the narration body.
 - At the very end of your message, append a single compact JSON object summarizing the turn, wrapped in <engine-struct>...</engine-struct> tags. Do not mention these tags in the narration.
 - JSON shape (omit keys that don't apply): { "choices": string[], "statCheck": { "stat": string, "difficulty": number }, "combat": { "enemies": string[], "playerHealth": number, "enemyHealth": Record<string, number> } }
 - Example: <engine-struct>{"choices":["Help the druids","Join the goblins"],"statCheck":{"stat":"Perception","difficulty":12}}</engine-struct>`;
@@ -279,7 +280,9 @@ function extractStructuredExtras(aiResponse: string):
     }
   | undefined {
   const match = aiResponse.match(/<engine-struct>([\s\S]*?)<\/engine-struct>/i);
-  if (!match?.[1]) return undefined;
+  if (!match?.[1]) {
+    return undefined;
+  }
   try {
     const json = JSON.parse(match[1].trim());
     const out: {
@@ -365,11 +368,7 @@ async function resolveServerStatCheck(args: {
   const { threadId, structured, aiResponse } = args;
   const supabase = getSupabaseClient();
   // Prefer structured stat/difficulty from the model, but always roll server-side
-  if (
-    structured &&
-    structured.stat &&
-    typeof structured.difficulty === 'number'
-  ) {
+  if (structured?.stat && typeof structured.difficulty === 'number') {
     const roll = await computeStatCheckForNextTurn({
       supabase,
       threadId,

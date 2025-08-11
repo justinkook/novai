@@ -121,7 +121,10 @@ export const extractLatestUserText = (messages: unknown[]): string => {
 };
 
 export const normalizeModelContent = (content: unknown): string => {
-  return (typeof content === 'string' ? content : String(content ?? ''))
-    .replace(/\s+/g, ' ')
+  const raw = typeof content === 'string' ? content : String(content ?? '');
+  return raw
+    .replace(/\r\n/g, '\n') // normalize newlines
+    .replace(/[ \t]+\n/g, '\n') // trim trailing whitespace at line ends
+    .replace(/\n{3,}/g, '\n\n') // cap multiple blank lines to max 2
     .trim();
 };

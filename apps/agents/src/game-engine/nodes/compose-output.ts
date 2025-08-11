@@ -68,12 +68,20 @@ export async function composeEngineOutputNode(
       : undefined;
 
   const mdNarration = normalized.narration;
-  const mdChoices =
-    Array.isArray(normalized.choices) && normalized.choices.length
-      ? `\n\n### Choices\n${normalized.choices
-          .map((c, i) => `${i + 1}. ${c}`)
-          .join('\n')}`
-      : '';
+  const mdChoices = (() => {
+    if (!Array.isArray(normalized.choices) || normalized.choices.length === 0) {
+      return '';
+    }
+    // Cap at 3 to minimize repetition/noise
+    const capped = normalized.choices.slice(0, 3);
+    // If narration already includes a Choices header, avoid duplicating
+    if (/\n#+\s*Choices/i.test(mdNarration)) {
+      return '';
+    }
+    return `\n\n### Choices\n${capped
+      .map((c, i) => `${i + 1}. ${c}`)
+      .join('\n')}`;
+  })();
   const mdStat = normalized.statCheck
     ? `\n\n> Stat Check: ${normalized.statCheck.stat} (DC ${normalized.statCheck.difficulty}) — Result ${normalized.statCheck.result} — ${normalized.statCheck.success ? 'Success' : 'Fail'}`
     : '';
@@ -83,7 +91,11 @@ export async function composeEngineOutputNode(
       )}`
     : '';
 
-  const newSection = `### Scene ${nextIndex}\n\n${mdNarration}${mdChoices}${mdStat}${mdCombat}`;
+  const newSection =
+    `### Scene ${nextIndex}\n\n${mdNarration}\n\n${mdChoices}${mdStat}${mdCombat}`.replace(
+      /\n{3,}/g,
+      '\n\n'
+    );
   const fullMarkdown = prevMarkdown
     ? `${prevMarkdown}\n\n---\n\n${newSection}`
     : newSection;
@@ -108,10 +120,11 @@ export async function composeEngineOutputNode(
   // Create a tailored follow-up message focused on choices
   const followupText =
     Array.isArray(normalized.choices) && normalized.choices.length
-      ? `What do you do next? Choose an option by number or reply with your own action.\n\n${normalized.choices
+      ? `Choose: ${normalized.choices
+          .slice(0, 3)
           .map((c, i) => `${i + 1}. ${c}`)
-          .join('\n')}`
-      : 'What do you do next? You can describe your action or ask for more details.';
+          .join('  ')}`
+      : 'Your move. Describe your action or ask for details.';
   const followup = new AIMessage({ content: followupText });
 
   return {

@@ -389,6 +389,9 @@ Rules and guidelines:
 - Do not include bullet lists or numbered choices in the final chapter.
 - Write in 3rd person and past tense.
 - Utilize show not tell principles of storytelling.
+- Remove section headings like "Scene X" and any meta prompts such as "What would you do?"; merge content into a single flowing chapter with a natural chapter title omitted unless already present.
+- Remove repeated choice listings; integrate any options that were previously shown as choices into narrative implications and actions already taken.
+- Avoid second-person imperatives/questions; ensure consistent third-person perspective for narration and dialogue tags.
 - Respond with ONLY the updated artifact, and no additional text before or after.
 - Ensure you respond with the entire updated artifact, and not just the new content.
 - Do not wrap it in any XML tags you see in this prompt. Ensure it's just the updated artifact.

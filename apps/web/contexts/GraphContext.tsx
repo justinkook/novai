@@ -588,6 +588,24 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               }
             }
 
+            if (langgraphNode === 'composeEngineOutput') {
+              const message = extractStreamDataChunk(nodeChunk);
+              // Some providers emit incremental outputs; attempt to merge if artifact snapshot provided
+              const maybeOutput = message as unknown as {
+                artifact?: ArtifactV3;
+                messages?: AIMessage[];
+              };
+              if (maybeOutput?.artifact) {
+                if (!firstTokenReceived) {
+                  setFirstTokenReceived(true);
+                }
+                setArtifact(maybeOutput.artifact);
+              }
+              if (maybeOutput?.messages?.length) {
+                setMessages((prev) => [...prev, ...maybeOutput.messages!]);
+              }
+            }
+
             if (langgraphNode === 'updateHighlightedText') {
               const message = extractStreamDataChunk(nodeChunk);
               if (!message) {
@@ -1263,6 +1281,26 @@ export function GraphProvider({ children }: { children: ReactNode }) {
           }
 
           if (event === 'on_chain_end') {
+            if (langgraphNode === 'composeEngineOutput') {
+              const output = extractStreamDataOutput(nodeOutput) as
+                | {
+                    artifact?: ArtifactV3;
+                    messages?: AIMessage[];
+                    _messages?: AIMessage[];
+                  }
+                | undefined;
+              if (output?.artifact) {
+                if (!firstTokenReceived) {
+                  setFirstTokenReceived(true);
+                }
+                setArtifact(output.artifact);
+              }
+              if (output?.messages?.length) {
+                const newMessages = output.messages;
+                setMessages((prev) => [...prev, ...newMessages]);
+              }
+            }
+
             if (
               langgraphNode === 'rewriteArtifact' &&
               taskName === 'optionally_update_artifact_meta'
