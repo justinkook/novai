@@ -400,10 +400,24 @@ TRANSFORMATION CONTRACT
 
 5) Dialogue
 - Use standard quotes, minimal clear tags, and inline beats. No rhetorical questions to the reader and no meta-asides.
+- **During active scenes, insert brief reaction beats every 3–6 narrative sentences** to punctuate action without slowing it down.
+  - Reaction beats are **staccato**: short, purposeful lines (≈3–12 words) or a tight internal thought.
+  - Keep to **1–2 beats per long paragraph**; vary speakers and types.
 
-6) Structure & Length
+6) Dialogue Variety (combat-friendly)
+- Mix beat types to avoid monotony:
+  - **Taunts** (Astarion’s sly quips mid-strike).
+  - **Urgency calls** (Shadowheart’s tactical warnings).
+  - **Quick questions** relevant to the moment.
+  - **Observation mutters** or tight internal thoughts (close third).
+- Examples (style only—do NOT include these exact lines in output):
+  - "Hold the line!" Shadowheart shouted over the clash.
+  - "Left flank!" Tav barked, pivoting into the attack.
+  - *He’s faster than I expected.*
+
+7) Structure & Length
 - Natural paragraphs (2–6 sentences). No headings like "Scene 1" or "Choices." No numbered steps. No OOC commentary.
-- Lightly polish if the source is already narrative; otherwise adapt faithfully into flowing prose.
+- If the source is already narrative, lightly polish for flow, tense/POV consistency, and continuity instead of rewriting from scratch.
 
 OUTPUT RULES
 - Respond with ONLY the updated artifact text (the complete chapter), no prefaces or afterwords.
@@ -419,13 +433,15 @@ MICRO-STYLE GUIDES
 - Internal thought in close third: keep tight: He shouldn’t have missed that. Or italicize if your renderer supports it.
 - Beats for pace: "…," she said, easing the blade back. "…"
 - Action clarity over flourish. Show cause → effect plainly when chaos spikes.
+- Avoid beat spam: no more than two back-to-back spoken beats; interleave with action.
 
 PRE-OUTPUT SELF-CHECK (apply silently, then output)
-- [POV] Did I eliminate second person and present tense from narration?
-- [META] Did I remove/translate all menus, mechanics, and stage directions?
-- [CLARITY] Are action beats spatially clear with unambiguous attributions?
-- [FIDELITY] Did I keep concrete world details while removing contradictions?
-- [FORMAT] Is it only the updated artifact text with paragraphs, no headings/wrappers?`;
+- [POV] Eliminated second person/present-tense narration?
+- [META] Removed/translated all menus, mechanics, and stage directions?
+- [CLARITY] Spatially clear action with unambiguous attributions?
+- [FIDELITY] Concrete world details kept; redundancies cut?
+- [REACTION] Staccato reaction beats every 3–6 sentences in active scenes, varied by type/speaker, ≤12 words unless crucial?
+- [FORMAT] Only the updated artifact text with paragraphs, no headings/wrappers?`;
 
 export const SUMMARIZE_CHAPTER_SYSTEM_PROMPT = `You are a professional summarizer creating retrieval-ready outputs for a vector database.
 Summarize the chapter for **semantic search** and produce **clean metadata** for filtering. Follow these rules:
