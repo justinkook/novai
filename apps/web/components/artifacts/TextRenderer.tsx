@@ -85,13 +85,21 @@ export function TextRendererComponent(props: TextRendererProps) {
   const [manuallyUpdatingArtifact, setManuallyUpdatingArtifact] =
     useState(false);
 
+  // Debounced selection processing to avoid heavy work on every tiny selection mutation
   useEffect(() => {
-    const selectedText = editor.getSelectedText();
-    const selection = editor.getSelection();
+    let rafId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    if (selectedText && selection) {
+    const processSelection = async () => {
+      const selectedText = editor.getSelectedText();
+      const selection = editor.getSelection();
+      if (!selectedText || !selection) {
+        setSelectedBlocks(undefined);
+        return;
+      }
+
       if (!artifact) {
-        console.error('Artifact not found');
+        // no artifact; nothing to process
         return;
       }
 
@@ -99,35 +107,54 @@ export function TextRendererComponent(props: TextRendererProps) {
       const currentContent = artifact.contents.find(
         (c) => c.index === currentBlockIdx
       );
-      if (!currentContent) {
-        console.error('Current content not found');
-        return;
-      }
-      if (!isArtifactMarkdownContent(currentContent)) {
-        console.error('Current content is not markdown');
+      if (!currentContent || !isArtifactMarkdownContent(currentContent)) {
         return;
       }
 
-      (async () => {
-        const [markdownBlock, fullMarkdown] = await Promise.all([
-          editor.blocksToMarkdownLossy(selection.blocks),
-          editor.blocksToMarkdownLossy(editor.document),
-        ]);
-        setSelectedBlocks({
-          fullMarkdown: cleanText(fullMarkdown),
-          markdownBlock: cleanText(markdownBlock),
-          selectedText: cleanText(selectedText),
+      const [markdownBlock, fullMarkdown] = await Promise.all([
+        editor.blocksToMarkdownLossy(selection.blocks),
+        editor.blocksToMarkdownLossy(editor.document),
+      ]);
+      setSelectedBlocks({
+        fullMarkdown: cleanText(fullMarkdown),
+        markdownBlock: cleanText(markdownBlock),
+        selectedText: cleanText(selectedText),
+      });
+    };
+
+    const scheduleProcess = () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      // Debounce a bit to batch rapid selection changes during copy/drag
+      timeoutId = setTimeout(() => {
+        rafId = requestAnimationFrame(() => {
+          processSelection();
         });
-      })();
-    }
-  }, [
-    editor.getSelectedText,
-    artifact,
-    editor.getSelection,
-    setSelectedBlocks,
-    editor.blocksToMarkdownLossy,
-    editor.document,
-  ]);
+      }, 50);
+    };
+
+    const onSelectionChange = () => {
+      scheduleProcess();
+    };
+
+    document.addEventListener('selectionchange', onSelectionChange);
+    // Run once initially to capture any existing selection
+    scheduleProcess();
+
+    return () => {
+      document.removeEventListener('selectionchange', onSelectionChange);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [editor, artifact, setSelectedBlocks]);
 
   useEffect(() => {
     if (!props.isInputVisible) {
