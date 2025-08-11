@@ -117,7 +117,7 @@ jobs:
         working-directory: apps/agents
       - name: Create .env file for dev server check
         # .env needs to be in the root of the project
-        run: touch ./.env
+        run: touch ./apps/agents/.env
       - name: Run dev server check
         run: node apps/agents/dist/scripts/check-dev-server.cjs
         env:

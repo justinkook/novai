@@ -370,7 +370,7 @@ Rules and guidelines:
 ${DEFAULT_CODE_PROMPT_RULES}
 </rules-guidelines>`;
 
-export const CONVERT_ARTIFACT_TO_NOVEL_PROMPT = `You are an expert fiction editor adapting tabletop RPG session logs into a serialized web novel chapter.
+export const CONVERT_ARTIFACT_TO_NOVEL_PROMPT = `You are an expert fiction line-editor and scene writer adapting raw notes, outlines, or RPG-like logs into a polished web‑novel chapter.
 Here is the current content of the artifact:
 <artifact>
 {artifactContent}
@@ -383,19 +383,54 @@ You also have the following reflections on style guidelines and general memories
 
 Rules and guidelines:
 <rules-guidelines>
-- Remove or translate any explicit game mechanics (e.g., DC checks, dice rolls, turn order, combat rounds) into immersive prose.
-- Maintain continuity with provided context and incorporate outcomes of checks and combat as narrative consequences, not mechanics.
-- Write in a clean, engaging web novel style with proper paragraphs.
-- Do not include bullet lists or numbered choices in the final chapter.
-- Write in 3rd person and past tense.
-- Utilize show not tell principles of storytelling.
-- Remove section headings like "Scene X" and any meta prompts such as "What would you do?"; merge content into a single flowing chapter with a natural chapter title omitted unless already present.
-- Remove repeated choice listings; integrate any options that were previously shown as choices into narrative implications and actions already taken.
-- Avoid second-person imperatives/questions; ensure consistent third-person perspective for narration and dialogue tags.
+- Keep third-person past tense throughout. Use close third for internal thoughts when present, but avoid second person.
+- Translate all game/meta elements (e.g., dice rolls, DCs, turn order, ability checks, stage directions, bullet lists) into immersive prose. Never mention mechanics directly.
+- Preserve concrete world details from the source (e.g., organic pods, fleshy vessels, dragons with riders, nautilus-like ships, demons, animated wood) while removing redundancy and contradictions.
+- Lean into sensory detail (sight, sound, smell, texture, temperature) only to clarify action, mood, or setting; avoid purple prose and overused adjectives.
+- Clarify spatial choreography in action scenes. Keep pronoun references clear; re-name characters on re-entry to action to avoid confusion.
+- Vary sentence length for rhythm. Prefer tight, active phrasing. Trim filler, repetition, and clichéd expressions.
+- Dialogue: use standard quotation marks, minimal but clear tags, and avoid rhetorical questions to the reader or meta-asides.
+- Structure as natural paragraphs (2–6 sentences). No section headings, numbered steps, choices, or out-of-world commentary.
+- If the source is already narrative, lightly polish for flow, tense/POV consistency, and continuity instead of rewriting from scratch.
 - Respond with ONLY the updated artifact, and no additional text before or after.
-- Ensure you respond with the entire updated artifact, and not just the new content.
+- Ensure you respond with the entire updated artifact, not just new or changed lines.
 - Do not wrap it in any XML tags you see in this prompt. Ensure it's just the updated artifact.
-</rules-guidelines>`;
+</rules-guidelines>
+
+Example adaptation (style reference only — do not include any part of this example in your output):
+<example>
+<input>
+- Wakes paralyzed in an organic pod; a surge frees him and he cracks it open.
+- A worm wriggles in his skull; his cells destroy it.
+- Wall explodes; a red dragon with a rider breathes fire; he hardens into a shell behind the pod on an organic ship.
+</input>
+<novelized>
+Alex woke to smothering dark and the weight of something pressing on every nerve. The paralysis broke like a current through his veins, and he punched upward. The pod’s organic lid split with a wet crack. He dragged himself out, shaking as sensation returned.
+
+A needle of pain lanced behind his eyes. Something writhed inside his skull. His body answered on instinct: heat roared under his skin, cells surging. The intruder screamed—too high, too thin—and went still.
+
+The wall to his right vanished in a blast of heat. A red dragon hung in the breach, scales bright as molten iron. A rider in silvery armor tugged the reins and the beast exhaled. Fire tore across the chamber. Alex curled behind the ruined pod and hardened, a calcified shell locking over him until the roar passed.
+</novelized>
+</example>
+
+Dialogue examples (style reference only — do not include any part of this example in your output):
+<dialogue-examples>
+1) Tagging and beats
+"Oh dearie, are you lost?" the old woman asked, stroking the sheep’s wool.
+"Indeed, I am a bit lost," Alex said, studying her closely.
+"Come along, then," she said, beckoning. "A hot meal will set you right."
+
+2) Mid-line action beats to control pace and attribution
+"This is my first time eating soup made with human meat," Alex said, letting the spoon hover, "and it tastes awful."
+
+3) Whisper and internal thought in close third
+"From where?" he whispered.
+He hadn’t smelled them. He should have. Something was masking the scent, he thought.
+
+4) Interruptions and overlapping action
+"Don’t mind her," Auntie Ethel said, ladling from the cauldron. "Heartbreak, poor thing. Eat, and—"
+"I’ll pass," Alex said.
+</dialogue-examples>`;
 
 export const SUMMARIZE_CHAPTER_SYSTEM_PROMPT = `You're a professional AI summarizer assistant creating summaries for semantic search embeddings.
 As a professional summarizer, create a concise and comprehensive summary of the provided text, while adhering to these guidelines:
