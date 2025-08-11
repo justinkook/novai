@@ -1,18 +1,36 @@
 import { AIMessage } from '@langchain/core/messages';
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
-import type { ArtifactMarkdownV3, ArtifactV3 } from '@workspace/shared/types';
-import {
-  getArtifactContent,
-  isArtifactMarkdownContent,
-} from '@workspace/shared/utils/artifacts';
-import type { z } from 'zod';
 import { ARTIFACT_TOOL_SCHEMA } from '../../open-canvas/nodes/generate-artifact/schemas.js';
 import { getModelFromConfig } from '../../utils.js';
 import type { GameEngineState } from '../state.js';
 import type { GameResponse } from '../types.js';
 
+const stripEngineStructAndDebugJson = (input: string): string => {
+  if (!input) {
+    return '';
+  }
+  let output = input;
+  // Remove any <engine-struct>...</engine-struct> blocks (extra safety if any leaked)
+  output = output.replace(/<engine-struct>[\s\S]*?<\/engine-struct>/gi, '');
+  // Remove any standalone JSON blocks that look like engine struct
+  output = output.replace(/(?:^|\n)\s*\{[\s\S]*?\}\s*(?=\n|$)/g, (match) => {
+    const lower = match.toLowerCase();
+    const isEngineStructLike =
+      lower.includes('"choices"') ||
+      lower.includes("'choices'") ||
+      lower.includes('"statcheck"') ||
+      lower.includes("'statcheck'") ||
+      lower.includes('"combat"') ||
+      lower.includes("'combat'");
+    return isEngineStructLike ? '' : match;
+  });
+  return output.replace(/\n{3,}/g, '\n\n').trim();
+};
+
 function normalize(results: GameResponse): GameResponse {
-  const narration = String(results.narration || '').trim();
+  const narration = stripEngineStructAndDebugJson(
+    String(results.narration || '').trim()
+  );
   const rawChoices = results.choices;
   const choices = Array.isArray(rawChoices)
     ? rawChoices
@@ -56,19 +74,9 @@ export async function composeEngineOutputNode(
   }
   const normalized = normalize(state.gameEngineResults as GameResponse);
 
-  // Build or update artifact
   const nextIndex = state.artifact?.contents.length
     ? state.artifact.contents.length + 1
     : 1;
-
-  const previousContent = state.artifact
-    ? getArtifactContent(state.artifact)
-    : undefined;
-
-  const prevMarkdown =
-    previousContent && isArtifactMarkdownContent(previousContent)
-      ? previousContent.fullMarkdown
-      : undefined;
 
   const mdNarration = normalized.narration;
   const mdChoices = (() => {
@@ -99,11 +107,7 @@ export async function composeEngineOutputNode(
       /\n{3,}/g,
       '\n\n'
     );
-  const fullMarkdown = prevMarkdown
-    ? `${prevMarkdown}\n\n---\n\n${newSection}`
-    : newSection;
 
-  // LLM-driven tool-call: emit the entire updated artifact via generate_artifact
   const toolCallingModel = (
     await getModelFromConfig(_config, { isToolCalling: true })
   )
@@ -119,37 +123,20 @@ export async function composeEngineOutputNode(
     )
     .withConfig({ runName: 'composeEngineOutput' });
 
-  const prompt = `You are formatting a game engine scene into an artifact for display.
-Return the full, updated artifact by CALLING the generate_artifact tool only.
+  const prompt = `You are formatting a game engine scene into a single artifact entry for display.
+Call the generate_artifact tool only and return ONLY the new scene entry, not any prior history.
 
 Inputs:
-- Previous artifact markdown (may be empty):\n<prev>\n${prevMarkdown || ''}\n</prev>
-- New section to append:\n<section>\n${newSection}\n</section>
+<section>\n${newSection}\n</section>
 
 Rules:
-- Type must be 'text'.
-- Language must be 'other'.
-- Title should be a short label for this update, e.g., "Scene ${nextIndex}".
-- The artifact field must contain the complete updated markdown (previous + new section).`;
+- type must be 'text'.
+- language must be 'other'.
+- title should be "Scene ${nextIndex}".
+- artifact must equal the section content exactly.`;
 
-  const response = await toolCallingModel.invoke([
-    { role: 'user', content: prompt },
-  ]);
-  const args = response.tool_calls?.[0]?.args as
-    | z.infer<typeof ARTIFACT_TOOL_SCHEMA>
-    | undefined;
-
-  const newContent: ArtifactMarkdownV3 = {
-    index: 1,
-    type: 'text',
-    title: args?.title || `Scene ${nextIndex}`,
-    fullMarkdown: args?.artifact || fullMarkdown,
-  };
-
-  const updatedArtifact: ArtifactV3 = {
-    currentIndex: 1,
-    contents: [newContent],
-  };
+  // Fire the tool call; the UI listens to streamed chunks and will append a new history entry.
+  await toolCallingModel.invoke([{ role: 'user', content: prompt }]);
 
   // Create a tailored follow-up message focused on choices
   const followupText =
@@ -162,7 +149,6 @@ Rules:
   const followup = new AIMessage({ content: followupText });
 
   return {
-    artifact: updatedArtifact,
     messages: [followup],
     _messages: [followup],
   };
