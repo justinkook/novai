@@ -1,7 +1,11 @@
 import type { LangGraphRunnableConfig } from '@langchain/langgraph';
 import { getModelFromConfig } from '../../utils.js';
 import { getCampaign } from '../campaigns/index.js';
-import { getOrCreateSession, getSupabaseClient } from '../persistence.js';
+import {
+  getOrCreateSession,
+  getSupabaseClient,
+  persistTurn,
+} from '../persistence.js';
 import {
   BG3_CAMPAIGN_GUARDRAILS,
   BG3_RULESET_PROMPT,
@@ -32,7 +36,7 @@ export async function runEngineNode(
     (config.configurable?.campaign_id as string | undefined) ||
     'baldurs-gate-3';
   const playerName =
-    (config.configurable?.player_name as string | undefined) || 'Traveler';
+    (config.configurable?.assistant_name as string | undefined) || 'Tav';
 
   if (!userId || !threadId) {
     return {};
@@ -56,12 +60,25 @@ export async function runEngineNode(
     threadId,
   });
 
+  try {
+    await persistTurn({
+      threadId,
+      gameState: response.updatedGameState,
+      playerInput,
+      output: {
+        narration: response.narration,
+        choices: response.choices,
+        statCheck: response.statCheck,
+        combat: response.combat,
+      },
+    });
+  } catch {
+    // no-op
+  }
+
   return {
     gameEngineResults: response,
     messages: [],
-    threadId,
-    // carry forward latest player input for persistence node
-    lastPlayerInput: playerInput,
   };
 }
 

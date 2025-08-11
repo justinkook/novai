@@ -12,8 +12,6 @@ import {
   NON_STREAMING_TOOL_CALLING_MODELS,
 } from '@workspace/shared/models';
 import type {
-  ArtifactCodeV3,
-  ArtifactMarkdownV3,
   ArtifactType,
   ArtifactV3,
   CustomModelConfig,
@@ -557,10 +555,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               );
             }
 
-            if (
-              langgraphNode === 'generateArtifact' ||
-              langgraphNode === 'composeEngineOutput'
-            ) {
+            if (langgraphNode === 'generateArtifact') {
               const message = extractStreamDataChunk(nodeChunk);
 
               // Accumulate content
@@ -588,31 +583,8 @@ export function GraphProvider({ children }: { children: ReactNode }) {
                   if (!firstTokenReceived) {
                     setFirstTokenReceived(true);
                   }
-                  if (langgraphNode === 'composeEngineOutput') {
-                    // Append the streamed single-entry artifact as a new history item
-                    setArtifact((prev): ArtifactV3 | undefined => {
-                      const streamedContent = result.contents[0] as
-                        | ArtifactMarkdownV3
-                        | ArtifactCodeV3;
-                      if (!prev) {
-                        return {
-                          currentIndex: 1,
-                          contents: [{ ...streamedContent, index: 1 }],
-                        };
-                      }
-                      const newIndex = prev.contents.length + 1;
-                      return {
-                        currentIndex: newIndex,
-                        contents: [
-                          ...prev.contents,
-                          { ...streamedContent, index: newIndex },
-                        ],
-                      };
-                    });
-                  } else {
-                    // Replace artifact for standard generateArtifact flows
-                    setArtifact(result);
-                  }
+                  // Use debounced setter to prevent too frequent updates
+                  setArtifact(result);
                 }
               }
             }
@@ -1323,12 +1295,11 @@ export function GraphProvider({ children }: { children: ReactNode }) {
             }
 
             if (
-              langgraphNode === 'generateArtifact' ||
-              (langgraphNode === 'composeEngineOutput' &&
-                !generateArtifactToolCallStr &&
-                NON_STREAMING_TOOL_CALLING_MODELS.some(
-                  (m) => m === threadData.modelName
-                ))
+              langgraphNode === 'generateArtifact' &&
+              !generateArtifactToolCallStr &&
+              NON_STREAMING_TOOL_CALLING_MODELS.some(
+                (m) => m === threadData.modelName
+              )
             ) {
               const message = nodeOutput;
               generateArtifactToolCallStr +=
@@ -1339,29 +1310,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               if (result && result === 'continue') {
               } else if (result && typeof result === 'object') {
                 setFirstTokenReceived(true);
-                if (langgraphNode === 'composeEngineOutput') {
-                  setArtifact((prev): ArtifactV3 | undefined => {
-                    const streamedContent = result.contents[0] as
-                      | ArtifactMarkdownV3
-                      | ArtifactCodeV3;
-                    if (!prev) {
-                      return {
-                        currentIndex: 1,
-                        contents: [{ ...streamedContent, index: 1 }],
-                      };
-                    }
-                    const newIndex = prev.contents.length + 1;
-                    return {
-                      currentIndex: newIndex,
-                      contents: [
-                        ...prev.contents,
-                        { ...streamedContent, index: newIndex },
-                      ],
-                    };
-                  });
-                } else {
-                  setArtifact(result);
-                }
+                setArtifact(result);
               }
             }
           }

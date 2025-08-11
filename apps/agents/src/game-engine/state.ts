@@ -26,14 +26,9 @@ export const GameEngineGraphAnnotation = Annotation.Root({
    * Structured extras emitted by the engine (choices, checks, etc.)
    */
   gameEngineResults: Annotation<GameResponse | undefined>,
-  /**
-   * The original thread ID to use to update the message state.
-   */
-  threadId: Annotation<string>,
-  /**
-   * Latest raw player input extracted from messages for persistence/analytics.
-   */
-  lastPlayerInput: Annotation<string | undefined>,
 });
 
 export type GameEngineState = typeof GameEngineGraphAnnotation.State;
+export type GameEngineGraphReturnType = Partial<
+  typeof GameEngineGraphAnnotation.State
+>;
