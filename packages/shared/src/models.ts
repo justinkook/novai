@@ -42,6 +42,26 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
         current: 4_096,
       },
     },
+    isNew: false,
+  },
+  {
+    name: 'gpt-5',
+    label: 'GPT 5',
+    config: {
+      provider: 'openai',
+      temperatureRange: {
+        min: 0,
+        max: 1,
+        default: 0.5,
+        current: 0.5,
+      },
+      maxTokens: {
+        min: 1,
+        max: 32_768,
+        default: 4_096,
+        current: 4_096,
+      },
+    },
     isNew: true,
   },
   {
@@ -62,7 +82,7 @@ const OPENAI_MODELS: ModelConfigurationParams[] = [
         current: 4_096,
       },
     },
-    isNew: true,
+    isNew: false,
   },
   // Keep o4-mini available, but de-emphasized if needed
   {

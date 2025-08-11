@@ -1294,6 +1294,49 @@ export function GraphProvider({ children }: { children: ReactNode }) {
               });
             }
 
+            if (langgraphNode === 'generateFollowup') {
+              try {
+                const outputAny = nodeOutput;
+                const finalMsg = Array.isArray(outputAny?.messages)
+                  ? outputAny.messages[0]
+                  : undefined;
+
+                if (!finalMsg) {
+                  return;
+                }
+                const finalContent =
+                  typeof finalMsg.content === 'string' ? finalMsg.content : '';
+
+                if (followupMessageId) {
+                  setMessages((prev) =>
+                    prev.map((m) => {
+                      if (m.id !== followupMessageId) {
+                        return m;
+                      }
+                      return new AIMessage({
+                        ...(m as AIMessage),
+                        id: m.id,
+                        content: finalContent,
+                      });
+                    })
+                  );
+                  return;
+                }
+
+                const newMsgId = finalMsg.id ?? `followup-${uuidv4()}`;
+                setMessages((prev) => [
+                  ...prev,
+                  new AIMessage({ id: newMsgId, content: finalContent }),
+                ]);
+                followupMessageId = newMsgId;
+              } catch (e) {
+                console.error(
+                  'Failed to handle generateFollowup final output',
+                  e
+                );
+              }
+            }
+
             if (
               langgraphNode === 'generateArtifact' &&
               !generateArtifactToolCallStr &&
