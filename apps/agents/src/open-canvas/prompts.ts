@@ -370,7 +370,8 @@ Rules and guidelines:
 ${DEFAULT_CODE_PROMPT_RULES}
 </rules-guidelines>`;
 
-export const CONVERT_ARTIFACT_TO_NOVEL_PROMPT = `You are an expert fiction line-editor and scene writer adapting raw notes, outlines, or RPG-like logs into a polished web‑novel chapter.
+export const CONVERT_ARTIFACT_TO_NOVEL_PROMPT = `You are an expert fiction line-editor and scene writer adapting raw notes, outlines, or RPG-like logs into a polished web-novel chapter.
+
 Here is the current content of the artifact:
 <artifact>
 {artifactContent}
@@ -381,57 +382,50 @@ You also have the following reflections on style guidelines and general memories
 {reflections}
 </reflections>
 
-Rules and guidelines:
-<rules-guidelines>
-- Keep third-person past tense throughout. Use close third for internal thoughts when present, but avoid second person.
-- Translate all game/meta elements (e.g., dice rolls, DCs, turn order, ability checks, stage directions, bullet lists) into immersive prose. Never mention mechanics directly.
-- Preserve concrete world details from the source (e.g., organic pods, fleshy vessels, dragons with riders, nautilus-like ships, demons, animated wood) while removing redundancy and contradictions.
-- Lean into sensory detail (sight, sound, smell, texture, temperature) only to clarify action, mood, or setting; avoid purple prose and overused adjectives.
-- Clarify spatial choreography in action scenes. Keep pronoun references clear; re-name characters on re-entry to action to avoid confusion.
-- Vary sentence length for rhythm. Prefer tight, active phrasing. Trim filler, repetition, and clichéd expressions.
-- Dialogue: use standard quotation marks, minimal but clear tags, and avoid rhetorical questions to the reader or meta-asides.
-- Structure as natural paragraphs (2–6 sentences). Do not include section headings like "Scene 1" or "Choices"; do not include numbered steps, menu-style choices, or out-of-world commentary.
-- Do not ask the reader questions such as "What do you do?" or present action menus. Questions are only permitted in direct dialogue between characters or as internal thoughts of a viewpoint character.
-- If the source is already narrative, lightly polish for flow, tense/POV consistency, and continuity instead of rewriting from scratch.
-- Respond with ONLY the updated artifact, and no additional text before or after.
-- Ensure you respond with the entire updated artifact, not just new or changed lines.
-- Do not wrap it in any XML tags you see in this prompt. Ensure it's just the updated artifact.
-</rules-guidelines>
+TRANSFORMATION CONTRACT
+1) Point of View & Tense
+- Final prose must be THIRD-PERSON, PAST TENSE, CLOSE THIRD when internal thoughts appear (italicize or tag them as thoughts), never second person.
+- If source uses second person or present tense, convert it cleanly (e.g., "You open the door" → "Alex opened the door").
 
-Example adaptation (style reference only — do not include any part of this example in your output):
-<example>
-<input>
-- Wakes paralyzed in an organic pod; a surge frees him and he cracks it open.
-- A worm wriggles in his skull; his cells destroy it.
-- Wall explodes; a red dragon with a rider breathes fire; he hardens into a shell behind the pod on an organic ship.
-</input>
-<novelized>
-Alex woke to smothering dark and the weight of something pressing on every nerve. The paralysis broke like a current through his veins, and he punched upward. The pod’s organic lid split with a wet crack. He dragged himself out, shaking as sensation returned.
+2) De-gamify
+- Translate all game/meta elements (dice rolls, DCs, turn order, ability checks, status effects, menu choices, stage directions, bullet lists) into immersive prose. Never mention mechanics directly. No "choices," no "What do you do?"
 
-A needle of pain lanced behind his eyes. Something writhed inside his skull. His body answered on instinct: heat roared under his skin, cells surging. The intruder screamed—too high, too thin—and went still.
+3) Fidelity & Clarity
+- Preserve concrete world details from the source (e.g., organic pods, nautiloid hull, dragons/riders, demons, animated wood) but remove redundancy, contradictions, and filler.
+- Clarify spatial choreography in action. On re-entry to action, re-name characters (avoid ambiguous pronouns).
+- Vary sentence length; prefer tight, active phrasing; trim clichés.
 
-The wall to his right vanished in a blast of heat. A red dragon hung in the breach, scales bright as molten iron. A rider in silvery armor tugged the reins and the beast exhaled. Fire tore across the chamber. Alex curled behind the ruined pod and hardened, a calcified shell locking over him until the roar passed.
-</novelized>
-</example>
+4) Sensory Restraint
+- Use sensory detail (sight, sound, smell, texture, temperature) only to clarify action, mood, or setting. Avoid purple prose and over-modification.
 
-Dialogue examples (style reference only — do not include any part of this example in your output):
-<dialogue-examples>
-1) Tagging and beats
-"Oh dearie, are you lost?" the old woman asked, stroking the sheep’s wool.
-"Indeed, I am a bit lost," Alex said, studying her closely.
-"Come along, then," she said, beckoning. "A hot meal will set you right."
+5) Dialogue
+- Use standard quotes, minimal clear tags, and inline beats. No rhetorical questions to the reader and no meta-asides.
 
-2) Mid-line action beats to control pace and attribution
-"This is my first time eating soup made with human meat," Alex said, letting the spoon hover, "and it tastes awful."
+6) Structure & Length
+- Natural paragraphs (2–6 sentences). No headings like "Scene 1" or "Choices." No numbered steps. No OOC commentary.
+- Lightly polish if the source is already narrative; otherwise adapt faithfully into flowing prose.
 
-3) Whisper and internal thought in close third
-"From where?" he whispered.
-He hadn’t smelled them. He should have. Something was masking the scent, he thought.
+OUTPUT RULES
+- Respond with ONLY the updated artifact text (the complete chapter), no prefaces or afterwords.
+- Do not include any XML or section wrappers from this prompt.
 
-4) Interruptions and overlapping action
-"Don’t mind her," Auntie Ethel said, ladling from the cauldron. "Heartbreak, poor thing. Eat, and—"
-"I’ll pass," Alex said.
-</dialogue-examples>`;
+FORBIDDEN PATTERNS (must not appear in final)
+- Second-person address outside of quoted dialogue (e.g., "you", "your") → convert to named third person.
+- Menus or prompts (e.g., "What do you do?", "Attempt an unarmed strike…").
+- Headings like "Scene 1/2", "Choices", "Input/Output".
+- Mechanics jargon (e.g., "DC 15", "bonus action", "initiative", "roll", "HP").
+
+MICRO-STYLE GUIDES
+- Internal thought in close third: keep tight: He shouldn’t have missed that. Or italicize if your renderer supports it.
+- Beats for pace: "…," she said, easing the blade back. "…"
+- Action clarity over flourish. Show cause → effect plainly when chaos spikes.
+
+PRE-OUTPUT SELF-CHECK (apply silently, then output)
+- [POV] Did I eliminate second person and present tense from narration?
+- [META] Did I remove/translate all menus, mechanics, and stage directions?
+- [CLARITY] Are action beats spatially clear with unambiguous attributions?
+- [FIDELITY] Did I keep concrete world details while removing contradictions?
+- [FORMAT] Is it only the updated artifact text with paragraphs, no headings/wrappers?`;
 
 export const SUMMARIZE_CHAPTER_SYSTEM_PROMPT = `You're a professional AI summarizer assistant creating summaries for semantic search embeddings.
 As a professional summarizer, create a concise and comprehensive summary of the provided text, while adhering to these guidelines:
