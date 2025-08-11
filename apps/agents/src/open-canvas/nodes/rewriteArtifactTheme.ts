@@ -130,20 +130,75 @@ export const rewriteArtifactTheme = async (
 
       const joined = textSections.join('\n\n');
 
-      // Light pre-clean of explicit game formatting that shouldn't leak into the
-      // prose conversion. We keep this conservative; the prompt also instructs
-      // removal and transformation.
-      const stripGameMeta = (input: string): string =>
-        input
-          // Remove scene headers like "### Scene 1"
-          .replace(/^###\s*Scene\s+\d+\s*$/gim, '')
-          // Remove Choices sections: the header and immediate numbered/list lines
-          .replace(/^###\s*Choices[\s\S]*?(?=\n\s*###|\n\s*#|\n{2,}|$)/gim, '')
-          // Remove simple stat/combat callouts
-          .replace(/^>\s*(Stat Check|Combat):.*$/gim, '')
-          .trim();
+      // Heuristic pronoun conversion for narration (keeps it simple & safe)
+      const convertSecondPersonToThird = (block: string, name: string) => {
+        // possessives & contractions first to avoid partial overlaps
+        return (
+          block
+            // yours -> his/hers/theirs (use "their" to stay neutral)
+            .replace(/\b[Yy]ours\b/g, 'their')
+            .replace(/\b[Yy]our\b/g, `${name}’s`)
+            // you're / you are / you've / you'll / you'd
+            .replace(/\b[Yy]ou(?:’|')re\b|\b[Yy]ou are\b/g, `${name} was`)
+            .replace(/\b[Yy]ou(?:’|')ve\b/g, `${name} had`)
+            .replace(/\b[Yy]ou(?:’|')ll\b/g, `${name} would`)
+            .replace(/\b[Yy]ou(?:’|')d\b/g, `${name} had`)
+            // objective/subjective
+            .replace(/\b[Yy]ou\b/g, name)
+            // reflexive
+            .replace(/\b[Yy]ourself\b/g, `${name}self`)
+        );
+      };
 
-      return stripGameMeta(joined);
+      /**
+       * Lightweight cleanup:
+       * - Strip headings/menus/JSON/combat HUD.
+       * - Remove “What do you do?” prompts.
+       * - Convert stray 2nd-person narration (outside quotes) to named close third.
+       */
+      const postProcessNarrative = (text: string, protagonistName = 'Tav') => {
+        // 1) Strip common scene/menu/combat artifacts
+        let out = text
+          // Kill markdown scene/choices headings
+          .replace(/^\s{0,3}#{1,3}\s*(scene|choices)\b[^\n]*$/gim, '')
+          // Kill obvious menu lines
+          .replace(/^\s*(options?|choices?)\s*:?\s*$/gim, '')
+          // Kill “What do you do?” style prompts
+          .replace(/^\s*what (?:will )?you do\??\s*$/gim, '')
+          // Kill D&D-ish mechanics lines
+          .replace(
+            /^\s*make .*? roll.*$|^\s*AC\s*\d+.*$|^\s*initiative.*$|^\s*DC\s*\d+.*$/gim,
+            ''
+          )
+          // Kill inline combat HUDs / JSON blobs
+          .replace(/```json[\s\S]*?```/g, '')
+          .replace(
+            /\{[\s\S]*?"choices"[\s\S]*?\}|\{[\s\S]*?"combat"[\s\S]*?\}/g,
+            ''
+          )
+          .replace(/>\s*Combat:.*$/gim, '')
+          .replace(
+            /^\s*-\s*(Press the attack|Attempt to disarm|Shove against.*)$/gim,
+            ''
+          );
+
+        // 2) Convert second-person narration to named third-person—outside quotes only
+        // Split by quotes; process non-dialogue chunks.
+        const parts = out.split(/(".*?")/gs);
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i] && !parts[i]?.startsWith('"')) {
+            parts[i] = convertSecondPersonToThird(parts[i]!, protagonistName);
+          }
+        }
+        out = parts.join('');
+
+        // 3) Tidy extra blank lines
+        out = out.replace(/\n{3,}/g, '\n\n').trim();
+
+        return out;
+      };
+
+      return postProcessNarrative(joined);
     };
 
     const entireArtifactMarkdown = buildFullArtifactMarkdown();
