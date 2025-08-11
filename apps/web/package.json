@@ -50,6 +50,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@uiw/react-codemirror": "^4.23.5",
     "@uiw/react-md-editor": "^4.0.4",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/kv": "^2.0.0",
     "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",

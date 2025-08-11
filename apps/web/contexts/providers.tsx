@@ -1,5 +1,6 @@
 'use client';
 
+import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from '@workspace/ui/components/toaster';
 import { Suspense } from 'react';
 import { AssistantProvider } from '@/contexts/AssistantContext';
@@ -16,6 +17,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
             <GraphProvider>
               {children}
               <Toaster />
+              <Analytics />
             </GraphProvider>
           </AssistantProvider>
         </ThreadProvider>
