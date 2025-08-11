@@ -390,7 +390,8 @@ Rules and guidelines:
 - Clarify spatial choreography in action scenes. Keep pronoun references clear; re-name characters on re-entry to action to avoid confusion.
 - Vary sentence length for rhythm. Prefer tight, active phrasing. Trim filler, repetition, and clichéd expressions.
 - Dialogue: use standard quotation marks, minimal but clear tags, and avoid rhetorical questions to the reader or meta-asides.
-- Structure as natural paragraphs (2–6 sentences). No section headings, numbered steps, choices, or out-of-world commentary.
+- Structure as natural paragraphs (2–6 sentences). Do not include section headings like "Scene 1" or "Choices"; do not include numbered steps, menu-style choices, or out-of-world commentary.
+- Do not ask the reader questions such as "What do you do?" or present action menus. Questions are only permitted in direct dialogue between characters or as internal thoughts of a viewpoint character.
 - If the source is already narrative, lightly polish for flow, tense/POV consistency, and continuity instead of rewriting from scratch.
 - Respond with ONLY the updated artifact, and no additional text before or after.
 - Ensure you respond with the entire updated artifact, not just new or changed lines.
