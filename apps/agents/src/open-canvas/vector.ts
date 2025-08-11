@@ -36,7 +36,9 @@ export async function upsertChapterEmbedding(args: {
 }) {
   const { threadId, chapterId, title, summary, embedding } = args;
   const index = await ensureIndexes();
-  await index.upsert([
+  const namespaceName = process.env.PINECONE_NAMESPACE || 'chapter_summaries';
+  const ns = index.namespace(namespaceName);
+  await ns.upsert([
     {
       id: `${threadId}:${chapterId}`,
       values: embedding,
@@ -65,8 +67,10 @@ export async function querySimilarChapters(args: {
 }) {
   const { threadId, query, topK = 5 } = args;
   const index = await ensureIndexes();
+  const namespaceName = process.env.PINECONE_NAMESPACE || 'chapter_summaries';
+  const ns = index.namespace(namespaceName);
   const vector = await embedText(query);
-  const res = await index.query({
+  const res = await ns.query({
     vector,
     topK,
     includeMetadata: true,
@@ -154,7 +158,12 @@ type PineconeMetadata = Record<string, PineconePrimitive>;
 
 export async function upsertChapterSummary(
   llmJsonString: string,
-  opts?: { id?: string; namespace?: string; threadId?: string }
+  opts?: {
+    id?: string;
+    namespace?: string;
+    threadId?: string;
+    chapterId?: string;
+  }
 ) {
   const parsed = ChapterSummarySchema.parse(JSON.parse(llmJsonString));
   const { embedding_text, metadata } = parsed;
@@ -175,7 +184,7 @@ export async function upsertChapterSummary(
 
   const pineconeMetadata: PineconeMetadata = {
     // Flatten/normalize: drop non-primitive arrays of objects, stringify if needed later
-    chapter_id: metadata.chapter_id || '',
+    chapter_id: opts?.chapterId || '',
     thread_id: opts?.threadId || '',
     pov: metadata.pov || '',
     locations: (metadata.locations || []) as string[],

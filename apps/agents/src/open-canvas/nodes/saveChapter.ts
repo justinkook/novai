@@ -72,6 +72,7 @@ export async function saveChapterNode(
       id: `chapter:${chapterId}`,
       namespace: process.env.PINECONE_NAMESPACE || 'chapter_summaries',
       threadId,
+      chapterId,
     });
   }
 
