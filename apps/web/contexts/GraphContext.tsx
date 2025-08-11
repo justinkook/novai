@@ -440,6 +440,7 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       const stream = workerService.streamData({
         threadId: currentThreadId,
         assistantId: assistantsData.selectedAssistant.assistant_id,
+        assistantName: assistantsData.selectedAssistant.name,
         input,
         modelName: threadData.modelName,
         modelConfigs: threadData.modelConfigs,

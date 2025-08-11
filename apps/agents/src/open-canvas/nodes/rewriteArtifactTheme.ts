@@ -130,33 +130,13 @@ export const rewriteArtifactTheme = async (
 
       const joined = textSections.join('\n\n');
 
-      // Heuristic pronoun conversion for narration (keeps it simple & safe)
-      const convertSecondPersonToThird = (block: string, name: string) => {
-        // possessives & contractions first to avoid partial overlaps
-        return (
-          block
-            // yours -> his/hers/theirs (use "their" to stay neutral)
-            .replace(/\b[Yy]ours\b/g, 'their')
-            .replace(/\b[Yy]our\b/g, `${name}’s`)
-            // you're / you are / you've / you'll / you'd
-            .replace(/\b[Yy]ou(?:’|')re\b|\b[Yy]ou are\b/g, `${name} was`)
-            .replace(/\b[Yy]ou(?:’|')ve\b/g, `${name} had`)
-            .replace(/\b[Yy]ou(?:’|')ll\b/g, `${name} would`)
-            .replace(/\b[Yy]ou(?:’|')d\b/g, `${name} had`)
-            // objective/subjective
-            .replace(/\b[Yy]ou\b/g, name)
-            // reflexive
-            .replace(/\b[Yy]ourself\b/g, `${name}self`)
-        );
-      };
-
       /**
        * Lightweight cleanup:
        * - Strip headings/menus/JSON/combat HUD.
        * - Remove “What do you do?” prompts.
-       * - Convert stray 2nd-person narration (outside quotes) to named close third.
+       * Note: We avoid automatic 2nd→3rd substitutions; rely on prompt guidance.
        */
-      const postProcessNarrative = (text: string, protagonistName = 'Tav') => {
+      const postProcessNarrative = (text: string) => {
         // 1) Strip common scene/menu/combat artifacts
         let out = text
           // Kill markdown scene/choices headings
@@ -182,17 +162,7 @@ export const rewriteArtifactTheme = async (
             ''
           );
 
-        // 2) Convert second-person narration to named third-person—outside quotes only
-        // Split by quotes; process non-dialogue chunks.
-        const parts = out.split(/(".*?")/gs);
-        for (let i = 0; i < parts.length; i++) {
-          if (parts[i] && !parts[i]?.startsWith('"')) {
-            parts[i] = convertSecondPersonToThird(parts[i]!, protagonistName);
-          }
-        }
-        out = parts.join('');
-
-        // 3) Tidy extra blank lines
+        // 2) Tidy extra blank lines
         out = out.replace(/\n{3,}/g, '\n\n').trim();
 
         return out;
@@ -202,10 +172,11 @@ export const rewriteArtifactTheme = async (
     };
 
     const entireArtifactMarkdown = buildFullArtifactMarkdown();
+    const assistantNameFromConfig = config.configurable?.assistant_name;
     formattedPrompt = CONVERT_ARTIFACT_TO_NOVEL_PROMPT.replace(
       '{artifactContent}',
       entireArtifactMarkdown
-    );
+    ).replace('{characterName}', assistantNameFromConfig);
   } else {
     throw new Error('No theme selected');
   }

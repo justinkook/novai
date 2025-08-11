@@ -10,6 +10,7 @@ export interface StreamWorkerMessage {
 export interface StreamConfig {
   threadId: string;
   assistantId: string;
+  assistantName?: string;
   input: GraphInput;
   modelName: ALL_MODEL_NAMES;
   modelConfigs: Record<string, CustomModelConfig>;

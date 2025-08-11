@@ -6,8 +6,14 @@ const ctx: Worker = self as any;
 
 ctx.addEventListener('message', async (event: MessageEvent<StreamConfig>) => {
   try {
-    const { threadId, assistantId, input, modelName, modelConfigs } =
-      event.data;
+    const {
+      threadId,
+      assistantId,
+      assistantName,
+      input,
+      modelName,
+      modelConfigs,
+    } = event.data;
 
     const client = createClient();
 
@@ -19,6 +25,7 @@ ctx.addEventListener('message', async (event: MessageEvent<StreamConfig>) => {
           customModelName: modelName,
           modelConfig: modelConfigs[modelName as keyof typeof modelConfigs],
           thread_id: threadId,
+          assistant_name: assistantName,
         },
       },
     });
