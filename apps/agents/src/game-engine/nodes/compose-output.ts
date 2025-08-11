@@ -5,6 +5,9 @@ import {
   getArtifactContent,
   isArtifactMarkdownContent,
 } from '@workspace/shared/utils/artifacts';
+import type { z } from 'zod';
+import { ARTIFACT_TOOL_SCHEMA } from '../../open-canvas/nodes/generate-artifact/schemas.js';
+import { getModelFromConfig } from '../../utils.js';
 import type { GameEngineState } from '../state.js';
 import type { GameResponse } from '../types.js';
 
@@ -100,22 +103,53 @@ export async function composeEngineOutputNode(
     ? `${prevMarkdown}\n\n---\n\n${newSection}`
     : newSection;
 
+  // LLM-driven tool-call: emit the entire updated artifact via generate_artifact
+  const toolCallingModel = (
+    await getModelFromConfig(_config, { isToolCalling: true })
+  )
+    .bindTools(
+      [
+        {
+          name: 'generate_artifact',
+          description: ARTIFACT_TOOL_SCHEMA.description,
+          schema: ARTIFACT_TOOL_SCHEMA,
+        },
+      ],
+      { tool_choice: 'generate_artifact' }
+    )
+    .withConfig({ runName: 'composeEngineOutput' });
+
+  const prompt = `You are formatting a game engine scene into an artifact for display.
+Return the full, updated artifact by CALLING the generate_artifact tool only.
+
+Inputs:
+- Previous artifact markdown (may be empty):\n<prev>\n${prevMarkdown || ''}\n</prev>
+- New section to append:\n<section>\n${newSection}\n</section>
+
+Rules:
+- Type must be 'text'.
+- Language must be 'other'.
+- Title should be a short label for this update, e.g., "Scene ${nextIndex}".
+- The artifact field must contain the complete updated markdown (previous + new section).`;
+
+  const response = await toolCallingModel.invoke([
+    { role: 'user', content: prompt },
+  ]);
+  const args = response.tool_calls?.[0]?.args as
+    | z.infer<typeof ARTIFACT_TOOL_SCHEMA>
+    | undefined;
+
   const newContent: ArtifactMarkdownV3 = {
-    index: nextIndex,
+    index: 1,
     type: 'text',
-    title: `Scene ${nextIndex}`,
-    fullMarkdown,
+    title: args?.title || `Scene ${nextIndex}`,
+    fullMarkdown: args?.artifact || fullMarkdown,
   };
 
-  const updatedArtifact: ArtifactV3 = state.artifact?.contents?.length
-    ? {
-        currentIndex: nextIndex,
-        contents: [...state.artifact.contents, newContent],
-      }
-    : {
-        currentIndex: 1,
-        contents: [newContent],
-      };
+  const updatedArtifact: ArtifactV3 = {
+    currentIndex: 1,
+    contents: [newContent],
+  };
 
   // Create a tailored follow-up message focused on choices
   const followupText =
