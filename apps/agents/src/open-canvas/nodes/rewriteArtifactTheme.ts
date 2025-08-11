@@ -176,7 +176,7 @@ export const rewriteArtifactTheme = async (
     formattedPrompt = CONVERT_ARTIFACT_TO_NOVEL_PROMPT.replace(
       '{artifactContent}',
       entireArtifactMarkdown
-    ).replace('{characterName}', assistantNameFromConfig);
+    ).replaceAll('{characterName}', assistantNameFromConfig);
   } else {
     throw new Error('No theme selected');
   }

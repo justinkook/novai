@@ -386,7 +386,7 @@ TRANSFORMATION CONTRACT
 1) Point of View & Tense
 - Final prose must be THIRD-PERSON, PAST TENSE, CLOSE THIRD when internal thoughts appear (italicize or tag them as thoughts), never second person.
 - If source uses second person or present tense, convert it cleanly (e.g., "You open the door" → "Alex opened the door").
-- The viewpoint character's canonical name is {{characterName}}. Treat any second-person narration in the source as referring to {{characterName}} in close third.
+- The viewpoint character's canonical name is {characterName}. Treat any second-person narration in the source as referring to {characterName} in close third.
 
 2) De-gamify
 - Translate all game/meta elements (dice rolls, DCs, turn order, ability checks, status effects, menu choices, stage directions, bullet lists) into immersive prose. Never mention mechanics directly. No "choices," no "What do you do?"
